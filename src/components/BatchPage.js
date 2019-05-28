@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import { ProxyPage } from "@openimis/fe-core";
 
 
-class ReviewPage extends Component {
+class BatchPage extends Component {
     render() {
-        return <ProxyPage url="/ClaimOverview.aspx" />
+        return <ProxyPage url="/ProcessBatches.aspx" />
     }
 }
 
-export { ReviewPage };
+export { BatchPage };

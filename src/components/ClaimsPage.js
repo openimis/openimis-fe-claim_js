@@ -8,4 +8,4 @@ class ClaimsPage extends Component {
     }
 }
 
-export default ClaimsPage;
+export { ClaimsPage };
