@@ -1,25 +1,34 @@
 import React, { Component } from "react";
+import { injectIntl } from 'react-intl';
 import { Keyboard, ScreenShare, Subscriptions, Assignment } from "@material-ui/icons";
-import { MainMenuContribution } from "@openimis/fe-core";
+import { formatMessage, MainMenuContribution } from "@openimis/fe-core";
 
 class ClaimMainMenu extends Component {
   render() {
     return (
       <MainMenuContribution
         {...this.props}
-        header="Claims"
-        icon={<ScreenShare/>}
+        header={formatMessage(this.props.intl, "claim", "mainMenu")}
+        icon={<ScreenShare />}
         entries={[
           {
-            text: "Health Facility Claims",
+            text: formatMessage(this.props.intl, "claim", "menu.healthFacilityClaims"),
             icon: <Keyboard />,
             route: "/claim/claims"
           },
-          { text: "Review", icon: <Assignment />, route: "/claim/review" },
-          { text: "Batch Run", icon: <Subscriptions />, route: "/claim/batch" }
+          {
+            text: formatMessage(this.props.intl, "claim", "menu.review"),
+            icon: <Assignment />,
+            route: "/claim/review"
+          },
+          {
+            text: formatMessage(this.props.intl, "claim", "batch"),
+            icon: <Subscriptions />,
+            route: "/claim/batch"
+          }
         ]}
       />
     );
   }
 }
-export { ClaimMainMenu };
+export default injectIntl(ClaimMainMenu);
