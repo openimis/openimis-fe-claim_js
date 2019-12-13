@@ -5,160 +5,28 @@ import { injectIntl } from 'react-intl';
 import _ from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import {
-    Grid,
-    Paper,
-    Divider,
     IconButton,
-    Typography,
-    Button,
-    Menu,
-    MenuItem,
-    CircularProgress,
 } from "@material-ui/core";
-import MoreHoriz from "@material-ui/icons/MoreHoriz";
-import SortIcon from "@material-ui/icons/UnfoldMore";
-import SortAscIcon from "@material-ui/icons/ExpandLess";
-import SortDescIcon from "@material-ui/icons/ExpandMore";
 import AttachIcon from "@material-ui/icons/AttachFile";
-import { Searcher, Contributions } from "@openimis/fe-core";
+import { Searcher } from "@openimis/fe-core";
 import ClaimFilter from "./ClaimFilter";
 import {
-    withModulesManager,
+    withModulesManager, formatMessageWithValues,
     formatMessage, formatDateFromISO, formatAmount,
-    FormattedMessage, ProgressOrError, Table, PublishedComponent
+    FormattedMessage, PublishedComponent
 } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
 
 const CLAIM_SEARCHER_CONTRIBUTION_KEY = "claim.Searcher";
 
 const styles = theme => ({
-    root: {
-        width: "100%"
-    },
-    paper: theme.paper.body,
-    paperHeader: theme.paper.header,
-    paperHeaderTitle: theme.paper.title,
-    paperHeaderMessage: theme.paper.message,
-    paperHeaderAction: theme.paper.action,
-    paperDivider: theme.paper.divider,
-    tableHeaderAction: theme.table.headerAction,
-    processing: {
-        margin: theme.spacing(1)
-    }
-});
-
-class SelectionPane extends Component {
-    render() {
-        const { selection } = this.props;
-        if (!selection || !selection.length) return null;
-        return (
-            <Typography>
-                <FormattedMessage
-                    module="claim"
-                    id="claimSummaries.selection.count"
-                    values={{
-                        count: <b>{selection.length}</b>,
-                    }}
-                />
-            </Typography>
-        )
-    }
-}
-
-class SelectionMenu extends Component {
-
-    state = {
-        anchorEl: null,
-        attachmentsClaim: null,
-    }
-
-    openMenu = (e) => this.setState({ anchorEl: e.currentTarget })
-
-    closeMenu = (e) => this.setState({ anchorEl: null })
-
-    action = (a) => {
-        this.setState(
-            { anchorEl: null },
-            e => this.props.triggerAction(a)
-        )
-    }
-    canSelectAll = () => this.props.claims.map(s => s.id).filter(s => !this.props.selection.map(s => s.id).includes(s)).length
-
-    renderButtons = (entries) => (
-        <Fragment>
-            {entries.map((i, idx) => (
-                <Grid key={`selectionsButtons-${idx}`} item className={this.props.classes.paperHeaderAction}>
-                    <Button onClick={e => this.action(i.action)}>{i.text}</Button>
-                </Grid>
-            ))}
-        </Fragment>
-    )
-
-    renderMenu = (entries) => {
-        return (
-            <Grid item className={this.props.classes.paperHeaderAction}>
-                <Grid container alignItems="center">
-                    <Grid item className={this.props.classes.paperHeader}>
-                        <IconButton onClick={this.openMenu}><MoreHoriz /></IconButton>
-                    </Grid>
-                </Grid>
-                {!!this.state.anchorEl && (
-                    <Menu
-                        open={!!this.state.anchorEl}
-                        anchorEl={this.state.anchorEl}
-                        onClose={this.closeMenu}
-                    >
-                        {entries.map((i, idx) => (
-                            <MenuItem key={`selectionsMenu-${idx}`} onClick={e => this.action(i.action)}>{i.text}</MenuItem>
-                        ))}
-                    </Menu>
-                )}
-            </Grid>
-        )
-    }
-
-    render() {
-        const { intl, classes, selection, clearSelected, selectAll, actions, processing } = this.props;
-        if (processing) {
-            return <CircularProgress className={classes.processing} size={24} />
-        }
-        let entries = [];
-        let selectionCount = selection.length;
-        if (!!selectionCount) {
-            entries.push({ text: formatMessage(intl, "claim", "clearSelected"), action: clearSelected });
-        }
-        if (this.canSelectAll()) {
-            entries.push({ text: formatMessage(intl, "claim", "selectAll"), action: selectAll });
-        }
-        actions.forEach(a => {
-            if (a.enabled(selection)) {
-                entries.push({ text: formatMessage(intl, "claim", a.label), action: a.action });
-            }
-        });
-        if (entries.length > 2) {
-            return this.renderMenu(entries);
-        } else {
-            return this.renderButtons(entries);
-        }
-    }
-}
-
-const StyledSelectionMenu = injectIntl(withTheme(withStyles(styles)(SelectionMenu)))
+})
 
 class ClaimSearcher extends Component {
 
     state = {
-        filters: {},
-        orderBy: "-dateClaimed",
-        page: 0,
-        pageSize: 0,
-        afterCursor: null,
-        beforeCursor: null,
-        selection: [],
-        selectAll: 0,
-        clearAll: 0,
-        menuAnchor: null,
-        mutationsClaims: [],
+        random: null,
+        attachmentsClaim: null,
     }
 
     constructor(props) {
@@ -170,180 +38,50 @@ class ClaimSearcher extends Component {
         this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     }
 
-    _resetFilters = () => {
-        this.setState({
-            filters: this.props.defaultFilters,
-            pageSize: this.defaultPageSize,
-        },
-            e => this.applyFilters()
-        );
+    canSelectAll = (selection) => this.props.claims.map(s => s.id).filter(s => !selection.map(s => s.id).includes(s)).length
+
+    fetch = (prms) => {
+        this.props.fetchClaimSummaries(
+            this.props.modulesManager,
+            prms,
+            !!this.claimAttachments
+        )
     }
 
-    componentDidMount() {
-        this._resetFilters()
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (!_.isEqual(prevProps.defaultFilters, this.props.defaultFilters)) {
-            this._resetFilters();
-        } else if (!_.isEqual(prevProps.forcedFilters, this.props.forcedFilters)) {
-            this.applyFilters();
-        }
-    }
+    rowIdentifier = (r) => r.uuid
 
     forcedFilters() {
-        return !this.props.forcedFilters ? [] : [...this.props.forcedFilters.filter(f => !f.startsWith('random'))];
+        return !this.props.forcedFilters ? [] : [...this.props.forcedFilters.filter(f => !f.id === 'random')];
     }
 
-    randomCount() {
-        let random = !!this.props.forcedFilters && this.props.forcedFilters.filter(f => f.startsWith('random'));
-        if (!random || random.length === 0) {
-            return null;
-        }
-        return parseInt(random[0].split(":")[1]);
-    }
-
-    filtersToQueryParams = () => {
-        let prms = Object.keys(this.state.filters)
-            .filter(f => !!this.state.filters[f]['filter'])
-            .map(f => this.state.filters[f]['filter']);
+    filtersToQueryParams = (state) => {
+        let prms = Object.keys(state.filters)
+            .filter(f => !!state.filters[f]['filter'])
+            .map(f => state.filters[f]['filter']);
         let forced = this.forcedFilters();
-        let random = this.randomCount();
+        let random = state.filters['random'];
         if (forced.length > 0) {
-            prms.push(forced);
+            prms.push(...forced.map(f => f.filter));
         }
         if (!!random) {
-            prms.push(`first: ${random}`);
+            prms.push(`first: ${random.value}`);
             prms.push(`orderBy: ["dateClaimed", "?"]`);
+            this.setState({ random })
         } else {
-            prms.push(`orderBy: ["${this.state.orderBy}"]`);
+            prms.push(`orderBy: ["${state.orderBy}"]`);
+            this.setState({ random: null })
         }
         if (!forced.length && !random) {
-            prms.push(`first: ${this.state.pageSize}`);
-            if (!!this.state.afterCursor) {
-                prms.push(`after: "${this.state.afterCursor}"`)
+            prms.push(`first: ${state.pageSize}`);
+            if (!!state.afterCursor) {
+                prms.push(`after: "${state.afterCursor}"`)
             }
-            if (!!this.state.beforeCursor) {
-                prms.push(`before: "${this.state.beforeCursor}"`)
+            if (!!state.beforeCursor) {
+                prms.push(`before: "${state.beforeCursor}"`)
             }
         }
         return prms;
     }
-
-    onChangeFilters = (fltrs) => {
-        let filters = { ...this.state.filters };
-        fltrs.forEach(filter => {
-            if (filter.value === null) {
-                delete (filters[filter.id]);
-            } else {
-                filters[filter.id] = { value: filter.value, filter: filter.filter };
-            }
-        });
-        this.setState(
-            { filters },
-            e => this.applyFilters()
-        )
-    }
-
-    applyFilters = () => {
-        this.setState({
-            page: 0,
-            afterCursor: null,
-            beforeCursor: null,
-            clearAll: this.state.clearAll + 1,
-        },
-            e => this.props.fetchClaimSummaries(
-                this.props.modulesManager,
-                this.filtersToQueryParams(),
-                !!this.claimAttachments
-            )
-        )
-    }
-
-    deleteFilter = (filter) => {
-        let fltrs = this.state.filters;
-        delete (fltrs[filter]);
-        this.setState({
-            filters: fltrs,
-            page: 0,
-            afterCursor: null,
-            beforeCursor: null,
-        },
-            e => this.props.fetchClaimSummaries(
-                this.props.modulesManager,
-                this.filtersToQueryParams(),
-                !!this.claimAttachments
-            )
-        )
-    }
-
-    clearSelected = (e) => {
-        this.setState({ clearAll: this.state.clearAll + 1 })
-    }
-
-    selectAll = (e) => {
-        this.setState({ selectAll: this.state.selectAll + 1 })
-    }
-
-    onChangeSelection = selection => {
-        this.setState({ selection });
-    }
-
-    onChangeRowsPerPage = (cnt) => {
-        this.setState(
-            {
-                pageSize: cnt,
-                page: 0,
-                afterCursor: null,
-                beforeCursor: null,
-            },
-            e => this.props.fetchClaimSummaries(
-                this.props.modulesManager,
-                this.filtersToQueryParams(),
-                !!this.claimAttachments
-            )
-        )
-    }
-
-    onChangePage = (page, nbr) => {
-        if (nbr > this.state.page) {
-            this.setState(
-                {
-                    page: this.state.page + 1,
-                    beforeCursor: null,
-                    afterCursor: this.props.claimsPageInfo.endCursor,
-                },
-                e => this.props.fetchClaimSummaries(
-                    this.props.modulesManager,
-                    this.filtersToQueryParams(),
-                    !!this.claimAttachments
-                )
-            )
-        } else if (nbr < this.state.page) {
-            this.setState(
-                {
-                    page: this.state.page - 1,
-                    beforeCursor: this.props.claimsPageInfo.startCursor,
-                    afterCursor: null,
-                },
-                e => this.props.fetchClaimSummaries(
-                    this.props.modulesManager,
-                    this.filtersToQueryParams(),
-                    !!this.claimAttachments
-                )
-            )
-        }
-    }
-
-    openMenu = (event) => {
-        this.setState({ menuAnchor: event.currentTarget });
-    }
-
-    closeMenu = () => {
-        this.setState({ menuAnchor: null });
-    }
-
-    rowIdentifier = (r) => r.uuid
 
     feedbackColFormatter = c =>
         !!this.props.feedbackColFormatter ?
@@ -354,31 +92,22 @@ class ClaimSearcher extends Component {
             this.props.reviewColFormatter(c) :
             formatMessage(this.props.intl, "claim", `reviewStatus.${c.reviewStatus}`)
 
-    triggerAction = a => {
-        let s = [...this.state.selection]
-        this.setState(
-            {
-                selection: [],
-                clearAll: this.state.clearAll + 1
-            },
-            e => a(s));
-    }
-    preHeaders = () => {
-        var result = this.state.selection.length ?
+    preHeaders = (selection) => {
+        var result = selection.length ?
             [
                 '', '', '', '', '', '',
                 <FormattedMessage
                     module="claim"
                     id="claimSummaries.selection.claimed"
                     values={{
-                        claimed: <b>{formatAmount(this.props.intl, this.state.selection.reduce((t, v) => t + v.claimed, 0))}</b>,
+                        claimed: <b>{formatAmount(this.props.intl, selection.reduce((t, v) => t + v.claimed, 0))}</b>,
                     }}
                 />,
                 <FormattedMessage
                     module="claim"
                     id="claimSummaries.selection.approved"
                     values={{
-                        approved: <b>{formatAmount(this.props.intl, this.state.selection.reduce((t, v) => t + v.approved, 0))}</b>,
+                        approved: <b>{formatAmount(this.props.intl, selection.reduce((t, v) => t + v.approved, 0))}</b>,
                     }}
                 />,
                 , ''
@@ -408,20 +137,20 @@ class ClaimSearcher extends Component {
         return result;
     }
 
-    headerActions = () => {
+    sorts = () => {
         var result = [
-            () => this.formatSorter('code'),
-            () => this.formatSorter('healthFacility__code'),
-            () => this.formatSorter('insuree__last_name'),
-            () => this.formatSorter('dateClaimed', false),
-            () => null,
-            () => null,
-            () => this.formatSorter('claimed', false),
-            () => this.formatSorter('approved', false)
+            ['code', true],
+            ['healthFacility__code', true],
+            ['insuree__last_name', true],
+            ['dateClaimed', false],
+            null,
+            null,
+            ['claimed', false],
+            ['approved', false],
         ]
         if (this.claimAttachments) {
             result.push(
-                () => null
+                null
             )
         }
         return result;
@@ -458,48 +187,21 @@ class ClaimSearcher extends Component {
         }
         return result;
     }
-    rowLocked = claim => !!claim.clientMutationId
-    rowHighlighted = claim => !!this.highlightAmount && claim.claimed > this.highlightAmount
-    rowHighlightedAlt = claim => !!this.highlightAltInsurees &&
-        this.state.selection.filter(c => _.isEqual(c.insuree, claim.insuree)).length &&
-        !this.state.selection.includes(claim)
+    rowLocked = (selection, claim) => !!claim.clientMutationId
+    rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount
+    rowHighlightedAlt = (selection, claim) => !!this.highlightAltInsurees &&
+        selection.filter(c => _.isEqual(c.insuree, claim.insuree)).length &&
+        !selection.includes(claim)
 
-    sort = attr => {
-        this.setState({ orderBy: attr },
-            e => this.props.fetchClaimSummaries(
-                this.props.modulesManager,
-                this.filtersToQueryParams(),
-                !!this.claimAttachments
-            ))
-    }
-
-    formatSorter = (attr, asc = true) => {
-        let random = this.randomCount();
-        if (!!random) return null;
-        if (this.state.orderBy === attr) {
-            return (
-                <IconButton size="small" onClick={e => this.sort('-' + attr)}>
-                    <SortAscIcon size={24} />
-                </IconButton>)
-        } else if (this.state.orderBy === '-' + attr) {
-            return (
-                <IconButton size="small" onClick={e => this.sort(attr)} >
-                    <SortDescIcon size={24} />
-                </IconButton>)
-        } else {
-            return (
-                <IconButton size="small" onClick={e => asc ? this.sort(attr) : this.sort('-' + attr)}>
-                    <SortIcon size={24} />
-                </IconButton>)
-        }
-    }
 
     render() {
-        const { intl, classes, claims, claimsPageInfo, fetchingClaims, fetchedClaims, errorClaims,
-            onDoubleClick, actions, processing = false, fixFilter } = this.props;
+        const { intl,
+            claims, claimsPageInfo, fetchingClaims, fetchedClaims, errorClaims,
+            FilterExt, actions, defaultFilters, onDoubleClick
+        } = this.props;
 
-        let count = this.randomCount();
-        if (!count || !!this.forcedFilters().length > 0) {
+        let count = !!this.state.random && this.state.random.value
+        if (!count) {
             count = claimsPageInfo.totalCount;
         }
 
@@ -511,83 +213,36 @@ class ClaimSearcher extends Component {
                     close={e => this.setState({ attachmentsClaim: null })} />
                 <Searcher
                     module="claim"
-                    refresh={this.applyFilters}
-                    apply={this.applyFilters}
-                    del={this.deleteFilter}
-                    filters={this.state.filters}
-                    filterPane={
-                        <ClaimFilter
-                            fixFilter={fixFilter}
-                            filters={this.state.filters}
-                            apply={this.applyFilters}
-                            onChangeFilters={this.onChangeFilters}
-                        />}
+                    canSelectAll={this.canSelectAll}
+                    defaultFilters={defaultFilters}
+                    FilterPane={ClaimFilter}
+                    FilterExt={FilterExt}
+                    items={claims}
+                    itemsPageInfo={claimsPageInfo}
+                    fetchingItems={fetchingClaims}
+                    fetchedItems={fetchedClaims}
+                    errorItems={errorClaims}
+                    contributionKey={CLAIM_SEARCHER_CONTRIBUTION_KEY}
+                    tableTitle={formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
+                    rowsPerPageOptions={this.rowsPerPageOptions}
+                    defaultPageSize={this.defaultPageSize}
+                    fetch={this.fetch}
+                    rowIdentifier={this.rowIdentifier}
+                    filtersToQueryParams={this.filtersToQueryParams}
+                    defaultOrderBy="-dateClaimed"
+                    rowLocked={this.rowLocked}
+                    rowHighlighted={this.rowHighlighted}
+                    rowHighlightedAlt={this.rowHighlightedAlt}
+                    selectionMessage={"claimSummaries.selection.count"}
+                    preHeaders={this.preHeaders}
+                    headers={this.headers}
+                    itemFormatters={this.itemFormatters}
+                    headerActions={this.headerActions}
+                    actions={actions}
+                    aligns={this.aligns}
+                    sorts={this.sorts}
+                    onDoubleClick={onDoubleClick}
                 />
-                <Contributions contributionKey={CLAIM_SEARCHER_CONTRIBUTION_KEY} />
-                <Paper className={classes.paper}>
-                    <Grid container>
-                        <ProgressOrError progress={fetchingClaims} error={errorClaims} />
-                        {!!fetchedClaims && !errorClaims && (
-                            <Fragment>
-                                <Grid item xs={8}>
-                                    <Grid container alignItems="center" className={classes.paperHeader}>
-                                        <Grid item xs={8} className={classes.paperHeaderTitle}>
-                                            <FormattedMessage module="claim" id="claimSummaries" values={{ count }} />
-                                        </Grid>
-                                        <Grid item xs={4} className={classes.paperHeaderMessage}>
-                                            <SelectionPane intl={intl} selection={this.state.selection} />
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <Grid container direction="row" justify="flex-end">
-                                        <StyledSelectionMenu
-                                            selection={this.state.selection}
-                                            claims={claims}
-                                            clearSelected={this.clearSelected}
-                                            selectAll={this.selectAll}
-                                            triggerAction={this.triggerAction}
-                                            actions={actions}
-                                            processing={processing}
-                                        />
-                                    </Grid>
-
-                                </Grid>
-                                <Grid item xs={12} className={classes.paperDivider}>
-                                    <Divider />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Table
-                                        module="claim"
-                                        preHeaders={this.preHeaders()}
-                                        headers={this.headers()}
-                                        headerActions={this.headerActions()}
-                                        aligns={this.aligns()}
-                                        itemFormatters={this.itemFormatters()}
-                                        rowLocked={this.rowLocked}
-                                        rowHighlighted={this.rowHighlighted}
-                                        rowHighlightedAlt={this.rowHighlightedAlt}
-                                        items={claims}
-                                        withPagination={!this.props.forcedFilters}
-                                        withSelection={true}
-                                        itemIdentifier={this.rowIdentifier}
-                                        selection={this.state.selection}
-                                        selectAll={this.state.selectAll}
-                                        clearAll={this.state.clearAll}
-                                        onChangeSelection={this.onChangeSelection}
-                                        onDoubleClick={onDoubleClick}
-                                        page={this.state.page}
-                                        pageSize={this.state.pageSize}
-                                        count={claimsPageInfo.totalCount}
-                                        onChangePage={this.onChangePage}
-                                        rowsPerPageOptions={this.rowsPerPageOptions}
-                                        onChangeRowsPerPage={this.onChangeRowsPerPage}
-                                    />
-                                </Grid>
-                            </Fragment>
-                        )}
-                    </Grid>
-                </Paper>
             </Fragment>
         )
     }

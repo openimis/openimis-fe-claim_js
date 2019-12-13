@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { bindActionCreators } from "redux";
 import {
     formatMessage, ControlledField, withModulesManager,
-    PublishedComponent, Contributions, AmountInput, TextInput,
+    FormPanel, PublishedComponent, Contributions, AmountInput, TextInput,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
@@ -26,10 +26,9 @@ const styles = theme => ({
     item: theme.paper.item,
 });
 
-class ClaimMasterPanel extends Component {
+class ClaimMasterPanel extends FormPanel {
 
     state = {
-        data: {},
         claimCode: null,
         claimCodeError: null,
     }
@@ -41,16 +40,9 @@ class ClaimMasterPanel extends Component {
         this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
     }
 
-    componentDidMount() {
-        this.setState({ data: this.props.edited });
-    }
-
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if ((prevProps.edited_id && !this.props.edited_id) ||
-            prevProps.reset !== this.props.reset
-        ) {
-            this.setState({ data: this.props.edited });
-        } else if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
+        if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
+        if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
             this.setState({ claimCodeError: null })
         } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
             if (!!this.props.claimCodeCount) {
@@ -62,8 +54,6 @@ class ClaimMasterPanel extends Component {
                     { attr: 'codeError', v: null },
                 ])
             }
-        } else if (!_.isEqual(prevProps.edited, this.props.edited)) {
-            this.setState({ data: this.props.edited })
         }
     }
 
@@ -81,18 +71,6 @@ class ClaimMasterPanel extends Component {
         this.validateClaimCode,
         this.props.modulesManager.getConf("fe-claim", "debounceTime", 800)
     )
-
-
-    updateAttributes = updates => {
-        let data = { ...this.state.data };
-        updates.forEach(update => {
-            data[update.attr] = update.v;
-            data[update.attr + "_str"] = update.s;
-        });
-        this.props.onEditedChanged(data);
-    }
-
-    updateAttribute = (attr, v, s) => this.updateAttributes([{ attr, v, s }])
 
     render() {
         const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback } = this.props;

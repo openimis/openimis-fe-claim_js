@@ -7,18 +7,20 @@ import FilterIcon from "@material-ui/icons/FilterList";
 import FeedbackIcon from "@material-ui/icons/SpeakerNotesOutlined";
 import ReviewIcon from "@material-ui/icons/SupervisorAccount";
 import {
-    formatMessage, formatMessageWithValues, TextInput, AmountInput,
+    formatMessage, formatMessageWithValues, AmountInput, NumberInput,
     withHistory, historyPush, withModulesManager, PublishedComponent,
     journalize, coreAlert
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
+    selectHealthFacility,
     selectForFeedback, bypassFeedback, skipFeedback,
     selectForReview, bypassReview, skipReview,
     process
 } from "../actions";
 import { RIGHT_UPDATE, RIGHT_FEEDBACK, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "../constants";
 import { withTheme, withStyles } from "@material-ui/core/styles";
+import ClaimsSearcherPage from "./ClaimsSearcherPage";
 
 const styles = theme => ({
     page: theme.page,
@@ -30,13 +32,16 @@ const styles = theme => ({
     }
 });
 
-class RawFixFilter extends Component {
+class RawRandomAndValueFilters extends Component {
     state = {
+        randomToggled: false,
         random: 0,
+        valueToggled: false,
         value: 0,
         variance: 0,
         filters: {},
     }
+
     componentDidMount() {
         this.setState(this.props.modulesManager.getConf(
             "fe-claim",
@@ -44,6 +49,7 @@ class RawFixFilter extends Component {
             { random: 5, value: 0, variance: 10 }
         ));
     }
+
     randomChange = (v) => {
         let filters = this.state.filters;
         delete (filters.random)
@@ -80,7 +86,7 @@ class RawFixFilter extends Component {
             return;
         }
         let rnd = Math.trunc(this.state.random * this.props.claimsPageInfo.totalCount / 100);
-        if (!filters.random && !rnd) {
+        if (!this.state.randomToggled && !rnd) {
             this.props.coreAlert(
                 formatMessage(this.props.intl, "claim", "ClaimFilter.randomFilter.zeroAlert.title"),
                 formatMessageWithValues(this.props.intl, "claim", "ClaimFilter.randomFilter.zeroAlert.message", {
@@ -90,20 +96,38 @@ class RawFixFilter extends Component {
             )
             return;
         }
-        if (!!filters.random) {
-            delete (filters.random);
+        if (!this.state.randomToggled) {
+            filters.random = [{
+                id: 'random',
+                value: rnd,
+            }]
         } else {
-            filters.random = [`random: ${rnd}`]
+            filters.random = [{
+                id: 'random',
+                value: null,
+            }]
         }
         this.setState(
-            { filters },
-            e => this.props.filtersChange(Object.values(this.state.filters).flat())
+            {
+                filters,
+                randomToggled: !this.state.randomToggled,
+            },
+            e => this.props.onChangeFilters(Object.values(this.state.filters).flat())
         )
     }
     toggleValueFilter = (e) => {
         let filters = this.state.filters;
-        if (!!filters.value) {
-            delete (filters.value);
+        if (!!this.state.valueToggled) {
+            filters.value = [
+                { id: 'value', value: null },
+                {
+                    id: 'claimedAbove',
+                    value: null,
+                }, {
+                    id: 'claimedUnder',
+                    value: null
+                }
+            ];
         } else {
             let min = this.state.value;
             let max = this.state.value;
@@ -111,18 +135,33 @@ class RawFixFilter extends Component {
                 min = min - min * this.state.variance / 100;
                 max = max + max * this.state.variance / 100;
             }
-            filters.value = [`claimed_Gte: ${min}`, `claimed_Lte: ${max}`]
+            filters.value = [
+                { id: 'value', value: this.state.value },
+                {
+                    id: 'claimedAbove',
+                    value: min,
+                    filter: `claimed_Gte: ${min}`
+                }, {
+                    id: 'claimedUnder',
+                    value: max,
+                    filter: `claimed_Lte: ${max}`
+                }]
         }
-        this.setState({ filters },
-            e => this.props.filtersChange(Object.values(this.state.filters).flat())
+        this.setState(
+            {
+                filters,
+                valueToggled: !this.state.valueToggled,
+            },
+            e => this.props.onChangeFilters(Object.values(this.state.filters).flat())
         )
     }
     render() {
         const { classes } = this.props;
+        let random = !!this.state.filters['random'] && !!this.state.filters['random'][0].value
         return (
             <Grid container justify="center" alignItems="center" direction="row">
                 <Grid item xs={3} className={classes.item}>
-                    <TextInput
+                    <NumberInput
                         module="claim" label="ClaimFilter.Reviews.random"
                         name="random"
                         value={this.state.random}
@@ -131,7 +170,7 @@ class RawFixFilter extends Component {
                         endAdornment={
                             <InputAdornment position="end">
                                 <IconButton
-                                    className={!!this.state.filters.random ? classes.toggledButton : null}
+                                    className={!!this.state.randomToggled ? classes.toggledButton : null}
                                     onClick={this.toggleRandomFilter}
                                     edge="end">
                                     <FilterIcon />
@@ -157,7 +196,7 @@ class RawFixFilter extends Component {
                             />
                         </Grid>
                         <Grid item xs={6}>
-                            <TextInput
+                            <NumberInput
                                 module="claim" label="ClaimFilter.Reviews.variance"
                                 value={this.state.variance}
                                 onChange={this.varianceChange}
@@ -167,7 +206,7 @@ class RawFixFilter extends Component {
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton
-                                            className={!!this.state.filters.value ? classes.toggledButton : null}
+                                            className={!!this.state.valueToggled ? classes.toggledButton : null}
                                             onClick={this.toggleValueFilter}
                                             edge="end">
                                             <FilterIcon />
@@ -201,14 +240,14 @@ const mapDispatchToFixFilterProps = dispatch => {
         dispatch);
 };
 
-const FixFilter = withModulesManager(injectIntl(withTheme(withStyles(styles)
-    (connect(mapStateToFixFilterProps, mapDispatchToFixFilterProps)(RawFixFilter))
+const RandomAndValueFilters = withModulesManager(injectIntl(withTheme(withStyles(styles)
+    (connect(mapStateToFixFilterProps, mapDispatchToFixFilterProps)(RawRandomAndValueFilters))
 )));
 
-class ReviewsPage extends Component {
+class ReviewsPage extends ClaimsSearcherPage {
 
     state = {
-        forcedFilters: [],
+        filtersExt: [],
     }
 
     constructor(props) {
@@ -226,42 +265,6 @@ class ReviewsPage extends Component {
             )
         }
     }
-
-    _filterOnUserHealthFacilityFullPath() {
-        let defaultFilters = { ...this.state.defaultFilters }
-        defaultFilters.healthFacility = {
-            "value": this.props.userHealthFacilityFullPath,
-            "filter": `healthFacility_Uuid: "${this.props.userHealthFacilityFullPath.uuid}"`
-        }
-        let district = this.props.userHealthFacilityFullPath.location;
-        defaultFilters.district = {
-            "value": district,
-            "filter": `healthFacility_Location_Uuid: "${district.uuid}"`
-        }
-        let region = district.parent;
-        defaultFilters.region = {
-            "value": region,
-            "filter": `healthFacility_Location_Parent_Uuid: "${region.uuid}"`
-        }
-        this.setState({ defaultFilters })
-    }
-
-    componentDidMount() {
-        if (!!this.props.userHealthFacilityFullPath) {
-            this._filterOnUserHealthFacilityFullPath();
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);
-        }
-        if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
-            this._filterOnUserHealthFacilityFullPath();
-        }
-    }
-
-    filtersChange = forcedFilters => this.setState({ forcedFilters })
 
     _labelMutation = (selection, labelOne, labelMultiple, action) => {
         if (selection.length === 1) {
@@ -500,8 +503,7 @@ class ReviewsPage extends Component {
             <div className={classes.page}>
                 <ClaimSearcher
                     defaultFilters={this.state.defaultFilters}
-                    forcedFilters={this.state.forcedFilters}
-                    fixFilter={<FixFilter filtersChange={this.filtersChange} />}
+                    FilterExt={RandomAndValueFilters}
                     actions={actions}
                     onDoubleClick={rights.includes(RIGHT_UPDATE) ? this.onDoubleClick : null}
                     feedbackColFormatter={this.feedbackColFormatter}
@@ -514,15 +516,21 @@ class ReviewsPage extends Component {
 
 const mapStateToProps = state => ({
     rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
+    claimAdmin: state.claim.claimAdmin,
+    claimHealthFacility: state.claim.claimHealthFacility,
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,     
     claimsPageInfo: state.claim.claimsPageInfo,
+    //props used from super.componentDidUpdate !!
     submittingMutation: state.claim.submittingMutation,
     mutation: state.claim.mutation,
+    //--    
 });
 
 const mapDispatchToProps = dispatch => {
     return bindActionCreators(
         {
+            selectHealthFacility,
+            journalize,
             selectForFeedback,
             bypassFeedback,
             skipFeedback,
@@ -530,7 +538,6 @@ const mapDispatchToProps = dispatch => {
             bypassReview,
             skipReview,
             process,
-            journalize,
         },
         dispatch);
 };

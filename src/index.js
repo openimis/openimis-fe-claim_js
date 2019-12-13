@@ -36,7 +36,7 @@ const DEFAULT_CONFIG = {
     {
       key: "claim.ClaimAdminPicker.projection",
       ref: ["id", "uuid", "code", "lastName", "otherNames",
-        "healthFacility{id, uuid, code, name, location{id, uuid, code, name, parent{id, uuid, code, name}}}"]
+        "healthFacility{id, uuid, code, name, level, servicesPricelist{id, uuid}, itemsPricelist{id, uuid}, location{id, uuid, code, name, parent{id, uuid, code, name}}}"]
     },
     { key: "claim.ClaimOfficerPicker", ref: ClaimOfficerPicker },
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
@@ -64,6 +64,7 @@ const DEFAULT_CONFIG = {
   ],
   "core.MainMenu": [ClaimMainMenu],
   "core.Boot": [ClaimAlertForwarder],
+  "claim.MasterPanel": [ClaimMasterPanelExt],
 }
 
 export const ClaimModule = (cfg) => {

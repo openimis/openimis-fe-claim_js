@@ -171,7 +171,7 @@ class ClaimForm extends Component {
         this.setState({ claim })
     }
 
-    save = (claim) => {
+    _save = (claim) => {
         this.setState(
             { lockNew: !claim.uuid }, // avoid duplicates
             e => this.props.save(claim))
@@ -185,10 +185,10 @@ class ClaimForm extends Component {
     }
 
     render() {
-        const { rights, fetchingClaim, fetchedClaim, errorClaim, add, back,
+        const { rights, fetchingClaim, fetchedClaim, errorClaim, add, save, back,
             forReview = false, forFeedback = false, } = this.props;
-        const { claim_uuid } = this.state;
-        let readOnly = this.state.lockNew ||
+        const { claim_uuid, lockNew } = this.state;
+        let readOnly = lockNew ||
             (!forReview && !forFeedback && this.state.claim.status !== 2) ||
             ((forReview || forFeedback) && this.state.claim.status !== 4) ||
             !rights.filter(r => r === RIGHT_LOAD).length
@@ -232,7 +232,7 @@ class ClaimForm extends Component {
                             titleParams={{ code: this.state.claim.code }}
                             back={back}
                             add={!!add ? this._add : null}
-                            save={!!this.props.save ? this.save : null}
+                            save={!!save ? this._save : null}
                             openDirty={forReview && !readOnly}
                             canSave={e => this.canSave(forFeedback)}
                             reload={(claim_uuid || readOnly) && this.reload}

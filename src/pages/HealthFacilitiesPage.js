@@ -15,13 +15,14 @@ import ClaimSearcher from "../components/ClaimSearcher";
 
 import { submit, del, selectHealthFacility } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE } from "../constants";
+import ClaimsSearcherPage from "./ClaimsSearcherPage";
 
 const styles = theme => ({
     page: theme.page,
     fab: theme.fab
 });
 
-class HealthFacilitiesPage extends Component {
+class HealthFacilitiesPage extends ClaimsSearcherPage {
 
     constructor(props) {
         super(props);
@@ -39,59 +40,6 @@ class HealthFacilitiesPage extends Component {
         this.state = {
             defaultFilters,
             confirmedAction: null,
-        }
-    }
-
-    _filterOnHealthFacility(hf) {
-        let defaultFilters = { ...this.state.defaultFilters }
-        if (!hf) {
-            delete(defaultFilters.healthFacility);
-            delete(defaultFilters.district);
-            delete(defaultFilters.region);
-            delete(defaultFilters.claimAdmin);
-        } else {
-            defaultFilters.healthFacility = {
-                "value": hf,
-                "filter": `healthFacility_Id: "${hf.id}"`
-            }
-            let district = hf.location;
-            defaultFilters.district = {
-                "value": district,
-                "filter": `healthFacility_Location_Id: "${district.id}"`
-            }
-            let region = district.parent;
-            defaultFilters.region = {
-                "value": region,
-                "filter": `healthFacility_Location_Parent_Id: "${region.id}"`
-            }
-            if (!!this.props.claimAdmin) {
-                defaultFilters.claimAdmin = {
-                    "value": this.props.claimAdmin,
-                    "filter": `admin_Uuid: "${this.props.claimAdmin.uuid}"`
-                }
-            }
-        }
-        this.setState({ defaultFilters })
-        this.props.selectHealthFacility(hf);
-    }
-
-    componentDidMount() {
-        if (!!this.props.claimHealthFacility) {
-            this._filterOnHealthFacility(this.props.claimHealthFacility);
-        } else if (!!this.props.userHealthFacilityFullPath) {
-            this._filterOnHealthFacility(this.props.userHealthFacilityFullPath);
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.submittingMutation && !this.props.submittingMutation) {
-            this.props.journalize(this.props.mutation);
-        } else if (prevProps.confirmed !== this.props.confirmed && !!this.props.confirmed && !!this.state.confirmedAction) {
-            this.state.confirmedAction();
-        } else if (!_.isEqual(prevProps.userHealthFacilityFullPath, this.props.userHealthFacilityFullPath)) {
-            this._filterOnHealthFacility(this.props.userHealthFacilityFullPath);
-        } else if (!_.isEqual(prevProps.claimHealthFacility, this.props.claimHealthFacility)) {
-            this._filterOnHealthFacility(this.props.claimHealthFacility);
         }
     }
 
@@ -218,23 +166,25 @@ class HealthFacilitiesPage extends Component {
 
 const mapStateToProps = state => ({
     rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-    confirmed: state.core.confirmed,
-    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
-    submittingMutation: state.claim.submittingMutation,
-    mutation: state.claim.mutation,
     claimAdmin: state.claim.claimAdmin,
     claimHealthFacility: state.claim.claimHealthFacility,
+    userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,    
+    //props used from super.componentDidUpdate !!
+    submittingMutation: state.claim.submittingMutation,
+    mutation: state.claim.mutation,
+    confirmed: state.core.confirmed,
+    //--
 });
 
 
 const mapDispatchToProps = dispatch => {
     return bindActionCreators(
         {
+            selectHealthFacility,
+            journalize,
             coreConfirm,
             submit,
             del,
-            journalize,
-            selectHealthFacility,
         },
         dispatch);
 };

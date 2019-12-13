@@ -155,7 +155,7 @@ function reducer(
                 fetchingClaim: false,
                 fetchedClaim: true,
                 claim: (!!claims && claims.length > 0) ? claims[0] : null,
-                errorClaims: formatGraphQLError(action.payload)
+                errorClaim: formatGraphQLError(action.payload)
             };
         case 'CLAIM_CLAIM_ERR':
             return {

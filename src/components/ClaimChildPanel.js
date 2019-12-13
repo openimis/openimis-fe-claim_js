@@ -1,14 +1,19 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { injectIntl } from 'react-intl';
+import { withTheme, withStyles } from "@material-ui/core/styles";
 import {
     formatAmount, formatMessage, formatMessageWithValues, NumberInput, Table,
     PublishedComponent, AmountInput, TextInput, decodeId, withModulesManager
 } from "@openimis/fe-core";
-import { IconButton } from "@material-ui/core";
+import { IconButton, Paper } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import _ from "lodash";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+
+const styles = theme => ({
+    paper: theme.paper.paper,
+});
 
 class ClaimChildPanel extends Component {
 
@@ -126,7 +131,7 @@ class ClaimChildPanel extends Component {
     }
 
     render() {
-        const { intl, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
+        const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
         if (!edited) return null;
         const totalClaimed = _.round(this.state.data.reduce(
             (sum, r) => sum + claimedAmount(r), 0),
@@ -243,14 +248,16 @@ class ClaimChildPanel extends Component {
             header += formatMessage(intl, "claim", `edit.${this.props.type}s.fetchingPricelist`)
         }
         return (
-            <Table
-                module="claim"
-                header={header}
-                preHeaders={preHeaders}
-                headers={headers}
-                itemFormatters={itemFormatters}
-                items={!fetchingPricelist ? this.state.data : []}
-            />
+            <Paper className={classes.paper}>
+                <Table
+                    module="claim"
+                    header={header}
+                    preHeaders={preHeaders}
+                    headers={headers}
+                    itemFormatters={itemFormatters}
+                    items={!fetchingPricelist ? this.state.data : []}
+                />
+            </Paper>
         )
     }
 }
@@ -261,4 +268,4 @@ const mapStateToProps = (state, props) => ({
         state.medical_pricelist.pricelist ? state.medical_pricelist.pricelist : {},
 });
 
-export default withModulesManager(injectIntl(connect(mapStateToProps)(ClaimChildPanel)));
+export default withModulesManager(injectIntl(withTheme(withStyles(styles)(connect(mapStateToProps)(ClaimChildPanel)))));

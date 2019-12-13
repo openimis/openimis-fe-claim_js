@@ -8,7 +8,8 @@ import _ from "lodash";
 import { Grid, Divider } from "@material-ui/core";
 import {
     formatMessage, withModulesManager,
-    ControlledField, PublishedComponent, TextInput
+    ControlledField, PublishedComponent,
+    TextInput, AmountInput,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility } from "../actions";
 
@@ -45,17 +46,6 @@ class Head extends Component {
             value: v,
             filter: `healthFacility_Location_Uuid: "${!!v && v.uuid}"`
         }
-    }
-
-    _healthFacilityFilter = v => {
-        return [{
-            id: 'healthFacility',
-            value: v,
-            filter: `healthFacility_Uuid: "${!!v && v.uuid}"`
-        }, {
-            id: 'batchRun',
-            value: null
-        }];
     }
 
     _onChangeRegion = (v, s) => {
@@ -117,48 +107,11 @@ class Head extends Component {
     }
 
     _onChangeHealthFacility = (v, s) => {
-        let filters = this._healthFacilityFilter(v);
-        if (!!v) {
-            filters.push(
-                this._regionFilter(v.location.parent),
-                this._districtFilter(v.location),
-                {
-                    id: 'claimAdmin',
-                    value: null,
-                    filter: null
-                }
-            );
-        }
-        this.props.onChangeFilters(filters);
         this.props.selectHealthFacility(v);
-        this.props.selectClaimAdmin(null);
-        this.setState({
-            reset: this.state.reset + 1,
-        });
     }
 
     _onChangeClaimAdmin = (v, s) => {
-        let filters = [
-            {
-                id: 'claimAdmin',
-                value: v,
-                filter: `admin_Uuid: "${!!v && v.uuid}"`
-            }
-        ];
-        let hfFilter = this.props.filters['healthFacility'] ? this.props.filters['healthFacility']['value'] : null;
-        if (!!v && (!hfFilter || hfFilter.uuid !== v.healthFacility.uuid)) {
-            filters.push(
-                ...this._healthFacilityFilter(v.healthFacility),
-                this._regionFilter(v.healthFacility.location.parent),
-                this._districtFilter(v.healthFacility.location)
-            );
-            this.props.selectHealthFacility(v.healthFacility);
-        }
-        this.props.onChangeFilters(filters);
         this.props.selectClaimAdmin(v);
-        this.setState({
-            reset: this.state.reset + 1,
-        });
     }
 
 
@@ -230,17 +183,11 @@ class Head extends Component {
     }
 }
 
-const mapStateToProps = state => ({
-    user: state.core.user.i_user,
-    submittingMutation: state.claim.submittingMutation,
-    mutation: state.claim.mutation,
-});
-
 const mapDispatchToProps = dispatch => {
     return bindActionCreators({ selectClaimAdmin, selectHealthFacility }, dispatch);
 };
 
-const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head)
+const BoundHead = connect(null, mapDispatchToProps)(Head)
 
 class Details extends Component {
 
@@ -250,7 +197,7 @@ class Details extends Component {
     )
 
     render() {
-        const { intl, classes, filters, onChangeFilters, fixFilter } = this.props;
+        const { intl, classes, filters, onChangeFilters, FilterExt } = this.props;
         return (
             <Grid container className={classes.form}>
                 <Grid item xs={1} className={classes.item}>
@@ -324,11 +271,10 @@ class Details extends Component {
                     />
                 </Grid>
                 <Grid item xs={2} className={classes.item}>
-                    <TextInput
+                    <AmountInput
                         module="claim" label="ClaimFilter.claimedAbove"
                         name="claimedAbove"
-                        inputProps={{ type: "number" }}
-                        value={(filters['claimedbove'] && filters['claimedAbove']['value'])}
+                        value={(filters['claimedAbove'] && filters['claimedAbove']['value'])}
                         onChange={v => this.debouncedOnChangeFilter([
                             {
                                 id: 'claimedAbove',
@@ -339,10 +285,9 @@ class Details extends Component {
                     />
                 </Grid>
                 <Grid item xs={2} className={classes.item}>
-                    <TextInput
+                    <AmountInput
                         module="claim" label="ClaimFilter.claimedUnder"
                         name="claimedUnder"
-                        inputProps={{ type: "number" }}
                         value={(filters['claimedUnder'] && filters['claimedUnder']['value'])}
                         onChange={v => this.debouncedOnChangeFilter([
 
@@ -447,13 +392,13 @@ class Details extends Component {
                         ])}
                     />
                 </Grid>
-                {!!fixFilter && (
+                {!!FilterExt && (
                     <Fragment>
                         <Grid item xs={12} className={classes.paperDivider}>
                             <Divider />
                         </Grid>
                         <Grid item xs={12}>
-                            {fixFilter}
+                            <FilterExt onChangeFilters={onChangeFilters} />
                         </Grid>
                     </Fragment>
                 )}
