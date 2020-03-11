@@ -118,20 +118,6 @@ class ClaimMasterPanel extends FormPanel {
                         />
                     </Grid>
                 } />
-                <ControlledField module="claim" id="Claim.claimedDate" field={
-                    <Grid item xs={2} className={classes.item}>
-                        <PublishedComponent id="core.DatePicker"
-                            value={edited.dateClaimed}
-                            module="claim"
-                            label="claimedDate"
-                            reset={reset}
-                            onChange={d => this.updateAttribute("dateClaimed", d)}
-                            readOnly={ro}
-                            required={true}
-                            minDate={edited.dateFrom}
-                        />
-                    </Grid>
-                } />
                 <ControlledField module="claim" id="Claim.visitDateFrom" field={
                     <Grid item xs={2} className={classes.item}>
                         <PublishedComponent id="core.DatePicker"
@@ -155,6 +141,20 @@ class ClaimMasterPanel extends FormPanel {
                             reset={reset}
                             onChange={d => this.updateAttribute("dateTo", d)}
                             readOnly={ro}
+                            minDate={edited.dateFrom}
+                        />
+                    </Grid>
+                } />
+                <ControlledField module="claim" id="Claim.claimedDate" field={
+                    <Grid item xs={2} className={classes.item}>
+                        <PublishedComponent id="core.DatePicker"
+                            value={edited.dateClaimed}
+                            module="claim"
+                            label="claimedDate"
+                            reset={reset}
+                            onChange={d => this.updateAttribute("dateClaimed", d)}
+                            readOnly={ro}
+                            required={true}
                             minDate={edited.dateFrom}
                         />
                     </Grid>
@@ -374,7 +374,7 @@ class ClaimMasterPanel extends FormPanel {
                                         value={edited.adjustment}
                                         reset={reset}
                                         onChange={v => this.updateAttribute("adjustment", v)}
-                                        readOnly={!!forFeedback || (ro && forReview && roReview) }
+                                        readOnly={!!forFeedback || (ro && forReview && roReview)}
                                     />
                                 </Grid>
                             } />
