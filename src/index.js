@@ -13,6 +13,7 @@ import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
+import LatestClaimsBlock from "./components/LatestClaimsBlock";
 import messages_en from "./translations/en.json";
 import reducer from "./reducer";
 
@@ -69,6 +70,7 @@ const DEFAULT_CONFIG = {
   ],
   "core.MainMenu": [ClaimMainMenu],
   "claim.MasterPanel": [ClaimMasterPanelExt],
+  "home.HomePage.Blocks": [LatestClaimsBlock],
 };
 
 export const ClaimModule = (cfg) => {
