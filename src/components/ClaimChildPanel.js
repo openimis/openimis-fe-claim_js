@@ -18,6 +18,7 @@ import {
 import { Paper, Box } from "@material-ui/core";
 import _ from "lodash";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import DetailsTable from "./DetailsTable"; 
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -30,8 +31,8 @@ class ClaimChildPanel extends Component {
 
   constructor(props) {
     super(props);
-    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", false);
-    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", false);
+    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", true);
+    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", true);
     this.showJustificationAtEnter = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.showJustificationAtEnter",
@@ -178,6 +179,10 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.explanation`,
     ];
 
+    const details = [
+      { code: "AAYU", type: "C", validFrom: "12-03-22" },
+    ]
+
     let itemFormatters = [
       (i, idx) => (
         <Box minWidth={400}>
@@ -195,7 +200,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly}
+          readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
         />
@@ -215,6 +220,7 @@ class ClaimChildPanel extends Component {
         />
       ),
     ];
+
     if (!!forReview || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
         preHeaders.push("");
@@ -289,6 +295,10 @@ class ClaimChildPanel extends Component {
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
         />
+        <DetailsTable 
+        list={details}
+        />
+        
       </Paper>
     );
   }
