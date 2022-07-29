@@ -10,6 +10,7 @@ import {
   withModulesManager,
   NumberInput,
   Table,
+  TableService,
   PublishedComponent,
   AmountInput,
   TextInput,
@@ -17,8 +18,7 @@ import {
 } from "@openimis/fe-core";
 import { Paper, Box } from "@material-ui/core";
 import _ from "lodash";
-import { claimedAmount, approvedAmount } from "../helpers/amounts";
-import DetailsTable from "./DetailsTable"; 
+import { claimedAmount, approvedAmount } from "../helpers/amounts"; 
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -27,6 +27,10 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
+    code: "ZEDFR5",
+    type: "C",
+    qte: "0",
+    priceToBuy: "500",
   };
 
   constructor(props) {
@@ -163,24 +167,46 @@ class ClaimChildPanel extends Component {
       2,
     );
     let preHeaders = [
-      "\u200b",
-      "",
       totalClaimed > 0
         ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
             totalClaimed: formatAmount(intl, totalClaimed),
           })
         : "",
-      "",
     ];
     let headers = [
       `edit.${type}s.${type}`,
-      `edit.${type}s.quantity`,
-      `edit.${type}s.price`,
-      `edit.${type}s.explanation`,
     ];
 
-    const details = [
-      { code: "AAYU", type: "C", validFrom: "12-03-22" },
+    let detailsFormatters = [
+      (i, idx) => (
+        <TextInput
+          readOnly={!!forReview || readOnly || true}
+          value={this.state.code}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+      (i, idx) => (
+        <TextInput
+          readOnly={!!forReview || readOnly || true}
+          value={this.state.type}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+      (i, idx) => (
+        <NumberInput
+          readOnly={!!forReview || readOnly}
+          value={this.state.qte}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+      (i, idx) => (
+        <TextInput
+          readOnly={!!forReview || readOnly || true}
+          value={this.state.priceToBuy}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+
     ]
 
     let itemFormatters = [
@@ -218,7 +244,7 @@ class ClaimChildPanel extends Component {
           value={i.explanation}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
-      ),
+      )
     ];
 
     if (!!forReview || edited.status !== 2) {
@@ -286,7 +312,7 @@ class ClaimChildPanel extends Component {
     }
     return (
       <Paper className={classes.paper}>
-        <Table
+        <TableService
           module="claim"
           header={header}
           preHeaders={preHeaders}
@@ -294,11 +320,11 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          code={this.state.code}
+          type={this.state.type}
+          validFrom={this.state.validFrom}
+          detailsFormatters={detailsFormatters}
         />
-        <DetailsTable 
-        list={details}
-        />
-        
       </Paper>
     );
   }
