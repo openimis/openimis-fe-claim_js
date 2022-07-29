@@ -24,10 +24,10 @@ const ServicePicker = (props) => {
 
   const { isLoading, data, error } = useGraphqlQuery(
     `query ($searchString: String, $pricelistUuid: UUID, $date: Date) {
-      medicalServicesStr(type:"P", str: $searchString, first: 20, pricelistUuid: $pricelistUuid, date: $date) {
+      medicalServicesStr(str: $searchString, first: 20, pricelistUuid: $pricelistUuid, date: $date) {
         edges {
           node {
-            id name code price packageType
+            id name code price
             ${extraFragment ?? ""}
           }
         }

@@ -18,7 +18,7 @@ import {
 } from "@openimis/fe-core";
 import { Paper, Box } from "@material-ui/core";
 import _ from "lodash";
-import { claimedAmount, approvedAmount } from "../helpers/amounts"; 
+import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -27,10 +27,6 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
-    code: "ZEDFR5",
-    type: "C",
-    qte: "0",
-    priceToBuy: "500",
   };
 
   constructor(props) {
@@ -101,8 +97,26 @@ class ClaimChildPanel extends Component {
     let id = decodeId(v.id);
     return (
       this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-        id
+      id
       ] || v.price
+    );
+  };
+
+  _name = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.name
+    );
+  };
+
+  _code = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.code
     );
   };
 
@@ -111,10 +125,14 @@ class ClaimChildPanel extends Component {
     if (!v) {
       data[idx].priceAsked = null;
       data[idx].qtyProvided = null;
+      data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      if (!data[idx].qtyProvided) {
+      data[idx].itemName = this._name(v);
+      data[idx].code = this._code(v);
+      if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
+        data[idx].qtyAppr = "0";
       }
     }
     this._onEditedChanged(data);
@@ -169,8 +187,8 @@ class ClaimChildPanel extends Component {
     let preHeaders = [
       totalClaimed > 0
         ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-            totalClaimed: formatAmount(intl, totalClaimed),
-          })
+          totalClaimed: formatAmount(intl, totalClaimed),
+        })
         : "",
     ];
     let headers = [
@@ -181,28 +199,30 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <TextInput
           readOnly={!!forReview || readOnly || true}
-          value={this.state.code}
+          value={i.code}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
       ),
       (i, idx) => (
+        <Box minWidth={400}>
         <TextInput
           readOnly={!!forReview || readOnly || true}
-          value={this.state.type}
+          value={i.itemName}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
+        </Box>
       ),
       (i, idx) => (
         <NumberInput
           readOnly={!!forReview || readOnly}
-          value={this.state.qte}
+          value={i.qtyAppr}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
       ),
       (i, idx) => (
-        <TextInput
+        <AmountInput
           readOnly={!!forReview || readOnly || true}
-          value={this.state.priceToBuy}
+          value={i.priceAsked}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
       ),
@@ -254,8 +274,8 @@ class ClaimChildPanel extends Component {
       preHeaders.push(
         totalClaimed > 0
           ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
-              totalApproved: formatAmount(intl, totalApproved),
-            })
+            totalApproved: formatAmount(intl, totalApproved),
+          })
           : "",
       );
       headers.push(`edit.${type}s.appQuantity`);
@@ -320,9 +340,6 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
-          code={this.state.code}
-          type={this.state.type}
-          validFrom={this.state.validFrom}
           detailsFormatters={detailsFormatters}
         />
       </Paper>
