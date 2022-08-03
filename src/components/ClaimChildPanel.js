@@ -27,7 +27,6 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
-    itemType: "",
   };
 
   constructor(props) {
@@ -121,15 +120,6 @@ class ClaimChildPanel extends Component {
     );
   };
 
-  _type = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.type
-    );
-  };
-
   _onChangeItem = (idx, attr, v) => {
     let data = this._updateData(idx, [{ attr, v }]);
     if (!v) {
@@ -140,7 +130,6 @@ class ClaimChildPanel extends Component {
       data[idx].priceAsked = this._price(v);
       data[idx].itemName = this._name(v);
       data[idx].code = this._code(v);
-      this.state.itemType = this._type(v);
       if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
@@ -236,8 +225,7 @@ class ClaimChildPanel extends Component {
           value={i.priceAsked}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
-      ),
-
+      )
     ]
 
     let itemFormatters = [
@@ -352,7 +340,6 @@ class ClaimChildPanel extends Component {
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           detailsFormatters={detailsFormatters}
-          itemType={this.state.itemType}
         />
       </Paper>
     );
