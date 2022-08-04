@@ -10,6 +10,7 @@ import {
   withModulesManager,
   NumberInput,
   Table,
+  TableService,
   PublishedComponent,
   AmountInput,
   TextInput,
@@ -30,8 +31,8 @@ class ClaimChildPanel extends Component {
 
   constructor(props) {
     super(props);
-    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", false);
-    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", false);
+    this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", true);
+    this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", true);
     this.showJustificationAtEnter = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.showJustificationAtEnter",
@@ -96,8 +97,26 @@ class ClaimChildPanel extends Component {
     let id = decodeId(v.id);
     return (
       this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-        id
+      id
       ] || v.price
+    );
+  };
+
+  _name = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.name
+    );
+  };
+
+  _code = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.code
     );
   };
 
@@ -106,10 +125,14 @@ class ClaimChildPanel extends Component {
     if (!v) {
       data[idx].priceAsked = null;
       data[idx].qtyProvided = null;
+      data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      if (!data[idx].qtyProvided) {
+      data[idx].itemName = this._name(v);
+      data[idx].code = this._code(v);
+      if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
+        data[idx].qtyAppr = "0";
       }
     }
     this._onEditedChanged(data);
@@ -162,21 +185,48 @@ class ClaimChildPanel extends Component {
       2,
     );
     let preHeaders = [
-      "\u200b",
-      "",
       totalClaimed > 0
         ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-            totalClaimed: formatAmount(intl, totalClaimed),
-          })
+          totalClaimed: formatAmount(intl, totalClaimed),
+        })
         : "",
-      "",
     ];
     let headers = [
       `edit.${type}s.${type}`,
-      `edit.${type}s.quantity`,
-      `edit.${type}s.price`,
-      `edit.${type}s.explanation`,
     ];
+
+    let detailsFormatters = [
+      (i, idx) => (
+        <TextInput
+          readOnly={!!forReview || readOnly || true}
+          value={i.code}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+      (i, idx) => (
+        <Box minWidth={400}>
+        <TextInput
+          readOnly={!!forReview || readOnly || true}
+          value={i.itemName}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+        </Box>
+      ),
+      (i, idx) => (
+        <NumberInput
+          readOnly={!!forReview || readOnly}
+          value={i.qtyAppr}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      ),
+      (i, idx) => (
+        <AmountInput
+          readOnly={!!forReview || readOnly || true}
+          value={i.priceAsked}
+          onChange={(v) => this._onChange(idx, "explanation", v)}
+        />
+      )
+    ]
 
     let itemFormatters = [
       (i, idx) => (
@@ -195,7 +245,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly}
+          readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
         />
@@ -213,8 +263,9 @@ class ClaimChildPanel extends Component {
           value={i.explanation}
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
-      ),
+      )
     ];
+
     if (!!forReview || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
         preHeaders.push("");
@@ -222,8 +273,8 @@ class ClaimChildPanel extends Component {
       preHeaders.push(
         totalClaimed > 0
           ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
-              totalApproved: formatAmount(intl, totalApproved),
-            })
+            totalApproved: formatAmount(intl, totalApproved),
+          })
           : "",
       );
       headers.push(`edit.${type}s.appQuantity`);
@@ -280,7 +331,7 @@ class ClaimChildPanel extends Component {
     }
     return (
       <Paper className={classes.paper}>
-        <Table
+        <TableService
           module="claim"
           header={header}
           preHeaders={preHeaders}
@@ -288,6 +339,7 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          detailsFormatters={detailsFormatters}
         />
       </Paper>
     );
