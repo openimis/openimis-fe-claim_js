@@ -16,7 +16,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { Paper, Box } from "@material-ui/core";
+import { Paper, Box, TableCell } from "@material-ui/core";
 import _ from "lodash";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
@@ -27,6 +27,8 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
+    subServices: [],
+    serviceLinked: [],
   };
 
   constructor(props) {
@@ -102,21 +104,30 @@ class ClaimChildPanel extends Component {
     );
   };
 
-  _name = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.name
-    );
-  };
-
   _code = (v) => {
     let id = decodeId(v.id);
     return (
       this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
       id
       ] || v.code
+    );
+  };
+
+  _serviceSet = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.serviceserviceSet
+    );
+  };
+
+  _serviceLinked = (v) => {
+    let id = decodeId(v.id);
+    return (
+      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+      id
+      ] || v.servicesLinked
     );
   };
 
@@ -128,8 +139,10 @@ class ClaimChildPanel extends Component {
       data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      data[idx].itemName = this._name(v);
+      data[idx].subItems = this._serviceLinked(v);
       data[idx].code = this._code(v);
+      data[idx].subServices = this._serviceSet(v);
+
       if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
@@ -195,39 +208,6 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.${type}`,
     ];
 
-    let detailsFormatters = [
-      (i, idx) => (
-        <TextInput
-          readOnly={!!forReview || readOnly || true}
-          value={i.code}
-          onChange={(v) => this._onChange(idx, "explanation", v)}
-        />
-      ),
-      (i, idx) => (
-        <Box minWidth={400}>
-        <TextInput
-          readOnly={!!forReview || readOnly || true}
-          value={i.itemName}
-          onChange={(v) => this._onChange(idx, "explanation", v)}
-        />
-        </Box>
-      ),
-      (i, idx) => (
-        <NumberInput
-          readOnly={!!forReview || readOnly}
-          value={i.qtyAppr}
-          onChange={(v) => this._onChange(idx, "explanation", v)}
-        />
-      ),
-      (i, idx) => (
-        <AmountInput
-          readOnly={!!forReview || readOnly || true}
-          value={i.priceAsked}
-          onChange={(v) => this._onChange(idx, "explanation", v)}
-        />
-      )
-    ]
-
     let itemFormatters = [
       (i, idx) => (
         <Box minWidth={400}>
@@ -265,6 +245,71 @@ class ClaimChildPanel extends Component {
         />
       )
     ];
+
+    let subServicesItemsFormatters = [
+      (i, idx) => (i.subServices.map((u, udx) => (
+        <tr>
+          <TableCell>
+            <TextInput
+              readOnly={true}
+              value={u.service.code}
+            />
+          </TableCell>
+          <TableCell>
+            <Box minWidth={400}>
+              <TextInput
+                readOnly={!!forReview || readOnly || true}
+                value={u.service.name}
+              />
+            </Box>
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              readOnly={!!forReview || readOnly}
+              value={"0"}
+              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+            />
+          </TableCell>
+          <TableCell>
+            <AmountInput
+              readOnly={true}
+              value={u.priceAsked}
+            />
+          </TableCell>
+        </tr>
+      ))),
+      (i, idx) => (i.subItems.map((u, udx) => (
+        <tr>
+          <TableCell>
+            <TextInput
+              readOnly={true}
+              value={u.item.code}
+            />
+          </TableCell>
+          <TableCell>
+            <Box minWidth={400}>
+              <TextInput
+                readOnly={!!forReview || readOnly || true}
+                value={u.item.name}
+              />
+            </Box>
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              readOnly={!!forReview || readOnly}
+              value={"0"}
+              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+            />
+          </TableCell>
+          <TableCell>
+            <AmountInput
+              readOnly={true}
+              value={u.priceAsked}
+            />
+          </TableCell>
+        </tr>
+      )))
+    ]
 
     if (!!forReview || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
@@ -337,9 +382,9 @@ class ClaimChildPanel extends Component {
           preHeaders={preHeaders}
           headers={headers}
           itemFormatters={itemFormatters}
+          subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
-          detailsFormatters={detailsFormatters}
         />
       </Paper>
     );
