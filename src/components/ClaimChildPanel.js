@@ -138,11 +138,14 @@ class ClaimChildPanel extends Component {
       data[idx].qtyProvided = null;
       data[idx].qtyAppr = null;
     } else {
+      console.log("Change Item in Claim ChildPanel");
       data[idx].priceAsked = this._price(v);
-      data[idx].subItems = this._serviceLinked(v);
+      if (!('item' in data[idx])){
+        data[idx].subItems = this._serviceLinked(v);
+        data[idx].subServices = this._serviceSet(v);
+      }
       data[idx].code = this._code(v);
-      data[idx].subServices = this._serviceSet(v);
-
+      
       if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
@@ -151,6 +154,33 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
+  _onChangeSubItem = (idx, udx, attr, v) => {
+    console.log("On change Sub Item");
+    console.log(idx);
+    console.log(udx);
+    console.log(attr);
+    console.log(v);
+
+    /*let data = this._updateData(idx, [{ attr, v }]);
+    if (!v) {
+      data[idx].priceAsked = null;
+      data[idx].qtyProvided = null;
+      data[idx].qtyAppr = null;
+    } else {
+      //console.log("Change Item in Claim ChildPanel");
+      data[idx].priceAsked = this._price(v);
+      data[idx].subItems = this._serviceLinked(v);
+      //this.state.serviceLinked = this._serviceLinked(v);
+      data[idx].code = this._code(v);
+      data[idx].subServices = this._serviceSet(v);
+      if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
+        data[idx].qtyProvided = 1;
+        data[idx].qtyAppr = "0";
+      }
+    }
+    this._onEditedChanged(data);*/
+  };
+  
   _onDelete = (idx) => {
     const data = [...this.state.data];
     data.splice(idx, 1);
@@ -180,7 +210,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;    
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -266,8 +296,24 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={"0"}
-              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+              value={this.state.subServicesqtyAsked}
+              onChange={(v) => {
+                if(i.service.packagetype=="P"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyAsked=v;  
+                }else if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    console.log("Check si la quantité entrée est inférieur a celle autorisé");
+                    u.qtyAsked=v;
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v)
+                }
+              }
             />
           </TableCell>
           <TableCell>
@@ -298,7 +344,21 @@ class ClaimChildPanel extends Component {
             <NumberInput
               readOnly={!!forReview || readOnly}
               value={"0"}
-              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+              onChange={(v) => {
+                if(i.service.packagetype=="P"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyAsked=v;
+                }else if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    return u.qtyProvided
+                  }
+                }
+              }
+            }
             />
           </TableCell>
           <TableCell>

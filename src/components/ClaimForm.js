@@ -138,6 +138,10 @@ class ClaimForm extends Component {
     return true;
   };
 
+  checkQtySubService = () => {
+    
+  }
+
   canSave = (forFeedback) => {
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
@@ -150,6 +154,7 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!forFeedback) {
+      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }

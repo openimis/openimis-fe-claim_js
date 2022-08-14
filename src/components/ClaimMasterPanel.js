@@ -95,6 +95,8 @@ class ClaimMasterPanel extends FormPanel {
       totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
+    //console.log("Total Claimed");
+    //console.log(totalClaimed);
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
     let ro = readOnly || !!forReview || !!forFeedback;
