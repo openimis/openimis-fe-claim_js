@@ -1,11 +1,9 @@
 export function claimedAmount(r) {
-  //console.log("Claimed Amount Helper");
-  //console.log(r);
+  console.log("Claimed Amount Helper");
+  console.log(r);
   let totalPrice = 0;
   if(Object.keys(r).length!=0){
     if ('item' in r){
-      //console.log("Item Calcul");
-      //console.log(r.qtyProvided * parseFloat(r.priceAsked));
       return !!r.qtyProvided && !!r.priceAsked ? r.qtyProvided * parseFloat(r.priceAsked) : 0;
     }else{
       if(Object.keys(r.service).length!=0){
@@ -14,31 +12,51 @@ export function claimedAmount(r) {
           totalPrice += parseFloat(r.service.price);
         }else{
           // if this product has subItems we had everything
-          if(Object.keys(r.subItems).length!=0){
-            r.subItems.forEach(subItem => {
-              console.log(subItem);
+            r.service.serviceserviceSet.forEach(subItem => {
+              let qtyAsked = 0;
               if(currentPackageType=="F"){
                 // A ajouter : Verifier que la quantité entré n'est pas superieur a la quantité max
                 // Si c'est le cas mettre la quantité max
-                totalPrice += subItem.qtyProvided * subItem.priceAsked;
+                if(subItem.qtyAsked){
+                  qtyAsked = subItem.qtyAsked;
+                }
+                totalPrice += qtyAsked * subItem.priceAsked;
               }else if (currentPackageType=="P"){
                 // A ajouter : Si la quantite saisie est superieur a la quantite2 max
                 // reprendre la quantité saisi, sinon reprendre la quantité saisie
-                totalPrice += subItem.qtyProvided * subItem.priceAsked;
+                //console.log(subItem);
+                if(subItem.qtyAsked){
+                  qtyAsked = subItem.qtyAsked;
+                  if(subItem.qtyProvided<subItem.qtyAsked){
+                    qtyAsked = subItem.qtyProvided;
+                  }
+                }
+                totalPrice += qtyAsked * subItem.priceAsked;
+              }
+            });
+
+            r.service.servicesLinked.forEach(subItem => {
+              let qtyAsked = 0;
+              if(currentPackageType=="F"){
+                if(subItem.qtyAsked){
+                  qtyAsked = subItem.qtyAsked;
+                }
+                totalPrice += qtyAsked * subItem.priceAsked;
+              }else if (currentPackageType=="P"){
+                if(subItem.qtyAsked){
+                  qtyAsked = subItem.qtyAsked;
+                  if(subItem.qtyProvided<subItem.qtyAsked){
+                    qtyAsked = subItem.qtyProvided;
+                  }
+                }
+                totalPrice += qtyAsked * subItem.priceAsked;
               }
             });
           }
-          // if this product has subServices we had everything
-          if(Object.keys(r.subServices).length!=0){
-            r.subServices.forEach(subService => { 
-              totalPrice += subService.qtyProvided * subService.priceAsked;        
-            });
-          }
-        }
+        console.log("totalPrice");
+        console.log(totalPrice);
+        return totalPrice;  
       }
-      //console.log("totalPrice");
-      //console.log(totalPrice);
-      return totalPrice;  
     }
   }
   return totalPrice;

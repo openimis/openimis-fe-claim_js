@@ -160,7 +160,13 @@ class ClaimChildPanel extends Component {
     console.log(udx);
     console.log(attr);
     console.log(v);
-
+    let data = [...this.state.data];
+    console.log(data);
+    if(attr=="servicesQty"){
+      console.log(data[idx]);
+      console.log(data[idx].service.serviceserviceSet[udx]);
+      console.log(data[idx]["service"][udx]);
+    }
     /*let data = this._updateData(idx, [{ attr, v }]);
     if (!v) {
       data[idx].priceAsked = null;
@@ -177,8 +183,9 @@ class ClaimChildPanel extends Component {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
       }
-    }
-    this._onEditedChanged(data);*/
+    }*/
+    console.log(this.totalClaimed);
+    this._onEditedChanged(data);
   };
   
   _onDelete = (idx) => {
@@ -311,7 +318,10 @@ class ClaimChildPanel extends Component {
                     u.qtyAsked=v;
                   }
                 }
-                this._onChangeSubItem(idx, udx, "servicesQty", v)
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log("this.state.data");
+                console.log(this.state.data);
+                console.log(totalClaimed);
                 }
               }
             />
@@ -357,6 +367,10 @@ class ClaimChildPanel extends Component {
                     return u.qtyProvided
                   }
                 }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log("this.state.data");
+                console.log(this.state.data);
+                console.log(totalClaimed);
               }
             }
             />
