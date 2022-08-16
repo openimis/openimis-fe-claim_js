@@ -155,18 +155,18 @@ class ClaimChildPanel extends Component {
   };
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    console.log("On change Sub Item");
+    /*console.log("On change Sub Item");
     console.log(idx);
     console.log(udx);
     console.log(attr);
-    console.log(v);
+    console.log(v);*/
     let data = [...this.state.data];
-    console.log(data);
+    /*console.log(data);
     if(attr=="servicesQty"){
       console.log(data[idx]);
       console.log(data[idx].service.serviceserviceSet[udx]);
       console.log(data[idx]["service"][udx]);
-    }
+    }*/
     /*let data = this._updateData(idx, [{ attr, v }]);
     if (!v) {
       data[idx].priceAsked = null;
@@ -184,7 +184,7 @@ class ClaimChildPanel extends Component {
         data[idx].qtyAppr = "0";
       }
     }*/
-    console.log(this.totalClaimed);
+    //console.log(this.totalClaimed);
     this._onEditedChanged(data);
   };
   
@@ -303,7 +303,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={this.state.subServicesqtyAsked}
+              value={this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if(i.service.packagetype=="P"){
                   if(u.qtyProvided<v){
@@ -313,15 +313,17 @@ class ClaimChildPanel extends Component {
                   }
                   u.qtyAsked=v;  
                 }else if(i.service.packagetype=="F"){
-                  if(u.qtyProvided<v){
-                    console.log("Check si la quantité entrée est inférieur a celle autorisé");
-                    u.qtyAsked=v;
+                  
+                  if(v>u.qtyProvided){
+                    u.qtyAsked=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=v;
                   }
+
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
-                console.log("this.state.data");
-                console.log(this.state.data);
-                console.log(totalClaimed);
+                totalClaimed;
                 }
               }
             />
@@ -353,7 +355,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={"0"}
+              value={this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if(i.service.packagetype=="P"){
                   if(u.qtyProvided<v){
@@ -364,7 +366,8 @@ class ClaimChildPanel extends Component {
                   u.qtyAsked=v;
                 }else if(i.service.packagetype=="F"){
                   if(u.qtyProvided<v){
-                    return u.qtyProvided
+                    u.qtyAsked=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);

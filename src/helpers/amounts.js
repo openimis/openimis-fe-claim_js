@@ -1,6 +1,6 @@
 export function claimedAmount(r) {
-  console.log("Claimed Amount Helper");
-  console.log(r);
+  //console.log("Claimed Amount Helper");
+  //console.log(r);
   let totalPrice = 0;
   if(Object.keys(r).length!=0){
     if ('item' in r){
@@ -53,8 +53,8 @@ export function claimedAmount(r) {
               }
             });
           }
-        console.log("totalPrice");
-        console.log(totalPrice);
+        //console.log("totalPrice");
+        //console.log(totalPrice);
         return totalPrice;  
       }
     }
