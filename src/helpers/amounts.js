@@ -12,6 +12,7 @@ export function claimedAmount(r) {
           totalPrice += parseFloat(r.service.price);
         }else{
           // if this product has subItems we had everything
+          if(r.service.serviceserviceSet){
             r.service.serviceserviceSet.forEach(subItem => {
               let qtyAsked = 0;
               if(currentPackageType=="F"){
@@ -34,7 +35,8 @@ export function claimedAmount(r) {
                 totalPrice += qtyAsked * subItem.priceAsked;
               }
             });
-
+          }
+          if(r.service.servicesLinked){
             r.service.servicesLinked.forEach(subItem => {
               let qtyAsked = 0;
               if(currentPackageType=="F"){
@@ -53,6 +55,8 @@ export function claimedAmount(r) {
               }
             });
           }
+        }
+
         //console.log("totalPrice");
         //console.log(totalPrice);
         return totalPrice;  
