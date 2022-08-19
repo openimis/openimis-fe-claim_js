@@ -249,25 +249,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.guarantee"
-          field={
-            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label="guaranteeId"
-                value={edited.guaranteeId}
-                reset={reset}
-                onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.guaranteeIdMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
+        
         {!!forFeedback && (
           <Fragment>
             <ControlledField
