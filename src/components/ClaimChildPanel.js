@@ -270,7 +270,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={i.priceAsked}
+          value={this.state.data[idx].service?.priceAsked}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -303,7 +303,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
+              value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if(i.service.packagetype=="P"){
                   if(u.qtyProvided<v){
@@ -313,15 +313,18 @@ class ClaimChildPanel extends Component {
                   }
                   u.qtyAsked=v;  
                 }else if(i.service.packagetype=="F"){
-                  if(v>u.qtyProvided){
+                  if(v==u.qtyProvided){
                     u.qtyAsked=u.qtyProvided;
                     u.qtyDisplayed=u.qtyProvided;                   
                   }else{
                     u.qtyDisplayed=v;
+                    u.qtyAsked=0;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
-                totalClaimed;
+                console.log("this.state.data");
+                console.log(this.state.data);
+                console.log(totalClaimed);
                 }
               }
             />
@@ -353,8 +356,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              //              value={this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
-              value={"0"}
+              value={this.state.data[idx]?.service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
                 if(i.service.packagetype=="P"){
                   if(u.qtyProvided<v){
@@ -364,9 +366,12 @@ class ClaimChildPanel extends Component {
                   }
                   u.qtyAsked=v;
                 }else if(i.service.packagetype=="F"){
-                  if(u.qtyProvided<v){
+                  if(v==u.qtyProvided){
                     u.qtyAsked=u.qtyProvided;
-                    u.qtyDisplayed=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=v;
+                    u.qtyAsked=0;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);

@@ -2,18 +2,18 @@ export function claimedAmount(r) {
   console.log("Claimed Amount Helper");
   console.log(r);
   let totalPrice = 0;
-  if(Object.keys(r).length!=0){
+  if(Object?.keys(r)?.length!=0){
     if ('item' in r){
       return !!r.qtyProvided && !!r.priceAsked ? r.qtyProvided * parseFloat(r.priceAsked) : 0;
     }else{
-      if(r.service){
-        if(Object.keys(r.service).length!=0){
+      if(r?.service){
+        if(Object?.keys(r.service)?.length!=0){
           let currentPackageType = r.service.packagetype;
           if(currentPackageType=="S"){
             totalPrice += parseFloat(r.service.price);
           }else{
-            // if this product has subItems we had everything
-            if(r.service.serviceserviceSet){
+            // if this product has subItems we add everything
+            if(r.service?.serviceserviceSet){
               r.service.serviceserviceSet.forEach(subItem => {
                 let qtyAsked = 0;
                 if(currentPackageType=="F"){
@@ -56,10 +56,11 @@ export function claimedAmount(r) {
                 }
               });
             }
+            
           }
-
-          //console.log("totalPrice");
-          //console.log(totalPrice);
+          r.service.priceAsked=totalPrice;
+          console.log("totalPrice");
+          console.log(totalPrice);
           return totalPrice;  
         }
       }
