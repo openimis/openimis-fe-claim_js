@@ -155,36 +155,7 @@ class ClaimChildPanel extends Component {
   };
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    /*console.log("On change Sub Item");
-    console.log(idx);
-    console.log(udx);
-    console.log(attr);
-    console.log(v);*/
     let data = [...this.state.data];
-    /*console.log(data);
-    if(attr=="servicesQty"){
-      console.log(data[idx]);
-      console.log(data[idx].service.serviceserviceSet[udx]);
-      console.log(data[idx]["service"][udx]);
-    }*/
-    /*let data = this._updateData(idx, [{ attr, v }]);
-    if (!v) {
-      data[idx].priceAsked = null;
-      data[idx].qtyProvided = null;
-      data[idx].qtyAppr = null;
-    } else {
-      //console.log("Change Item in Claim ChildPanel");
-      data[idx].priceAsked = this._price(v);
-      data[idx].subItems = this._serviceLinked(v);
-      //this.state.serviceLinked = this._serviceLinked(v);
-      data[idx].code = this._code(v);
-      data[idx].subServices = this._serviceSet(v);
-      if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
-        data[idx].qtyProvided = 1;
-        data[idx].qtyAppr = "0";
-      }
-    }*/
-    //console.log(this.totalClaimed);
     this._onEditedChanged(data);
   };
   
@@ -305,14 +276,14 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview || readOnly}
               value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
               onChange={(v) => {
-                if(i.service.packagetype=="P"){
+                if(i.service.packagetype=="F"){
                   if(u.qtyProvided<v){
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
                     }));
                   }
                   u.qtyAsked=v;  
-                }else if(i.service.packagetype=="F"){
+                }else if(i.service.packagetype=="P"){
                   if(v==u.qtyProvided){
                     u.qtyAsked=u.qtyProvided;
                     u.qtyDisplayed=u.qtyProvided;                   
@@ -358,14 +329,14 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview || readOnly}
               value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
               onChange={(v) => {
-                if(i.service.packagetype=="P"){
+                if(i.service.packagetype=="F"){
                   if(u.qtyProvided<v){
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
                     }));
                   }
                   u.qtyAsked=v;
-                }else if(i.service.packagetype=="F"){
+                }else if(i.service.packagetype=="P"){
                   if(v==u.qtyProvided){
                     u.qtyAsked=u.qtyProvided;
                     u.qtyDisplayed=u.qtyProvided;                   

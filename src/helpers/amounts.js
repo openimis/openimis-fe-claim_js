@@ -1,6 +1,4 @@
 export function claimedAmount(r) {
-  console.log("Claimed Amount Helper");
-  console.log(r);
   let totalPrice = 0;
   if(Object?.keys(r)?.length!=0){
     if ('item' in r){
@@ -16,17 +14,12 @@ export function claimedAmount(r) {
             if(r.service?.serviceserviceSet){
               r.service.serviceserviceSet.forEach(subItem => {
                 let qtyAsked = 0;
-                if(currentPackageType=="F"){
-                  // A ajouter : Verifier que la quantité entré n'est pas superieur a la quantité max
-                  // Si c'est le cas mettre la quantité max
+                if(currentPackageType=="P"){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="P"){
-                  // A ajouter : Si la quantite saisie est superieur a la quantite2 max
-                  // reprendre la quantité saisi, sinon reprendre la quantité saisie
-                  //console.log(subItem);
+                }else if (currentPackageType=="F"){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                     if(subItem.qtyProvided<subItem.qtyAsked){
@@ -40,12 +33,12 @@ export function claimedAmount(r) {
             if(r.service.servicesLinked){
               r.service.servicesLinked.forEach(subItem => {
                 let qtyAsked = 0;
-                if(currentPackageType=="F"){
+                if(currentPackageType=="P"){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                   }
                   totalPrice += qtyAsked * subItem.priceAsked;
-                }else if (currentPackageType=="P"){
+                }else if (currentPackageType=="F"){
                   if(subItem.qtyAsked){
                     qtyAsked = subItem.qtyAsked;
                     if(subItem.qtyProvided<subItem.qtyAsked){
@@ -59,8 +52,6 @@ export function claimedAmount(r) {
             
           }
           r.service.priceAsked=totalPrice;
-          console.log("totalPrice");
-          console.log(totalPrice);
           return totalPrice;  
         }
       }
