@@ -133,6 +133,8 @@ export function formatDetail(type, detail) {
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+    ${detail.service.servicesLinked !== null ?  `serviceLinked: [ ${detail.service.servicesLinked.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}  
+    ${detail.service.serviceserviceSet !== null ?  `serviceserviceSet: [ ${detail.service.serviceserviceSet.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}  
     status: 1
     ${
       detail.explanation !== undefined && detail.explanation !== null
@@ -147,9 +149,22 @@ export function formatDetail(type, detail) {
   }`;
 }
 
+export function formatDetailSubService(type, detail) {
+  return `{
+    ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
+    ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
+    ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2)}"` : ""}
+    ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
+    ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+  },`;
+}
+
 export function formatDetails(type, details) {
   if (!details) return "";
   let dets = details.filter((d) => !!d[type]);
+  console.log(`${type}s: [
+    ${dets.map((d) => formatDetail(type, d)).join("\n")}
+  ]`);
   return `${type}s: [
       ${dets.map((d) => formatDetail(type, d)).join("\n")}
     ]`;

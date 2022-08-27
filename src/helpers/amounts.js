@@ -52,6 +52,7 @@ export function claimedAmount(r) {
             
           }
           r.service.priceAsked=totalPrice;
+          r.service.price=totalPrice;
           return totalPrice;  
         }
       }

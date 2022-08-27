@@ -70,6 +70,11 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
+    this.claimPrefix =props.modulesManager.getConf(
+      "fe-claim",
+      "claimPrex",
+      0,
+    );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
   }
 
@@ -194,6 +199,11 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
+
+    if(this.claimPrefix == 1){
+      claim.code = claim.insuree.chfId + claim.code
+    }
+
     this.setState(
       { lockNew: !claim.uuid }, // avoid duplicates
       (e) => this.props.save(claim),
