@@ -199,11 +199,6 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-
-    if(this.claimPrefix == 1){
-      claim.code = claim.insuree.chfId + claim.code
-    }
-
     this.setState(
       { lockNew: !claim.uuid }, // avoid duplicates
       (e) => this.props.save(claim),

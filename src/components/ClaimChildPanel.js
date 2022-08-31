@@ -45,7 +45,16 @@ class ClaimChildPanel extends Component {
   initData = () => {
     let data = [];
     if (!!this.props.edited[`${this.props.type}s`]) {
+      this.props.edited[`${this.props.type}s`].forEach(elmt =>{
+        //elmt.subItems = elmt.claimlinkedItem;
+        //elmt.service.servicesLinked = elmt.claimlinkedItem;
+        //elmt.subServices = elmt.claimlinkedService;
+      })
+
       data = this.props.edited[`${this.props.type}s`] || [];
+      let edited = { ...this.props.edited };
+      edited[`${this.props.type}s`] = data;
+      this.props.onEditedChanged(edited);
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
@@ -72,6 +81,7 @@ class ClaimChildPanel extends Component {
       this.setState({
         data: this.initData(),
       });
+
     }
   }
 
@@ -138,7 +148,6 @@ class ClaimChildPanel extends Component {
       data[idx].qtyProvided = null;
       data[idx].qtyAppr = null;
     } else {
-      console.log("Change Item in Claim ChildPanel");
       data[idx].priceAsked = this._price(v);
       if (!('item' in data[idx])){
         data[idx].subItems = this._serviceLinked(v);
@@ -151,6 +160,8 @@ class ClaimChildPanel extends Component {
         data[idx].qtyAppr = "0";
       }
     }
+    console.log("Change Item in Claim ChildPanel");
+    console.log(data)
     this._onEditedChanged(data);
   };
 
@@ -253,7 +264,6 @@ class ClaimChildPanel extends Component {
         />
       )
     ];
-
     let subServicesItemsFormatters = [
       (i, idx) => (i.subServices.map((u, udx) => (
         <tr>
@@ -293,8 +303,6 @@ class ClaimChildPanel extends Component {
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
-                console.log("this.state.data");
-                console.log(this.state.data);
                 console.log(totalClaimed);
                 }
               }
@@ -308,7 +316,8 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.subItems.map((u, udx) => (
+      (i, idx) => (i.subItems.map((u, udx) => {
+        return (
         <tr>
           <TableCell>
             <TextInput
@@ -346,8 +355,6 @@ class ClaimChildPanel extends Component {
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
-                console.log("this.state.data");
-                console.log(this.state.data);
                 console.log(totalClaimed);
               }
             }
@@ -360,7 +367,9 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
         </tr>
-      )))
+      )
+          }
+      ))
     ]
 
     if (!!forReview || edited.status !== 2) {

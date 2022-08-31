@@ -18,6 +18,15 @@ class EditPage extends Component {
   };
 
   save = (claim) => {
+
+    this.claimPrefix = this.props.modulesManager.getConf(
+      "fe-claim",
+      "claimPrex",
+      0,
+    );
+    if(this.claimPrefix==1){
+      claim.code = claim.insuree.chfId + claim.code
+    }
     if (!claim.uuid) {
       this.props.createClaim(
         this.props.modulesManager,

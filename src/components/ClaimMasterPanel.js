@@ -78,6 +78,11 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
+    if(this.claimPrefix==1){
+      if(this.state.data?.insuree?.chfId != undefined){
+        v = this.state.data?.insuree?.chfId + v
+      }
+    }
     this.setState(
       {
         claimCodeError: null,
@@ -241,7 +246,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {this.claimPrefix && (<ControlledField
+        {!!this.claimPrefix && (<ControlledField
           module="claim"
           id="Claim.codechfId"
           field={

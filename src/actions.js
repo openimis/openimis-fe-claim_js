@@ -271,6 +271,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     projections.push(
       "services{" +
         "id, service {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
+        " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
+        " claimlinkedService{ qtyProvided qtyDisplayed priceAsked }"+
         "}",
       "items{" +
         "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
