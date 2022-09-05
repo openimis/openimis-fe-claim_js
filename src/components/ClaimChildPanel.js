@@ -54,7 +54,7 @@ class ClaimChildPanel extends Component {
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
-      this.props.onEditedChanged(edited);
+      //this.props.onEditedChanged(edited);
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
