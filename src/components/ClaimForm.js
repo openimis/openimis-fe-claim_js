@@ -70,6 +70,11 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
+    this.claimPrefix =props.modulesManager.getConf(
+      "fe-claim",
+      "claimPrex",
+      0,
+    );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
   }
 
@@ -138,7 +143,12 @@ class ClaimForm extends Component {
     return true;
   };
 
+  checkQtySubService = () => {
+    
+  }
+
   canSave = (forFeedback) => {
+    console.log(this.state);
     if (!this.state.claim.code) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -150,6 +160,7 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!forFeedback) {
+      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }

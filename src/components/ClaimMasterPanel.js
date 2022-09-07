@@ -48,6 +48,16 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
+    this.claimPrefix =props.modulesManager.getConf(
+      "fe-claim",
+      "claimPrex",
+      0,
+    );
+    this.hideSecDiagnos =props.modulesManager.getConf(
+      "fe-claim",
+      "hideSecDiagnos",
+      0,
+    );
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -68,6 +78,11 @@ class ClaimMasterPanel extends FormPanel {
   }
 
   validateClaimCode = (v) => {
+    if(this.claimPrefix==1){
+      if(this.state.data?.insuree?.chfId != undefined){
+        v = this.state.data?.insuree?.chfId + v
+      }
+    }
     this.setState(
       {
         claimCodeError: null,
@@ -83,7 +98,7 @@ class ClaimMasterPanel extends FormPanel {
   );
 
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback } = this.props;
+    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos } = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -97,7 +112,12 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
+    if(edited.code && this.claimPrefix){
+      edited.code = edited.code.replace(edited.insuree?.chfId, '');
+    }
+
     let ro = readOnly || !!forReview || !!forFeedback;
+
     return (
       <Grid container>
         <ControlledField
@@ -226,11 +246,27 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
+        {!!this.claimPrefix && (<ControlledField
+          module="claim"
+          id="Claim.codechfId"
+          field={
+            <Grid item xs={1} className={classes.item}>
+               <TextInput
+                module="claim"
+                label="codechfId"
+                required
+                value={edited.insuree?.chfId}
+                readOnly="true"
+              />
+            </Grid>
+          }
+        />
+        )}
         <ControlledField
           module="claim"
           id="Claim.code"
           field={
-            <Grid item xs={2} className={classes.item}>
+            <Grid item xs={this.claimPrefix ? 1 : 2} className={classes.item}>
               <TextInput
                 module="claim"
                 label="code"
@@ -247,25 +283,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.guarantee"
-          field={
-            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label="guaranteeId"
-                value={edited.guaranteeId}
-                reset={reset}
-                onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.guaranteeIdMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
+        
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -330,7 +348,7 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
-        {!forFeedback && (
+        {!this.hideSecDiagnos && !forFeedback && (
           <Fragment>
             <ControlledField
               module="claim"

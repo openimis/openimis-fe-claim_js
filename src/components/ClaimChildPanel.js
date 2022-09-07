@@ -44,8 +44,19 @@ class ClaimChildPanel extends Component {
 
   initData = () => {
     let data = [];
+    this.state.isEdit = false;
     if (!!this.props.edited[`${this.props.type}s`]) {
+      this.props.edited[`${this.props.type}s`].forEach(elmt =>{
+        //elmt.subItems = elmt.claimlinkedItem;
+        //elmt.service.servicesLinked = elmt.claimlinkedItem;
+        //elmt.subServices = elmt.claimlinkedService;
+      })
+
       data = this.props.edited[`${this.props.type}s`] || [];
+      let edited = { ...this.props.edited };
+      edited[`${this.props.type}s`] = data;
+
+      //this.props.onEditedChanged(edited);
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
@@ -72,6 +83,7 @@ class ClaimChildPanel extends Component {
       this.setState({
         data: this.initData(),
       });
+
     }
   }
 
@@ -139,18 +151,27 @@ class ClaimChildPanel extends Component {
       data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      data[idx].subItems = this._serviceLinked(v);
+      if (!('item' in data[idx])){
+        data[idx].subItems = this._serviceLinked(v);
+        data[idx].subServices = this._serviceSet(v);
+      }
       data[idx].code = this._code(v);
-      data[idx].subServices = this._serviceSet(v);
-
+      
       if (!data[idx].qtyProvided || !data[idx].qtyAppr) {
         data[idx].qtyProvided = 1;
         data[idx].qtyAppr = "0";
       }
     }
+    console.log("Change Item in Claim ChildPanel");
+    console.log(data)
     this._onEditedChanged(data);
   };
 
+  _onChangeSubItem = (idx, udx, attr, v) => {
+    let data = [...this.state.data];
+    this._onEditedChanged(data);
+  };
+  
   _onDelete = (idx) => {
     const data = [...this.state.data];
     data.splice(idx, 1);
@@ -180,7 +201,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;    
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (
@@ -233,7 +254,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={i.priceAsked}
+          value={this.state.data[idx].service?.priceAsked}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -245,7 +266,6 @@ class ClaimChildPanel extends Component {
         />
       )
     ];
-
     let subServicesItemsFormatters = [
       (i, idx) => (i.subServices.map((u, udx) => (
         <tr>
@@ -266,8 +286,28 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={"0"}
-              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+              value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
+              onChange={(v) => {
+                if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyAsked=v;  
+                }else if(i.service.packagetype=="P"){
+                  if(v==u.qtyProvided){
+                    u.qtyAsked=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=v;
+                    u.qtyAsked=0;
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log(totalClaimed);
+                }
+              }
             />
           </TableCell>
           <TableCell>
@@ -278,7 +318,8 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.subItems.map((u, udx) => (
+      (i, idx) => (i.subItems.map((u, udx) => {
+        return (
         <tr>
           <TableCell>
             <TextInput
@@ -297,8 +338,28 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={"0"}
-              onChange={(v) => this._onChange(idx, "subServiceQty", v)}
+              value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
+              onChange={(v) => {
+                if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyAsked=v;
+                }else if(i.service.packagetype=="P"){
+                  if(v==u.qtyProvided){
+                    u.qtyAsked=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=v;
+                    u.qtyAsked=0;
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log(totalClaimed);
+              }
+            }
             />
           </TableCell>
           <TableCell>
@@ -308,7 +369,9 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
         </tr>
-      )))
+      )
+          }
+      ))
     ]
 
     if (!!forReview || edited.status !== 2) {
