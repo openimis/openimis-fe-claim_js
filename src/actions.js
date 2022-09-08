@@ -128,6 +128,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 }
 
 export function formatDetail(type, detail) {
+  console.log(detail);
   return `{
     ${detail.id !== undefined && detail.id !== null ? `id: ${detail.id}` : ""}
     ${type}Id: ${decodeId(detail[type].id)}
@@ -270,7 +271,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
+
+        "id, service {id code name price packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status," +
         " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
         " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
         "}",

@@ -27,8 +27,6 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
-    subServices: [],
-    serviceLinked: [],
   };
 
   constructor(props) {
@@ -49,11 +47,14 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
+        //this.state.subServicesEdit = elmt.claimlinkedService;
+        //this.state.subItemsEdit = elmt.claimlinkedItem;
       })
 
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
+
       //this.props.onEditedChanged(edited);
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
@@ -264,6 +265,7 @@ class ClaimChildPanel extends Component {
         />
       )
     ];
+
     let subServicesItemsFormatters = [
       (i, idx) => (i.subServices.map((u, udx) => (
         <tr>
