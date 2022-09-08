@@ -27,8 +27,6 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
-    subServicesEdit: [],
-    subItemsEdit: [],
   };
 
   constructor(props) {
@@ -49,8 +47,6 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
-        this.setState({subServicesEdit: elmt.claimlinkedService});
-        this.setState({subItemsEdit: elmt.claimlinkedItem});
         //this.state.subServicesEdit = elmt.claimlinkedService;
         //this.state.subItemsEdit = elmt.claimlinkedItem;
       })
@@ -378,69 +374,6 @@ class ClaimChildPanel extends Component {
       ))
     ]
 
-    let subServicesItemsFormattersEdit = [
-      (i, idx) => (this.state.subServicesEdit.map((u, udx) => (
-        <tr>
-          <TableCell>
-            <TextInput
-              readOnly={true}
-              value={u.service.code}
-            />
-          </TableCell>
-          <TableCell>
-            <Box minWidth={400}>
-              <TextInput
-                readOnly={!!forReview || readOnly || true}
-                value={u.service.name}
-              />
-            </Box>
-          </TableCell>
-          <TableCell>
-            <NumberInput
-              readOnly={!!forReview || readOnly || true}
-              value={u.qtyProvided}
-            />
-          </TableCell>
-          <TableCell>
-            <AmountInput
-              readOnly={true}
-              value={u.priceAsked}
-            />
-          </TableCell>
-        </tr>
-      ))),
-      (i, idx) => (this.state.subItemsEdit.map((u, udx) => (
-        <tr>
-          <TableCell>
-            <TextInput
-              readOnly={true}
-              value={u.item.code}
-            />
-          </TableCell>
-          <TableCell>
-            <Box minWidth={400}>
-              <TextInput
-                readOnly={!!forReview || readOnly || true}
-                value={u.item.name}
-              />
-            </Box>
-          </TableCell>
-          <TableCell>
-            <NumberInput
-              readOnly={!!forReview || readOnly || true}
-              value={u.qtyProvided}
-            />
-          </TableCell>
-          <TableCell>
-            <AmountInput
-              readOnly={true}
-              value={u.priceAsked}
-            />
-          </TableCell>
-        </tr>
-      )))
-    ]
-
     if (!!forReview || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
         preHeaders.push("");
@@ -515,7 +448,6 @@ class ClaimChildPanel extends Component {
           subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
-          subServicesItemsFormattersEdit = {subServicesItemsFormattersEdit}
         />
       </Paper>
     );
