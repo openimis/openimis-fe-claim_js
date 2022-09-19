@@ -7,6 +7,7 @@ import { withModulesManager, withHistory, formatMessageWithValues, historyPush, 
 import ClaimForm from "../components/ClaimForm";
 import { saveReview, deliverReview } from "../actions";
 import _ from "lodash";
+import ClaimFormReview from "../components/ClaimFormReview";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -51,7 +52,7 @@ class ReviewPage extends Component {
     const { classes, history, modulesManager, claim_uuid } = this.props;
     return (
       <div className={classes.page}>
-        <ClaimForm
+        <ClaimFormReview
           claim_uuid={claim_uuid}
           back={(e) => historyPush(modulesManager, history, "claim.route.reviews")}
           save={this.save}
