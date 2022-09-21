@@ -27,6 +27,8 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
+    subServicesEdit: [],
+    subItemsEdit: [],
   };
 
   constructor(props) {
@@ -47,8 +49,11 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
-        //this.state.subServicesEdit = elmt.claimlinkedService;
-        //this.state.subItemsEdit = elmt.claimlinkedItem;
+        this.setState({
+          subServicesEdit: elmt.claimlinkedService,
+          subItemsEdit: elmt.claimlinkedItem,
+        })
+
       })
 
       data = this.props.edited[`${this.props.type}s`] || [];
@@ -374,6 +379,113 @@ class ClaimChildPanel extends Component {
       ))
     ]
 
+
+    let subServicesItemsFormattersReview = [
+      (i, idx) => (this.state.subServicesEdit.map((u, udx) => (
+        <tr>
+          <TableCell>
+            <TextInput
+              readOnly={true}
+              value={u.service.code}
+            />
+          </TableCell>
+          <TableCell>
+            <Box minWidth={400}>
+              <TextInput
+                readOnly={!!forReview || readOnly || true}
+                value={u.service.name}
+              />
+            </Box>
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              readOnly={!!forReview || readOnly}
+              value={u.qtyDisplayed?u.qtyDisplayed:"0"}
+              onChange={(v) => {
+                if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyDisplayed=v;  
+                }else if(i.service.packagetype=="P"){
+                  if(v==u.qtyProvided){
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=0;
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log(totalClaimed);
+                }
+              }
+            />
+          </TableCell>
+          <TableCell>
+            <AmountInput
+              readOnly={true}
+              value={u.priceAsked}
+            />
+          </TableCell>
+        </tr>
+      ))),
+      (i, idx) => (this.state.subItemsEdit.map((u, udx) => {
+        return (
+        <tr>
+          <TableCell>
+            <TextInput
+              readOnly={true}
+              value={u.item.code}
+            />
+          </TableCell>
+          <TableCell>
+            <Box minWidth={400}>
+              <TextInput
+                readOnly={!!forReview || readOnly || true}
+                value={u.item.name}
+              />
+            </Box>
+          </TableCell>
+          <TableCell>
+            <NumberInput
+              readOnly={!!forReview || readOnly}
+              value={this.state.subItemsEdit[idx]?.qtyProvided}
+              onChange={(v) => {
+                if(i.service.packagetype=="F"){
+                  if(u.qtyProvided<v){
+                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                      totalApproved: u.qtyProvided,
+                    }));
+                  }
+                  u.qtyAsked=v;
+                }else if(i.service.packagetype=="P"){
+                  if(v==u.qtyProvided){
+                    u.qtyAsked=u.qtyProvided;
+                    u.qtyDisplayed=u.qtyProvided;                   
+                  }else{
+                    u.qtyDisplayed=v;
+                    u.qtyAsked=0;
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+                console.log(totalClaimed);
+              }
+            }
+            />
+          </TableCell>
+          <TableCell>
+            <AmountInput
+              readOnly={true}
+              value={u.priceAsked}
+            />
+          </TableCell>
+        </tr>
+      )
+          }
+      ))
+    ]
+
     if (!!forReview || edited.status !== 2) {
       if (!this.fixedPricesAtReview) {
         preHeaders.push("");
@@ -448,6 +560,7 @@ class ClaimChildPanel extends Component {
           subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          subServicesItemsFormattersReview={subServicesItemsFormattersReview}
         />
       </Paper>
     );
