@@ -11,6 +11,7 @@ import {
   NumberInput,
   Table,
   TableService,
+  TableServiceReview,
   PublishedComponent,
   AmountInput,
   TextInput,
@@ -47,7 +48,8 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
-
+        //this.state.subServicesEdit = elmt.claimlinkedService;
+        //this.state.subItemsEdit = elmt.claimlinkedItem;
       })
 
       data = this.props.edited[`${this.props.type}s`] || [];
@@ -373,9 +375,8 @@ class ClaimChildPanel extends Component {
       ))
     ]
 
-
     let subServicesItemsFormattersReview = [
-      (i, idx) => (i.claimlinkedService.map((u, udx) => (
+      (i, idx) => (this.state.subServicesEdit.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -424,7 +425,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.claimlinkedItem.map((u, udx) => {
+      (i, idx) => (this.state.subItemsEdit.map((u, udx) => {
         return (
         <tr>
           <TableCell>
@@ -444,7 +445,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={u.qtyDisplayed?u.qtyDisplayed:"0"}
+              value={this.state.subItemsEdit[idx]?.qtyProvided}
               onChange={(v) => {
                 if(i.service.packagetype=="F"){
                   if(u.qtyProvided<v){
@@ -545,7 +546,7 @@ class ClaimChildPanel extends Component {
     }
     return (
       <Paper className={classes.paper}>
-        <TableService
+        <TableServiceReview
           module="claim"
           header={header}
           preHeaders={preHeaders}
