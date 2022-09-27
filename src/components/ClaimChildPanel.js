@@ -27,8 +27,6 @@ const styles = (theme) => ({
 class ClaimChildPanel extends Component {
   state = {
     data: [],
-    subServicesEdit: [],
-    subItemsEdit: [],
   };
 
   constructor(props) {
@@ -49,10 +47,6 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
-        this.setState({
-          subServicesEdit: elmt.claimlinkedService,
-          subItemsEdit: elmt.claimlinkedItem,
-        })
 
       })
 
@@ -101,17 +95,6 @@ class ClaimChildPanel extends Component {
   };
 
   _onEditedChanged = (data) => {
-
-    this.props.edited[`${this.props.type}s`].forEach(elmt =>{
-      //elmt.subItems = elmt.claimlinkedItem;
-      //elmt.service.servicesLinked = elmt.claimlinkedItem;
-      //elmt.subServices = elmt.claimlinkedService;
-      this.setState({
-        subServicesEdit: elmt.claimlinkedService,
-        subItemsEdit: elmt.claimlinkedItem,
-      })
-
-    })
     let edited = { ...this.props.edited };
     edited[`${this.props.type}s`] = data;
     this.props.onEditedChanged(edited);
