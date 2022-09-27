@@ -101,6 +101,17 @@ class ClaimChildPanel extends Component {
   };
 
   _onEditedChanged = (data) => {
+
+    this.props.edited[`${this.props.type}s`].forEach(elmt =>{
+      //elmt.subItems = elmt.claimlinkedItem;
+      //elmt.service.servicesLinked = elmt.claimlinkedItem;
+      //elmt.subServices = elmt.claimlinkedService;
+      this.setState({
+        subServicesEdit: elmt.claimlinkedService,
+        subItemsEdit: elmt.claimlinkedItem,
+      })
+
+    })
     let edited = { ...this.props.edited };
     edited[`${this.props.type}s`] = data;
     this.props.onEditedChanged(edited);
@@ -381,7 +392,7 @@ class ClaimChildPanel extends Component {
 
 
     let subServicesItemsFormattersReview = [
-      (i, idx) => (this.state.subServicesEdit.map((u, udx) => (
+      (i, idx) => (i.claimlinkedService.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -430,7 +441,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (this.state.subItemsEdit.map((u, udx) => {
+      (i, idx) => (i.claimlinkedItem.map((u, udx) => {
         return (
         <tr>
           <TableCell>
@@ -450,7 +461,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={this.state.subItemsEdit[idx]?.qtyProvided}
+              value={u.qtyDisplayed?u.qtyDisplayed:"0"}
               onChange={(v) => {
                 if(i.service.packagetype=="F"){
                   if(u.qtyProvided<v){
