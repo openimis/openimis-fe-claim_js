@@ -129,13 +129,28 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 
 export function formatDetail(type, detail) {
   console.log(detail);
+  let subServices = [];
+  let subItems = [];
+  if(detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined ){
+    subItems.push(detail.service.servicesLinked.map((d) => formatDetailSubService(type, d)).join("\n"));
+  }
+  if(detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined){
+    subServices.push(detail.service.serviceserviceSet.map((d) => formatDetailSubService(type, d)).join("\n"));
+  }
+  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
+    subServices.push(detail.claimlinkedService.map((d) => formatDetailSubService(type, d)).join("\n"));
+  }
+  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
+    subItems.push(detail.claimlinkedItem.map((d) => formatDetailSubService(type, d)).join("\n"));
+  }
+  
   return `{
     ${detail.id !== undefined && detail.id !== null ? `id: ${detail.id}` : ""}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${detail.service.servicesLinked !== null ?  `serviceLinked: [ ${detail.service.servicesLinked.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}  
-    ${detail.service.serviceserviceSet !== null ?  `serviceserviceSet: [ ${detail.service.serviceserviceSet.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}  
+    ${subServices !== null ? `serviceserviceSet: [${subServices}]` : ""}
+    ${subItems !== null ? `serviceLinked: [${subItems}]` : ""}
     status: 1
     ${
       detail.explanation !== undefined && detail.explanation !== null
