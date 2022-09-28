@@ -30,6 +30,44 @@ export function claimedAmount(r) {
                 }
               });
             }
+            if(r?.claimlinkedService){
+              r.claimlinkedService.forEach(subItem => {
+                let qtyAsked = 0;
+                if(currentPackageType=="P"){
+                  if(subItem.qtyDisplayed){
+                    qtyAsked = subItem.qtyDisplayed;
+                  }
+                  totalPrice += qtyAsked * subItem.priceAsked;
+                }else if (currentPackageType=="F"){
+                  if(subItem.qtyDisplayed){
+                    qtyAsked = subItem.qtyDisplayed;
+                    if(subItem.qtyProvided<subItem.qtyDisplayed){
+                      qtyAsked = subItem.qtyProvided;
+                    }
+                  }
+                  totalPrice += qtyAsked * subItem.priceAsked;
+                }
+              });
+            }
+            if(r?.claimlinkedItem){
+              r.claimlinkedItem.forEach(subItem => {
+                let qtyAsked = 0;
+                if(currentPackageType=="P"){
+                  if(subItem.qtyDisplayed){
+                    qtyAsked = subItem.qtyDisplayed;
+                  }
+                  totalPrice += qtyAsked * subItem.priceAsked;
+                }else if (currentPackageType=="F"){
+                  if(subItem.qtyDisplayed){
+                    qtyAsked = subItem.qtyDisplayed;
+                    if(subItem.qtyProvided<subItem.qtyDisplayed){
+                      qtyAsked = subItem.qtyProvided;
+                    }
+                  }
+                  totalPrice += qtyAsked * subItem.priceAsked;
+                }
+              });
+            }
             if(r.service.servicesLinked){
               r.service.servicesLinked.forEach(subItem => {
                 let qtyAsked = 0;

@@ -385,6 +385,7 @@ class ClaimChildPanel extends Component {
           })
           : "",
       );
+
       itemFormatters.push((i, idx) => (
         <NumberInput
           readOnly={readOnly}

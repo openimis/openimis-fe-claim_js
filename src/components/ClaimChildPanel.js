@@ -47,8 +47,7 @@ class ClaimChildPanel extends Component {
         //elmt.subItems = elmt.claimlinkedItem;
         //elmt.service.servicesLinked = elmt.claimlinkedItem;
         //elmt.subServices = elmt.claimlinkedService;
-        //this.state.subServicesEdit = elmt.claimlinkedService;
-        //this.state.subItemsEdit = elmt.claimlinkedItem;
+
       })
 
       data = this.props.edited[`${this.props.type}s`] || [];
