@@ -253,7 +253,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={i.priceAsked}
+          value={i[`${this.props.type}`].priceAsked}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
