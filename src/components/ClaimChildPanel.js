@@ -373,7 +373,6 @@ class ClaimChildPanel extends Component {
       ))
     ]
 
-
     let subServicesItemsFormattersReview = [
       (i, idx) => (i.claimlinkedService.map((u, udx) => (
         <tr>

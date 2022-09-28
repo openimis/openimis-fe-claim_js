@@ -26,6 +26,7 @@ import _ from "lodash";
 
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
+import ClaimChildPanelReview from "./ClaimChildPanelReview";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_PRINT } from "../constants";
@@ -41,13 +42,22 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    if(!this.props.forReview){
+      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    }else{
+      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
+    }
+    
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    if(!this.props.forReview){
+      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    }else{
+      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
+    }
   }
 }
 
