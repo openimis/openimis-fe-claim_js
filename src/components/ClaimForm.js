@@ -47,7 +47,7 @@ class ClaimServicesPanel extends Component {
     }else{
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
     }
-    
+
   }
 }
 
@@ -150,11 +150,12 @@ class ClaimForm extends Component {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
     return true;
   };
 
   checkQtySubService = () => {
-    
+
   }
 
   canSave = (forFeedback) => {
@@ -169,6 +170,21 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+
+    if (this.state.claim.services == undefined) {
+      if(this.state.claim.items == undefined){
+        return false;
+      }else{
+        if (this.state.claim.items && this.state.claim.items.filter((i) => !this.canSaveDetail(i, "item")).length-1) {
+          return false;
+        }
+      }
+    }else{
+      if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+        return false;
+      }
+    }
+
     if (!forFeedback) {
       //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
