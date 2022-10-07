@@ -43,12 +43,6 @@ class ClaimChildPanel extends Component {
   initData = () => {
     let data = [];
     if (!!this.props.edited[`${this.props.type}s`]) {
-      this.props.edited[`${this.props.type}s`].forEach(elmt =>{
-        //elmt.subItems = elmt.claimlinkedItem;
-        //elmt.service.servicesLinked = elmt.claimlinkedItem;
-        //elmt.subServices = elmt.claimlinkedService;
-
-      })
 
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
@@ -160,8 +154,6 @@ class ClaimChildPanel extends Component {
         data[idx].qtyAppr = "0";
       }
     }
-    console.log("Change Item in Claim ChildPanel");
-    console.log(data)
     this._onEditedChanged(data);
   };
 
