@@ -177,7 +177,7 @@ export function formatDetailSubService(type, detail) {
   return `{
     ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
     ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
-    ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2)}"` : ""}
+    ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2) && _.round(detail.qtyDisplayed, 2).toFixed(2)}"` : ""}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
   },`;
