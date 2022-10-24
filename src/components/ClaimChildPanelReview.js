@@ -226,6 +226,9 @@ class ClaimChildPanel extends Component {
     ];
     let headers = [
       `edit.${type}s.${type}`,
+      `edit.${type}s.quantity`,
+      `edit.${type}s.price`,
+      `edit.${type}s.explanation`,
     ];
 
     let itemFormatters = [
@@ -385,7 +388,7 @@ class ClaimChildPanel extends Component {
           })
           : "",
       );
-
+      headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
           readOnly={readOnly}
@@ -394,6 +397,7 @@ class ClaimChildPanel extends Component {
         />
       ));
       if (!this.fixedPricesAtReview) {
+        headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
             readOnly={readOnly}
@@ -406,6 +410,7 @@ class ClaimChildPanel extends Component {
 
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
+      headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
           readOnly={readOnly}
@@ -416,6 +421,7 @@ class ClaimChildPanel extends Component {
     }
     if (!!forReview || edited.status !== 2) {
       preHeaders.push("", "");
+      headers.push(`edit.${type}s.status`, `edit.${type}s.rejectionReason`);
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
