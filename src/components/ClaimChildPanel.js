@@ -225,6 +225,9 @@ class ClaimChildPanel extends Component {
     ];
     let headers = [
       `edit.${type}s.${type}`,
+      `edit.${type}s.quantity`,
+      `edit.${type}s.price`,
+      `edit.${type}s.explanation`,
     ];
 
     let itemFormatters = [
