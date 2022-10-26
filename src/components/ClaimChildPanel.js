@@ -392,7 +392,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
+              readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
