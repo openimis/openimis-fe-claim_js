@@ -42,12 +42,7 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
-      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    }else{
-      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
-    }
-
+    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
   }
 }
 
