@@ -454,13 +454,14 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
+                    u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
+                      u.qtyDisplayed = 0;
                       u.qtyAsked = 0;
                     }
                   }
