@@ -230,6 +230,13 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.explanation`,
     ];
 
+    let subServiceHeaders = [
+      `medical.service.code`,
+      `medical.service.name`,
+      `edit.${type}s.quantity`,
+      `claim.edit.items.appPrice`,
+    ];
+
     let itemFormatters = [
       (i, idx) => (
         <Box minWidth={400}>
@@ -563,6 +570,7 @@ class ClaimChildPanel extends Component {
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
+          subServiceHeaders={subServiceHeaders}
         />
       </Paper>
     );

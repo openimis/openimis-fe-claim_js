@@ -231,6 +231,13 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.explanation`,
     ];
 
+    let subServiceHeaders = [
+      `medical.service.code`,
+      `medical.service.name`,
+      `edit.${type}s.quantity`,
+      `claim.edit.items.appPrice`,
+    ];
+
     let itemFormatters = [
       (i, idx) => (
         <Box minWidth={400}>
@@ -269,8 +276,8 @@ class ClaimChildPanel extends Component {
       )
     ];
 
-    let subServicesItemsFormatters = [
-      (i, idx) => (i.subServices.map((u, udx) => (
+    let subServicesItemsFormattersReview = [
+      (i, idx) => (i.claimlinkedService.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -288,28 +295,29 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
-              value={this.state.data[idx].service?.serviceserviceSet[udx]?.qtyDisplayed ? this.state.data[idx].service.serviceserviceSet[udx].qtyDisplayed : "0"}
+              readOnly={readOnly}
+              value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if(i.service.packagetype=="F"){
-                  if(u.qtyProvided<v){
+                if (i.service.packagetype == "F") {
+                  if (u.qtyProvided < v) {
                     alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                       totalApproved: u.qtyProvided,
                     }));
                   }
-                  u.qtyAsked=v;  
-                }else if(i.service.packagetype=="P"){
-                  if(v==u.qtyProvided){
-                    u.qtyAsked=u.qtyProvided;
-                    u.qtyDisplayed=u.qtyProvided;                   
-                  }else{
-                    u.qtyDisplayed=v;
-                    u.qtyAsked=0;
+                  u.qtyDisplayed = v;
+                  u.qtyAsked = v;
+                } else if (i.service.packagetype == "P") {
+                  if (v == u.qtyProvided) {
+                    u.qtyDisplayed = u.qtyProvided;
+                    u.qtyAsked = u.qtyProvided;
+                  } else {
+                    u.qtyDisplayed = 0;
+                    u.qtyAsked = 0;
                   }
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
                 console.log(totalClaimed);
-                }
+              }
               }
             />
           </TableCell>
@@ -321,59 +329,59 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.subItems.map((u, udx) => {
+      (i, idx) => (i.claimlinkedItem.map((u, udx) => {
         return (
-        <tr>
-          <TableCell>
-            <TextInput
-              readOnly={true}
-              value={u.item.code}
-            />
-          </TableCell>
-          <TableCell>
-            <Box minWidth={400}>
+          <tr>
+            <TableCell>
               <TextInput
-                readOnly={!!forReview || readOnly || true}
-                value={u.item.name}
+                readOnly={true}
+                value={u.item.code}
               />
-            </Box>
-          </TableCell>
-          <TableCell>
-            <NumberInput
-              readOnly={!!forReview || readOnly}
-              value={this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed ? this.state.data[idx]?.service?.servicesLinked[udx]?.qtyDisplayed : "0"}
-              onChange={(v) => {
-                if(i.service.packagetype=="F"){
-                  if(u.qtyProvided<v){
-                    alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                      totalApproved: u.qtyProvided,
-                    }));
+            </TableCell>
+            <TableCell>
+              <Box minWidth={400}>
+                <TextInput
+                  readOnly={!!forReview || readOnly || true}
+                  value={u.item.name}
+                />
+              </Box>
+            </TableCell>
+            <TableCell>
+              <NumberInput
+                readOnly={readOnly}
+                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                onChange={(v) => {
+                  if (i.service.packagetype == "F") {
+                    if (u.qtyProvided < v) {
+                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                        totalApproved: u.qtyProvided,
+                      }));
+                    }
+                    u.qtyAsked = v;
+                  } else if (i.service.packagetype == "P") {
+                    if (v == u.qtyProvided) {
+                      u.qtyAsked = u.qtyProvided;
+                      u.qtyDisplayed = u.qtyProvided;
+                    } else {
+                      u.qtyDisplayed = v;
+                      u.qtyAsked = 0;
+                    }
                   }
-                  u.qtyAsked=v;
-                }else if(i.service.packagetype=="P"){
-                  if(v==u.qtyProvided){
-                    u.qtyAsked=u.qtyProvided;
-                    u.qtyDisplayed=u.qtyProvided;                   
-                  }else{
-                    u.qtyDisplayed=v;
-                    u.qtyAsked=0;
-                  }
+                  this._onChangeSubItem(idx, udx, "servicesQty", v);
+                  console.log(totalClaimed);
                 }
-                this._onChangeSubItem(idx, udx, "servicesQty", v);
-                console.log(totalClaimed);
-              }
-            }
-            />
-          </TableCell>
-          <TableCell>
-            <AmountInput
-              readOnly={true}
-              value={u.priceAsked}
-            />
-          </TableCell>
-        </tr>
-      )
-          }
+                }
+              />
+            </TableCell>
+            <TableCell>
+              <AmountInput
+                readOnly={true}
+                value={u.priceAsked}
+              />
+            </TableCell>
+          </tr>
+        )
+      }
       ))
     ]
 
@@ -448,9 +456,10 @@ class ClaimChildPanel extends Component {
           preHeaders={preHeaders}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          subServicesItemsFormattersReview={subServicesItemsFormattersReview}
+          subServiceHeaders={subServiceHeaders}
         />
       </Paper>
     );
