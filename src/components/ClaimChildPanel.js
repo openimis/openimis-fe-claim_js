@@ -231,10 +231,10 @@ class ClaimChildPanel extends Component {
     ];
 
     let subServiceHeaders = [
-      `edit.${type}s.code`,
-      `edit.${type}s.name`,
+      `medical.service.code`,
+      `medical.service.name`,
       `edit.${type}s.quantity`,
-      `edit.${type}s.priceAppro`,
+      `claim.edit.items.appPrice`,
     ];
 
     let itemFormatters = [
