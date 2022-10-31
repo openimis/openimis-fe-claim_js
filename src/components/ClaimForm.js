@@ -170,18 +170,19 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
 
-    if (this.state.claim.services == undefined) {
-      if(this.state.claim.items == undefined){
-        return false;
+    if (this.state.claim.services !== undefined) {
+      if(this.props.forReview){
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
       }else{
-        if (this.state.claim.items && this.state.claim.items.filter((i) => !this.canSaveDetail(i, "item")).length-1) {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
           return false;
         }
       }
+      
     }else{
-      if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
-        return false;
-      }
+      return false;
     }
 
     if (!forFeedback) {
@@ -190,14 +191,6 @@ class ClaimForm extends Component {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
       //if there are items or services, they have to be complete
-      let items = [];
-      if (!!this.state.claim.items) {
-        items = [...this.state.claim.items];
-        if (!this.props.forReview) items.pop();
-        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item")).length) {
-          return false;
-        }
-      }
       let services = [];
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
@@ -206,7 +199,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
     return true;
   };
