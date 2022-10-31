@@ -225,6 +225,16 @@ class ClaimChildPanel extends Component {
     ];
     let headers = [
       `edit.${type}s.${type}`,
+      `edit.${type}s.quantity`,
+      `edit.${type}s.price`,
+      `edit.${type}s.explanation`,
+    ];
+
+    let subServiceHeaders = [
+      `medical.service.code`,
+      `medical.service.name`,
+      `edit.${type}s.quantity`,
+      `claim.edit.items.appPrice`,
     ];
 
     let itemFormatters = [
@@ -293,6 +303,7 @@ class ClaimChildPanel extends Component {
                       totalApproved: u.qtyProvided,
                     }));
                   }
+                  u.qtyDisplayed = v;
                   u.qtyAsked = v;
                 } else if (i.service.packagetype == "P") {
                   if (v == u.qtyProvided) {
@@ -345,6 +356,7 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
+                    u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
@@ -558,6 +570,7 @@ class ClaimChildPanel extends Component {
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
+          subServiceHeaders={subServiceHeaders}
         />
       </Paper>
     );
