@@ -47,7 +47,6 @@ class ClaimServicesPanel extends Component {
     }else{
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
     }
-
   }
 }
 

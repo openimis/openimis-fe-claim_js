@@ -41,21 +41,12 @@ class ClaimMasterPanelExt extends Component {
       <Grid container>
         <Grid item xs={6} className={classes.item}>
           <Typography className={classes.tableTitle}>
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header" />
-          </Typography>
-          <Divider />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
-          <Typography className={classes.tableTitle}>
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.header" />
           </Typography>
           <Divider />
         </Grid>
         <Grid item xs={6} className={classes.item}>
-          <PublishedComponent
-            pubRef="policy.InsureePolicyEligibilitySummary"
-            insuree={!!claim ? claim.insuree : null}
-          />
+          
         </Grid>
         <Grid item xs={6} className={classes.item}>
           <ProgressOrError progress={fetchingLastClaimAt} error={errorLastClaimAt} />

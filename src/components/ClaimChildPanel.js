@@ -217,6 +217,16 @@ class ClaimChildPanel extends Component {
     ];
     let headers = [
       `edit.${type}s.${type}`,
+      `edit.${type}s.quantity`,
+      `edit.${type}s.price`,
+      `edit.${type}s.explanation`,
+    ];
+
+    let subServiceHeaders = [
+      `medical.service.code`,
+      `medical.service.name`,
+      `edit.${type}s.quantity`,
+      `claim.edit.items.appPrice`,
     ];
 
     let itemFormatters = [
@@ -285,6 +295,7 @@ class ClaimChildPanel extends Component {
                       totalApproved: u.qtyProvided,
                     }));
                   }
+                  u.qtyDisplayed = v;
                   u.qtyAsked = v;
                 } else if (i.service.packagetype == "P") {
                   if (v == u.qtyProvided) {
@@ -337,6 +348,7 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
+                    u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
@@ -384,7 +396,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
+              readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 if (i.service.packagetype == "F") {
@@ -437,7 +449,7 @@ class ClaimChildPanel extends Component {
             </TableCell>
             <TableCell>
               <NumberInput
-                readOnly={!!forReview || readOnly}
+                readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
                   if (i.service.packagetype == "F") {
@@ -446,13 +458,14 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
+                    u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
+                      u.qtyDisplayed = 0;
                       u.qtyAsked = 0;
                     }
                   }
@@ -549,6 +562,7 @@ class ClaimChildPanel extends Component {
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}
+          subServiceHeaders={subServiceHeaders}
         />
       </Paper>
     );
