@@ -491,12 +491,30 @@ export function bypassReview(claims, clientMutationLabel, clientMutationDetails 
 }
 
 export function formatReviewDetail(type, detail) {
+
+  let subServices = [];
+  let subItems = [];
+
+  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
+    detail.claimlinkedItem.forEach(d =>{
+      subItems.push(d);
+    })
+  }
+
+  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
+    detail.claimlinkedService.forEach(d =>{
+      subServices.push(d);
+    })
+  }
+
   return `{
     id: ${detail.id}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
+    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;
