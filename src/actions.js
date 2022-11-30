@@ -112,6 +112,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "code",
     "jsonExt",
     "dateClaimed",
+    "dateProcessed",
     "feedbackStatus",
     "reviewStatus",
     "claimed",

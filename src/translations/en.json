@@ -223,5 +223,8 @@
   "claim.servicesPricelist.missing": "No services prices list registered for health facility",
   "claim.itemsPricelist.missing": "No items prices list registered for health facility",
   "claim.medicalItem": "Medical Item",
-  "claim.medicalService": "Medical Service"
+  "claim.medicalService": "Medical Service",
+  "claim.ClaimFilter.processedDateFrom": "Processed From",
+  "claim.ClaimFilter.processedDateTo": "Processed To",
+  "claim.claimSummaries.processedDate": "Processed On"
 }

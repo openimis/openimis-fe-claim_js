@@ -229,7 +229,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.qtyApproved}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
         />
@@ -238,7 +238,7 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={readOnly}
+            readOnly={!forReview && readOnly}
             value={i.priceApproved}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
@@ -251,7 +251,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />
@@ -263,7 +263,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={readOnly}
+            readOnly={!forReview && readOnly}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}

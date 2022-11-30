@@ -104,6 +104,7 @@ class ClaimSearcher extends Component {
           "",
           "",
           "",
+          "",
           <Typography noWrap={true}>
             <FormattedMessage
               module="claim"
@@ -139,7 +140,7 @@ class ClaimSearcher extends Component {
           "",
           "",
         ]
-      : ["\u200b", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
+      : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
     if (this.claimAttachments) {
       result.push("");
     }
@@ -155,6 +156,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.claimedDate",
+      "claimSummaries.processedDate",
       "claimSummaries.feedbackStatus",
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
@@ -196,7 +198,7 @@ class ClaimSearcher extends Component {
   };
 
   aligns = () => {
-    return [, , , , , , "right", "right"];
+    return [, , , , , , , "right", "right"];
   };
 
   itemFormatters = () => {
@@ -212,6 +214,7 @@ class ClaimSearcher extends Component {
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
+      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
       (c) => formatAmount(this.props.intl, c.claimed),

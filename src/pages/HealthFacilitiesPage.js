@@ -81,9 +81,6 @@ class HealthFacilitiesPage extends Component {
 
   submitAll = (selection) => {
     let filters = this.props.selectedFilters;
-
-    console.log("Filters: ", filters);
-    console.log("Params clean:", filters);
     if (selection.length === 0) {
       this.props.submitAll(
         filters,
