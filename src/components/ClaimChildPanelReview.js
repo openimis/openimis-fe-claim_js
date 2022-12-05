@@ -364,7 +364,7 @@ class ClaimChildPanel extends Component {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = 0;
+                      u.qtyDisplayed = v;
                       u.qtyAsked = 0;
                     }
                   }
