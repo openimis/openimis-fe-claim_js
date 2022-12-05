@@ -161,12 +161,11 @@ class ClaimChildPanel extends Component {
         data[idx].qtyAppr = "0";
       }
     }
-    console.log("Change Item in Claim ChildPanel");
-    console.log(data)
     this._onEditedChanged(data);
   };
 
   _onChangeSubItem = (idx, udx, attr, v) => {
+    this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     let data = [...this.state.data];
     this._onEditedChanged(data);
   };
