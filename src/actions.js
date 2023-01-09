@@ -7,6 +7,7 @@ import {
   formatMutation,
   decodeId,
   openBlob,
+  graphqlWithVariables,
   formatJsonField,
   formatGQLString,
 } from "@openimis/fe-core";
@@ -280,6 +281,30 @@ export function fetchLastClaimAt(claim) {
     ["code", "dateFrom", "dateTo"],
   );
   return graphql(payload, "CLAIM_LAST_CLAIM_AT");
+}
+
+export function fetchClaimOfficers(mm, extraFragment, variables) {
+  return graphqlWithVariables(
+    `
+    query ClaimOfficerPicker ($search: String) {
+      claimOfficers(search: $search, first: 20) {
+        edges {
+          node {
+            id
+            uuid
+            code
+            lastName
+            otherNames
+            ${extraFragment ?? ""}
+          }
+        }
+      }
+    }
+  `,
+    variables,
+    "CLAIM_ENROLMENT_OFFICERS",
+    { skip: true },
+  )
 }
 
 export function submit(claims, clientMutationLabel, clientMutationDetails = null) {

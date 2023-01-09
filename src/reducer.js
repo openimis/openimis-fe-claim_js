@@ -33,6 +33,15 @@ function reducer(
     fetchedClaimCodeCount: false,
     claimCodeCount: null,
     errorClaimCodeCount: null,
+    claimOfficers: {
+      items: [],
+      isFetching: false,
+      isFetched: false,
+      pageInfo: {
+        totalCount: 0,
+      },
+      error: null,
+    },
   },
   action,
 ) {
@@ -186,6 +195,34 @@ function reducer(
         ...state,
         fetchingClaimCodeCount: false,
         errorClaimCodeCount: formatServerError(action.payload),
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_REQ":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: true,
+        },
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_RESP":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: false,
+          isFetched: true,
+          pageInfo: pageInfo(action.payload.data.claimOfficers),
+          items: parseData(action.payload.data.claimOfficers),
+        },
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_ERR":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: false,
+          error: formatGraphQLError(action.payload),
+        },
       };
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);
