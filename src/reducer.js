@@ -221,6 +221,7 @@ function reducer(
         claimOfficers: {
           ...state.claimOfficers,
           isFetching: false,
+          isFetched: false,
           error: formatGraphQLError(action.payload),
         },
       };

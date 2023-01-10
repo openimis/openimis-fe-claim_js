@@ -24,29 +24,26 @@ const ClaimOfficerPicker = (props) => {
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [variables, setVariables] = useState({});
   const dispatch = useDispatch();
+  const properties = ['code', 'lastName', 'otherNames']
 
-  const isLoading = useSelector((state) => state.claim.claimOfficers.isFetching);
-  const isLoaded = useSelector((state) => state.claim.claimOfficers.isFetched);
-  const options = useSelector((state) => state.claim.claimOfficers.items);
-  const error = useSelector((state) => state.claim.claimOfficers.error);
+  const isLoading = useSelector((state) => state.claim.claimOfficers? state.claim.claimOfficers.isFetching: null);
+  const options = useSelector((state) => state.claim.claimOfficers? state.claim.claimOfficers.items: []);
+  const error = useSelector((state) => state.claim.claimOfficers? state.claim.claimOfficers.error: 'error');
 
   useEffect(async () => {
      await dispatch(
-      fetchClaimOfficers(modulesManager, extraFragment, variables, {
-        first: 20,
-      }),
+      fetchClaimOfficers(modulesManager, extraFragment, variables),
     );
   }, []);
 
   const getOptionLabel = (option) => {
-    const result = options.find(officer => decodeId(officer.id) === option.toString());
+    const result = options?.find(officer => decodeId(officer.id) === option.toString());
     if (result) option = result;
-    return `${option.code} ${option.lastName} ${option.otherNames}`
+    return properties.every(property => option.hasOwnProperty(property))? `${option.code} ${option.lastName} ${option.otherNames}`: 'error'
   };
 
   return (
     <div>
-      {isLoaded ? (
       <Autocomplete
         multiple={multiple}
         required={required}
@@ -65,7 +62,7 @@ const ClaimOfficerPicker = (props) => {
         filterSelectedOptions={filterSelectedOptions}
         onInputChange={(search) => setVariables({ search })}
         getOptionSelected={(option, value) => decodeId(option.id) === value.toString()}
-      /> ): null}
+      />
     </div>
   );
 };
