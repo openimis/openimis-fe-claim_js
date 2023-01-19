@@ -17,6 +17,7 @@ const ClaimAdminPicker = (props) => {
     multiple,
     extraFragment,
     hfFilter,
+    userHealthFacilityId,
   } = props;
 
   const modulesManager = useModulesManager();
@@ -24,8 +25,8 @@ const ClaimAdminPicker = (props) => {
   const [searchString, setSearchString] = useState("");
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf) {
+      query ClaimAdminPicker ($search: String, $hf: String, $user_health_facility: String) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, userHealthFacility: $user_health_facility) {
               edges {
                   node {
                       id
@@ -52,7 +53,7 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString },
+    { hf: hfFilter?.uuid, search: searchString, user_health_facility: userHealthFacilityId },
     { skip: true },
   );
 

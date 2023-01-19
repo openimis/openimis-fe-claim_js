@@ -216,6 +216,7 @@ class Head extends Component {
                 value={this._filterValue("admin")}
                 withNull={true}
                 hfFilter={this._filterValue("healthFacility")}
+                userHealthFacilityId={userHealthFacilityId}
                 reset={this.state.reset}
                 onChange={this._onChangeClaimAdmin}
               />
