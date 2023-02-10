@@ -55,7 +55,7 @@ class ClaimMasterPanel extends FormPanel {
     if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
       this.setState({ claimCodeError: null });
     } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
-      if (!!this.props.claimCodeCount) {
+      if (!!this.props.claimCodeCount && this.state?.claimCode != this.props?.code) {
         this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
         this.updateAttribute("codeError", true);
       } else {
@@ -495,6 +495,7 @@ const mapStateToProps = (state, props) => ({
   fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
+  code: state.claim.claim.code,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
 });
 
