@@ -532,6 +532,9 @@ const mapStateToProps = (state, props) => ({
   claimCodeCount: state.claim.claimCodeCount,
   code: state.claim.claim.code,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
+  isCodeValid: state.validationFields?.claimCode?.isValid,
+  isCodeValidating: state.validationFields?.claimCode?.isValidating,
+  codeValidationError: state.validationFields?.claimCode?.validationError,
 });
 
 const mapDispatchToProps = (dispatch) => {
