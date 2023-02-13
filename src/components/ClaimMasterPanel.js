@@ -12,12 +12,18 @@ import {
   Contributions,
   AmountInput,
   TextInput,
+  ValidatedTextInput,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
-import { claimHealthFacilitySet, validateClaimCode } from "../actions";
+import { 
+  claimHealthFacilitySet, 
+  validateClaimCode,
+  claimCodeValidationCheck,
+  claimCodeValidationClear,
+} from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
@@ -36,6 +42,19 @@ class ClaimMasterPanel extends FormPanel {
   state = {
     claimCode: null,
     claimCodeError: null,
+  };
+
+  // canSave = () => {
+  //   if (!this.state.healthFacility.code) return false;
+  //   if (!this.props.claimCode) return false;
+  //   if (!this.state.healthFacility.name) return false;
+  //   return true;
+  // };
+
+  shouldValidate = (inputValue) => {
+    const { code } = this.props;
+    const shouldValidate = inputValue !== ( code );
+    return shouldValidate;
   };
 
   constructor(props) {
@@ -253,7 +272,7 @@ class ClaimMasterPanel extends FormPanel {
           id="Claim.code"
           field={
             <Grid item xs={2} className={classes.item}>
-              <TextInput
+              {/* <TextInput
                 module="claim"
                 label="code"
                 required
@@ -265,6 +284,22 @@ class ClaimMasterPanel extends FormPanel {
                 inputProps={{
                   "maxLength": this.codeMaxLength,
                 }}
+              /> */}
+              <ValidatedTextInput
+                action={claimCodeValidationCheck}
+                clearAction={claimCodeValidationClear}
+                itemQueryIdentifier="claimCode"
+                isValid={isCodeValid}
+                isValidating={isCodeValidating}
+                validationError={codeValidationError}
+                shouldValidate={this.shouldValidate}
+                onChange={(code) => this.changeData("code", code)}
+                module="claim"
+                label="claim.code"
+                codeTakenLabel="claim.codeTaken"
+                value={!!this.state.data ? this.state.data.code : null}
+                autoFocus={true}
+                required={true}
               />
             </Grid>
           }

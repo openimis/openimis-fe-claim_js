@@ -43,6 +43,24 @@ export function validateClaimCode(code) {
   return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
 }
 
+export function claimCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($claimCode: String!) {
+      isValid: validateClaimCode(claimCode: $claimCode)
+ }
+    `,
+    variables,
+    `CLAIM_CODE_FIELDS_VALIDATION`,
+  );
+}
+
+export function claimCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
 export function fetchClaimAttachments(claim) {
   const payload = formatPageQuery(
     "claimAttachments",
