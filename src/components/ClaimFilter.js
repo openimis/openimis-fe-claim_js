@@ -15,7 +15,7 @@ import {
   AmountInput,
   Contributions,
 } from "@openimis/fe-core";
-import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
+import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion, clearClaim } from "../actions";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
@@ -255,7 +255,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion }, dispatch);
+  return bindActionCreators({ selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion, clearClaim }, dispatch);
 };
 
 const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);

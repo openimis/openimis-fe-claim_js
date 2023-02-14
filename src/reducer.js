@@ -130,6 +130,14 @@ function reducer(
         fetchingClaims: false,
         errorClaims: formatServerError(action.payload),
       };
+    case "CLAIM_CLAIM_CLEAR":
+      return {
+        ...state,
+        fetchingClaim: false,
+        fetchedClaim: false,
+        claim: null,
+        errorClaim: null,
+      };
     case "CLAIM_CLAIM_REQ":
       return {
         ...state,
@@ -225,54 +233,66 @@ function reducer(
           error: formatGraphQLError(action.payload),
         },
       };
-      case "CLAIM_CODE_FIELDS_VALIDATION_REQ":
-        return {
-          ...state,
-          validationFields: {
-            ...state.validationFields,
-            claimCode: {
-              isValidating: true,
-              isValid: false,
-              validationError: null,
-            },
+    case "CLAIM_CODE_FIELDS_VALIDATION_REQ":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
           },
-        };
-      case "CLAIM_CODE_FIELDS_VALIDATION_RESP":
-        return {
-          ...state,
-          validationFields: {
-            ...state.validationFields,
-            claimCode: {
-              isValidating: false,
-              isValid: action.payload?.data.isValid,
-              validationError: formatGraphQLError(action.payload),
-            },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
           },
-        };
-      case "CLAIM_CODE_FIELDS_VALIDATION_ERR":
-        return {
-          ...state,
-          validationFields: {
-            ...state.validationFields,
-            claimCode: {
-              isValidating: false,
-              isValid: false,
-              validationError: formatServerError(action.payload),
-            },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_ERR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: false,
+            validationError: formatServerError(action.payload),
           },
-        };
-      case "CLAIM_CODE_FIELDS_VALIDATION_CLEAR":
-        return {
-          ...state,
-          validationFields: {
-            ...state.validationFields,
-            claimCode: {
-              isValidating: true,
-              isValid: false,
-              validationError: null,
-            },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
           },
-        };
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
+      };
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "CLAIM_MUTATION_ERR":

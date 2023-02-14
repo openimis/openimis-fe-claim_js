@@ -61,6 +61,18 @@ export function claimCodeValidationClear() {
   };
 }
 
+export function claimCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
+export function clearClaim() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CLAIM_CLEAR` });
+  };
+}
+
 export function fetchClaimAttachments(claim) {
   const payload = formatPageQuery(
     "claimAttachments",
