@@ -44,15 +44,14 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
   };
 
-  // canSave = () => {
-  //   if (!this.state.healthFacility.code) return false;
-  //   if (!this.props.claimCode) return false;
-  //   if (!this.state.healthFacility.name) return false;
-  //   return true;
-  // };
+  canSave = () => {
+    if (!this.props.claimCode) return false;
+    return true;
+  };
 
   shouldValidate = (inputValue) => {
     const { code } = this.props;
+    console.log("filter: ", code);
     const shouldValidate = inputValue !== ( code );
     return shouldValidate;
   };
@@ -67,6 +66,7 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
+    const {isCodeValid, isCodeValidating, codeValidationError} = this.props;
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -289,11 +289,11 @@ class ClaimMasterPanel extends FormPanel {
                 action={claimCodeValidationCheck}
                 clearAction={claimCodeValidationClear}
                 itemQueryIdentifier="claimCode"
-                isValid={isCodeValid}
-                isValidating={isCodeValidating}
-                validationError={codeValidationError}
+                isValid={this.isCodeValid}
+                isValidating={this.isCodeValidating}
+                validationError={this.codeValidationError}
                 shouldValidate={this.shouldValidate}
-                onChange={(code) => this.changeData("code", code)}
+                onChange={(code) => this.updateAttribute("code", code)}
                 module="claim"
                 label="claim.code"
                 codeTakenLabel="claim.codeTaken"
@@ -525,16 +525,16 @@ class ClaimMasterPanel extends FormPanel {
   }
 }
 
-const mapStateToProps = (state, props) => ({
+const mapStateToProps = (state) => ({
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
   code: state.claim.claim.code,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
-  isCodeValid: state.validationFields?.claimCode?.isValid,
-  isCodeValidating: state.validationFields?.claimCode?.isValidating,
-  codeValidationError: state.validationFields?.claimCode?.validationError,
+  isCodeValid: state.claim.validationFields?.claimCode?.isValid,
+  isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
+  codeValidationError: state.claim.validationFields?.claimCode?.validationError,
 });
 
 const mapDispatchToProps = (dispatch) => {
