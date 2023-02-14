@@ -46,21 +46,6 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
   };
 
-  // canSave = () => {
-  //   if (!this.props.claimCode) return false;
-  //   return true;
-  // };
-
-    canSave = () => {
-    return false;
-  };
-
-  // canSave = () =>
-  // !!this.state.data &&
-  // !!this.state.data.code &&
-  // !!this.state.data.name &&
-  // !!(this.props.isCodeValid || this.props.location?.code === this.state.data?.code);
-
   shouldValidate = (inputValue) => {
     const { savedClaimCode } = this.props;
     const shouldValidate = inputValue !== (savedClaimCode);
@@ -100,18 +85,10 @@ class ClaimMasterPanel extends FormPanel {
     this.props?.clearClaim();
   };
 
-  validateClaimCode = (v) => {
-    this.setState(
-      {
-        claimCodeError: null,
-        claimCode: v,
-      },
-      (e) => this.props.validateClaimCode(v),
-    );
-  };
+
 
   debounceUpdateCode = _debounce(
-    this.validateClaimCode,
+    validateClaimCode,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
   );
 
