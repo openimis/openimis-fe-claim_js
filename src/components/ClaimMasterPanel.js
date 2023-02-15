@@ -19,12 +19,11 @@ import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
-  claimHealthFacilitySet,
-  validateClaimCode,
+  claimCodeSetValid,
   claimCodeValidationCheck,
   claimCodeValidationClear,
-  claimCodeSetValid,
-  clearClaim
+  claimHealthFacilitySet,
+  clearClaim,
 } from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
@@ -67,11 +66,6 @@ class ClaimMasterPanel extends FormPanel {
   componentWillUnmount = () => {
     this.props?.clearClaim();
   };
-
-  debounceUpdateCode = _debounce(
-    validateClaimCode,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
-  );
 
   computePriceAdjusted() {
     let totalServices = 0;
@@ -512,7 +506,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     claimHealthFacilitySet,
-    validateClaimCode,
     clearClaim,
   }, dispatch);
 };

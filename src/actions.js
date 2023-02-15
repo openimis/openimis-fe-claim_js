@@ -38,11 +38,6 @@ export function selectRegion(region) {
   };
 }
 
-export function validateClaimCode(code) {
-  const payload = formatQuery("claims", [`code: "${code}"`], ["totalCount"]);
-  return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
-}
-
 export function claimCodeValidationCheck(mm, variables) {
   return graphqlWithVariables(
     `
