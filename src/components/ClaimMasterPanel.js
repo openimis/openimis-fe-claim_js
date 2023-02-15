@@ -256,21 +256,22 @@ class ClaimMasterPanel extends FormPanel {
           field={
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
-                setValidAction={claimCodeSetValid}
                 action={claimCodeValidationCheck}
+                autoFocus={true}
                 clearAction={claimCodeValidationClear}
-                itemQueryIdentifier="claimCode"
+                codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
                 isValidating={isCodeValidating}
-                validationError={codeValidationError}
-                onChange={(code) => this.updateAttribute("code", code)}
-                module="claim"
+                itemQueryIdentifier="claimCode"
                 label="claim.code"
-                codeTakenLabel="claim.codeTaken"
-                value={!!this.state.data ? this.state.data.code : null}
-                autoFocus={true}
+                module="claim"
+                onChange={(code) => this.updateAttribute("code", code)}
+                readOnly={readOnly || !!forReview || !!forFeedback}
                 required={true}
+                setValidAction={claimCodeSetValid}
                 shouldValidate={this.shouldValidate}
+                validationError={codeValidationError}
+                value={!!this.state.data ? this.state.data.code : null}
               />
             </Grid>
           }
