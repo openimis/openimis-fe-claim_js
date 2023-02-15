@@ -64,28 +64,9 @@ class ClaimMasterPanel extends FormPanel {
     );
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
-    if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
-      this.setState({ claimCodeError: null });
-    } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
-      if (!!this.props.claimCodeCount && this.state?.claimCode != this.props?.code) {
-        this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
-        this.updateAttribute("codeError", true);
-      } else {
-        this.updateAttributes({
-          code: this.state.claimCode,
-          codeError: null,
-        });
-      }
-    }
-  }
-
   componentWillUnmount = () => {
     this.props?.clearClaim();
   };
-
-
 
   debounceUpdateCode = _debounce(
     validateClaimCode,
@@ -274,27 +255,14 @@ class ClaimMasterPanel extends FormPanel {
           id="Claim.code"
           field={
             <Grid item xs={2} className={classes.item}>
-              {/* <TextInput
-                module="claim"
-                label="code"
-                required
-                value={edited.code}
-                error={this.state.claimCodeError}
-                reset={reset}
-                onChange={this.debounceUpdateCode}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.codeMaxLength,
-                }}
-              /> */}
               <ValidatedTextInput
+                setValidAction={claimCodeSetValid}
                 action={claimCodeValidationCheck}
                 clearAction={claimCodeValidationClear}
                 itemQueryIdentifier="claimCode"
                 isValid={isCodeValid}
                 isValidating={isCodeValidating}
                 validationError={codeValidationError}
-                shouldValidate={this.shouldValidate}
                 onChange={(code) => this.updateAttribute("code", code)}
                 module="claim"
                 label="claim.code"
@@ -302,7 +270,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={!!this.state.data ? this.state.data.code : null}
                 autoFocus={true}
                 required={true}
-                setValidAction={claimCodeSetValid}
+                shouldValidate={this.shouldValidate}
               />
             </Grid>
           }
