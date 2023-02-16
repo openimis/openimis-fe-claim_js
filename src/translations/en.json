@@ -18,6 +18,7 @@
   "claim.ClaimFilter.district": "District",
   "claim.claimStatus": "Claim Status",
   "claim.code": "Claim No.",
+  "claim.codeTaken": "Claim code already exists",
   "claim.guaranteeId": "Guarantee No.",
   "claim.claimStatus.null": "Any",
   "claim.claimStatus.1": "Rejected",
