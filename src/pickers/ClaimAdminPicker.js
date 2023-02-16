@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useModulesManager, useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
 import _debounce from "lodash/debounce";
+import { fetchaAvailableHealthFacilities } from "../actions";
+
 
 const ClaimAdminPicker = (props) => {
   const {
@@ -23,6 +26,22 @@ const ClaimAdminPicker = (props) => {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
+  const dispatch = useDispatch();
+  const [variables, setVariables] = useState({});
+  const options = useSelector((state) => state.claim?.healthFacilities.availableHealthFacilities);
+  const region = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.region?.value?.uuid);
+  const district = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.district?.value?.uuid);
+
+  useEffect(() => {
+    setVariables({ region: props?.region?.uuid, district: [props?.district?.uuid] });
+  }, [region, district]);
+
+  useEffect(() => {
+    dispatch(fetchaAvailableHealthFacilities(modulesManager, variables));
+  }, [variables]);
+
+  let availablehealthFacilities = options?.map(healthfacility => healthfacility.uuid);
+
   const { isLoading, data, error } = useGraphqlQuery(
     `
       query ClaimAdminPicker ($search: String, $hf: String, $user_health_facility: String) {
@@ -53,7 +72,7 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString, user_health_facility: userHealthFacilityId },
+    { hf: hfFilter?.uuid, search: searchString, user_health_facility: userHealthFacilityId || availablehealthFacilities },
     { skip: true },
   );
 
