@@ -77,8 +77,6 @@ class HealthFacilitiesPage extends Component {
     }
   };
 
-  filtersToQueryParams = (filters) => {};
-
   submitAll = (selection) => {
     let filters = this.props.selectedFilters;
     if (selection.length === 0) {

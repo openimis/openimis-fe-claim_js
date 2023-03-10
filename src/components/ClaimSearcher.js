@@ -75,12 +75,16 @@ class ClaimSearcher extends Component {
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
-      prms.push(`first: ${state.pageSize}`);
+      if (!state.beforeCursor && !state.afterCursor) {
+        prms.push(`first: ${state.pageSize}`);
+      }
       if (!!state.afterCursor) {
         prms.push(`after: "${state.afterCursor}"`);
+        prms.push(`first: ${state.pageSize}`);
       }
       if (!!state.beforeCursor) {
         prms.push(`before: "${state.beforeCursor}"`);
+        prms.push(`last: ${state.pageSize}`);
       }
     }
     return prms;
