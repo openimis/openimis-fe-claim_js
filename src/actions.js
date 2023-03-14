@@ -332,7 +332,7 @@ export function fetchClaimOfficers(mm, extraFragment, variables) {
   )
 }
 
-export function fetchaAvailableHealthFacilities(mm, variables){
+export function fetchAvailableHealthFacilities(mm, variables){
   return graphqlWithVariables(
     `
     query HealthFacilityPicker ($str: String, $region: String, $district: [String], $level: String) {
