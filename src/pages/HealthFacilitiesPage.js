@@ -15,6 +15,7 @@ import {
   journalize,
   coreConfirm,
   Helmet,
+  clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 
@@ -139,6 +140,21 @@ class HealthFacilitiesPage extends Component {
     return true;
   };
 
+  componentDidMount = () => {
+    const moduleName = "claim";
+    const { module } = this.props;
+    if (module !== moduleName) this.props.clearCurrentPaginationPage();
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
+
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
@@ -200,6 +216,7 @@ const mapStateToProps = (state) => ({
   confirmed: state.core.confirmed,
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
+  module: state.core?.savedPagination?.module,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -211,6 +228,7 @@ const mapDispatchToProps = (dispatch) => {
       submit,
       submitAll,
       del,
+      clearCurrentPaginationPage,
     },
     dispatch,
   );

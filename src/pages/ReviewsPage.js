@@ -18,6 +18,7 @@ import {
   journalize,
   coreAlert,
   Helmet,
+  clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
@@ -574,6 +575,21 @@ class ReviewsPage extends Component {
     this.review(c, newTab);
   };
 
+  componentDidMount = () => {
+    const moduleName = "claim";
+    const { module } = this.props;
+    if (module !== moduleName) this.props.clearCurrentPaginationPage();
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
+
   render() {
     const { classes, rights } = this.props;
     if (!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) return null;
@@ -652,6 +668,7 @@ const mapStateToProps = (state) => ({
   claimHealthFacility: state.claim.claimHealthFacility,
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   claimsPageInfo: state.claim.claimsPageInfo,
+  module: state.core?.savedPagination?.module,
   //props used from super.componentDidUpdate !!
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,
@@ -671,6 +688,7 @@ const mapDispatchToProps = (dispatch) => {
       deliverReview,
       skipReview,
       process,
+      clearCurrentPaginationPage,
     },
     dispatch,
   );
