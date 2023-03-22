@@ -18,9 +18,8 @@ import {
   clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-
 import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE } from "../constants";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -141,9 +140,8 @@ class HealthFacilitiesPage extends Component {
   };
 
   componentDidMount = () => {
-    const moduleName = "claim";
     const { module } = this.props;
-    if (module !== moduleName) this.props.clearCurrentPaginationPage();
+    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
   };
 
   componentWillUnmount = () => {
