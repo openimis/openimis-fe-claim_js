@@ -118,7 +118,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.claimed ? parseFloat(v.claimed) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.claimed) {
+                          return acc + parseFloat(v.claimed);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
@@ -134,7 +140,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.approved ? parseFloat(v.approved) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.approved) {
+                          return acc + parseFloat(v.approved);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
