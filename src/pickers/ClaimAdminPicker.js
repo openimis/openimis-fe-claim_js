@@ -21,31 +21,28 @@ const ClaimAdminPicker = (props) => {
     multiple,
     extraFragment,
     hfFilter,
+    region,
+    district,
   } = props;
 
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
   const dispatch = useDispatch();
-  const [variables, setVariables] = useState({});
   const options = useSelector((state) => state.claim?.healthFacilities.availableHealthFacilities);
-  const region = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.region?.value?.uuid);
-  const district = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.district?.value?.uuid);
+
 
   useEffect(() => {
-    setVariables({ region: props?.region?.uuid, district: [props?.district?.uuid] });
-  }, [region, district]);
-
-  useEffect(() => {
+    const variables = { region: props?.region?.uuid, district: [props?.district?.uuid]};
     dispatch(fetchAvailableHealthFacilities(modulesManager, variables));
-  }, [variables]);
+  }, [region, district]);
 
   const availableHealthFacilities = options?.map(HF => HF.uuid);
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String, $user_health_facility: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, userHealthFacility: $user_health_facility) {
+      query ClaimAdminPicker ($search: String, $hf: String, $user_health_facility: String, $onlyValidHf: Boolean) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, userHealthFacility: $user_health_facility, onlyValidHf: $onlyValidHf) {
               edges {
                   node {
                       id
@@ -72,7 +69,7 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString, user_health_facility: availableHealthFacilities },
+    { hf: hfFilter?.uuid, search: searchString, user_health_facility: availableHealthFacilities, onlyValidHf: true },
   );
 
   return (
