@@ -140,6 +140,7 @@ class ClaimForm extends Component {
 
   canSave = (forFeedback) => {
     if (!this.state.claim.code) return false;
+    if (this.state.lockNew) return false;
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -191,7 +192,7 @@ class ClaimForm extends Component {
 
   _save = (claim) => {
     this.setState(
-      { lockNew: !claim.uuid }, // avoid duplicates
+      { lockNew: true }, // avoid duplicates
       (e) => this.props.save(claim),
     );
   };
