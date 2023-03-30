@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import _debounce from "lodash/debounce";
 
 import { useModulesManager, useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
-import { fetchAvailableHealthFacilities } from "../actions";
 
 
 const ClaimAdminPicker = (props) => {
@@ -21,31 +18,18 @@ const ClaimAdminPicker = (props) => {
     multiple,
     extraFragment,
     hfFilter,
+    region,
+    district,
   } = props;
 
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
-  const dispatch = useDispatch();
-  const [variables, setVariables] = useState({});
-  const options = useSelector((state) => state.claim?.healthFacilities.availableHealthFacilities);
-  const region = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.region?.value?.uuid);
-  const district = useSelector((state) => state.core.filtersCache.claimHealthFacilitiesPageFiltersCache?.district?.value?.uuid);
-
-  useEffect(() => {
-    setVariables({ region: props?.region?.uuid, district: [props?.district?.uuid] });
-  }, [region, district]);
-
-  useEffect(() => {
-    dispatch(fetchAvailableHealthFacilities(modulesManager, variables));
-  }, [variables]);
-
-  const availableHealthFacilities = options?.map(HF => HF.uuid);
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String, $user_health_facility: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, userHealthFacility: $user_health_facility) {
+      query ClaimAdminPicker ($search: String, $hf: String, $region_uuid: String, $district_uuid: String) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, regionUuid: $region_uuid, districtUuid: $district_uuid) {
               edges {
                   node {
                       id
@@ -72,7 +56,7 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString, user_health_facility: availableHealthFacilities },
+    { hf: hfFilter?.uuid, search: searchString, region_uuid: region?.uuid, district_uuid: district?.uuid },
   );
 
   return (
