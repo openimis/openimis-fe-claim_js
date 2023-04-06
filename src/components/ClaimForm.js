@@ -75,9 +75,8 @@ class ClaimForm extends Component {
 
   _newClaim() {
     let claim = {};
-    claim.healthFacility =
-      this.state && this.state.claim ? this.state.claim.healthFacility : this.props.claimHealthFacility;
-    claim.admin = this.state && this.state.claim ? this.state.claim.admin : this.props.claimAdmin;
+    claim.healthFacility = this?.state?.claim?.healthFacility ?? this.props.claimHealthFacility ?? JSON.parse(localStorage.getItem('claimHealthFacility'));
+    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem('admin'));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -89,6 +88,10 @@ class ClaimForm extends Component {
   componentDidMount() {
     if (!!this.props.claimHealthFacility) {
       this.props.claimHealthFacilitySet(this.props.claimHealthFacility);
+      localStorage.setItem('claimHealthFacility', JSON.stringify(this.props.claimHealthFacility));
+    }
+    if (this.props.claimAdmin) {
+      localStorage.setItem('admin', JSON.stringify(this.props.claimAdmin));
     }
     if (this.props.claim_uuid) {
       this.setState(
@@ -96,6 +99,10 @@ class ClaimForm extends Component {
         (e) => this.props.fetchClaim(this.props.modulesManager, this.props.claim_uuid, this.props.forFeedback),
       );
     }
+  }
+
+  componentWillUnmount() {
+    localStorage.clear();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
