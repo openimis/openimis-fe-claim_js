@@ -97,7 +97,7 @@ class ClaimChildPanel extends Component {
     return (
       this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
         id
-      ] || v.price
+        ] || v.price
     );
   };
 
@@ -166,8 +166,8 @@ class ClaimChildPanel extends Component {
       "",
       totalClaimed > 0
         ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-            totalClaimed: formatAmount(intl, totalClaimed),
-          })
+          totalClaimed: formatAmount(intl, totalClaimed),
+        })
         : "",
       "",
     ];
@@ -204,6 +204,7 @@ class ClaimChildPanel extends Component {
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
           value={i.priceAsked}
+          decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -222,8 +223,8 @@ class ClaimChildPanel extends Component {
       preHeaders.push(
         totalClaimed > 0
           ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
-              totalApproved: formatAmount(intl, totalApproved),
-            })
+            totalApproved: formatAmount(intl, totalApproved),
+          })
           : "",
       );
 
@@ -241,6 +242,7 @@ class ClaimChildPanel extends Component {
           <AmountInput
             readOnly={!forReview && readOnly}
             value={i.priceApproved}
+            decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
@@ -250,6 +252,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push((i, idx) => (
         <AmountInput
           readOnly={true}
+          decimal={true}
           value={i.priceValuated}
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
