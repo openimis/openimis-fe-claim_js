@@ -190,6 +190,14 @@ function reducer(
         fetchingLastClaimAt: false,
         errorLastClaimAt: formatServerError(action.payload),
       };
+    case "CLEAR_CLAIM_LAST_CLAIM_AT_REQ":
+      return {
+        ...state,
+        fetchingLastClaimAt: false,
+        fetchedLastClaimAt: false,
+        lastClaimAt: null,
+        errorLastClaimAt: null,
+      };
     case "CLAIM_CLAIM_CODE_COUNT_REQ":
       return {
         ...state,

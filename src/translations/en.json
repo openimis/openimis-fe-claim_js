@@ -208,6 +208,7 @@
   "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header": "Policy Information",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.header": "Insuree Last Visit",
   "ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim": "No Other Visit (Claim)",
+  "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit": "This is the last visit (Claim)",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.claimCode": "Claim No.",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtFrom": "Visit Date From",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtTo": "Visit Date To",

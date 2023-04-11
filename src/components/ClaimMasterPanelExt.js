@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { Grid, Typography, Divider } from "@material-ui/core";
 import { PublishedComponent, FormattedMessage, ProgressOrError, TextInput } from "@openimis/fe-core";
-import { fetchLastClaimAt } from "../actions";
+import {clearLastClaimAt, fetchLastClaimAt} from "../actions";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
@@ -13,6 +13,7 @@ const styles = (theme) => ({
 
 class ClaimMasterPanelExt extends Component {
   componentDidMount() {
+    this.props.clearLastClaimAt();
     const { claim } = this.props;
     if (!!claim && !!claim.insuree && !!claim.healthFacility) {
       this.props.fetchLastClaimAt(claim);
@@ -33,6 +34,10 @@ class ClaimMasterPanelExt extends Component {
     ) {
       this.props.fetchLastClaimAt(claim);
     }
+  }
+
+  componentWillUnmount() {
+    this.props.clearLastClaimAt();
   }
 
   render() {
@@ -62,7 +67,10 @@ class ClaimMasterPanelExt extends Component {
           {!!fetchedLastClaimAt && !lastClaimAt && (
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
           )}
-          {!!fetchedLastClaimAt && !!lastClaimAt && (
+          {!!fetchedLastClaimAt && lastClaimAt?.uuid === claim.uuid && (
+            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
+          )}
+          {!!fetchedLastClaimAt && !!lastClaimAt && lastClaimAt?.uuid !== claim.uuid && (
             <Grid container>
               <Grid xs={4} item className={classes.item}>
                 <TextInput
@@ -106,7 +114,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ fetchLastClaimAt }, dispatch);
+  return bindActionCreators({ fetchLastClaimAt, clearLastClaimAt }, dispatch);
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanelExt)));
