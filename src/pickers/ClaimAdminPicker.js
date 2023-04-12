@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
-import { useModulesManager, useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
+import {
+  useModulesManager,
+  useTranslations,
+  Autocomplete,
+  useGraphqlQuery,
+} from "@openimis/fe-core";
 
 
 const ClaimAdminPicker = (props) => {
@@ -21,6 +27,9 @@ const ClaimAdminPicker = (props) => {
     region,
     district,
   } = props;
+  const userHealthFacilityId = useSelector((state) =>
+    state?.loc?.userHealthFacilityFullPath?.uuid
+  );
 
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
@@ -56,7 +65,12 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString, region_uuid: region?.uuid, district_uuid: district?.uuid },
+    {
+      hf: userHealthFacilityId || hfFilter?.uuid,
+      search: searchString,
+      region_uuid: region?.uuid,
+      district_uuid: district?.uuid
+    },
   );
 
   return (
