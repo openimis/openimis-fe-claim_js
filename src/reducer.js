@@ -33,7 +33,6 @@ function reducer(
     fetchedClaimCodeCount: false,
     claimCodeCount: null,
     errorClaimCodeCount: null,
-    availablehealthFacilities: [],
     healthFacilities: {
       availableHealthFacilities: [],
       isFetching: false,
