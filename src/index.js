@@ -15,6 +15,9 @@ import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
 import reducer from "./reducer";
+import { decodeId } from "@openimis/fe-core";
+import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
+
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -25,6 +28,21 @@ const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
   "reducers": [{ key: "claim", reducer }],
+  "reports": [
+    {
+      key: "claim_percentage_referrals",
+      component: ClaimPercentageReferralsReport,
+      isValid: (values) => values.region && values.district && values.dateStart && values.dateEnd,
+      getParams: (values) => {
+        const params = {}
+        params.region_id = decodeId(values.region.id);
+        params.district_id = decodeId(values.district.id);
+        params.date_start = values.dateStart;
+        params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+  ],
   "refs": [
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
     { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
