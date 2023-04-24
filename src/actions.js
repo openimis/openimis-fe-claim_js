@@ -294,18 +294,31 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
 }
 
 export function fetchLastClaimAt(claim) {
+  let claimFilters = [
+    `insuree_ChfId: "${claim.insuree.chfId}"`,
+    "first: 1",
+    `status_Gt: 2`,
+    `orderBy: "-dateFrom"`,
+  ];
+
+  if (claim.status > 2) {
+    claimFilters.push(`dateFrom_Lt: "${claim.dateFrom}"`);
+  }
+
   const payload = formatPageQuery(
     "claims",
-    [
-      `insuree_ChfId: "${claim.insuree.chfId}"`,
-      `codeIsNot: "${claim.code}"`,
-      `healthFacility_Uuid: "${claim.healthFacility.uuid}"`,
-      "first: 1",
-      `orderBy: "-dateFrom"`,
-    ],
-    ["code", "dateFrom", "dateTo"],
+    claimFilters,
+    ["code", "dateFrom", "dateTo", "uuid"],
   );
   return graphql(payload, "CLAIM_LAST_CLAIM_AT");
+}
+
+export function clearLastClaimAt() {
+  return function (dispatch) {
+    dispatch({
+      type: "CLEAR_CLAIM_LAST_CLAIM_AT"
+    });
+  };
 }
 
 export function fetchClaimOfficers(mm, extraFragment, variables) {
@@ -329,26 +342,6 @@ export function fetchClaimOfficers(mm, extraFragment, variables) {
     variables,
     "CLAIM_ENROLMENT_OFFICERS",
     { skip: true },
-  )
-}
-
-export function fetchAvailableHealthFacilities(mm, variables){
-  return graphqlWithVariables(
-    `
-    query HealthFacilityPicker ($str: String, $region: String, $district: [String], $level: String) {
-      healthFacilities: healthFacilitiesStr(first: 20, str: $str, regionUuid: $region, districtsUuids: $district, level: $level) {
-        edges {
-          node {
-            uuid
-            code
-            location {uuid, parent { uuid }}
-          }
-        }
-      }
-    }
-    `,
-    variables,
-    "CLAIM_HEALTH_FACILITIES",
   )
 }
 

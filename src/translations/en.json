@@ -208,6 +208,7 @@
   "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header": "Policy Information",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.header": "Insuree Last Visit",
   "ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim": "No Other Visit (Claim)",
+  "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit": "This is the last visit (Claim)",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.claimCode": "Claim No.",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtFrom": "Visit Date From",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtTo": "Visit Date To",
@@ -229,5 +230,9 @@
   "claim.ClaimFilter.processedDateTo": "Processed To",
   "claim.claimSummaries.processedDate": "Processed On",
   "claim.edit.items.pricevaluated": "Valuated",
-  "claim.edit.services.pricevaluated": "Valuated"
+  "claim.edit.services.pricevaluated": "Valuated",
+  "claim.ClaimPercentageReferralsReport.region": "Region",
+  "claim.ClaimPercentageReferralsReport.district": "District",
+  "claim.ClaimPercentageReferralsReport.dateStart": "Date From",
+  "claim.ClaimPercentageReferralsReport.dateEnd": "Date To"
 }

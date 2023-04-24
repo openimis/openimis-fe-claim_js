@@ -7,6 +7,8 @@ export const APPROVAL_STATUS = [1, 2];
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 
+export const MODULE_NAME = "claim";
+
 export const RIGHT_CLAIM = 111000;
 export const RIGHT_SEARCH = 111001;
 export const RIGHT_ADD = 111002;

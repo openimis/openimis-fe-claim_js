@@ -33,7 +33,6 @@ function reducer(
     fetchedClaimCodeCount: false,
     claimCodeCount: null,
     errorClaimCodeCount: null,
-    availablehealthFacilities: [],
     healthFacilities: {
       availableHealthFacilities: [],
       isFetching: false,
@@ -190,6 +189,14 @@ function reducer(
         fetchingLastClaimAt: false,
         errorLastClaimAt: formatServerError(action.payload),
       };
+    case "CLEAR_CLAIM_LAST_CLAIM_AT_REQ":
+      return {
+        ...state,
+        fetchingLastClaimAt: false,
+        fetchedLastClaimAt: false,
+        lastClaimAt: null,
+        errorLastClaimAt: null,
+      };
     case "CLAIM_CLAIM_CODE_COUNT_REQ":
       return {
         ...state,
@@ -300,34 +307,6 @@ function reducer(
           },
         },
       };
-    case "CLAIM_HEALTH_FACILITIES_REQ":
-      return {
-        ...state,
-        healthFacilities: {
-          availableHealthFacilities: null,
-          isFetching: true,
-          isFetched: false,
-          error: null,
-        },
-      };
-    case "CLAIM_HEALTH_FACILITIES_RESP":
-      return {
-        ...state,
-        healthFacilities: {
-          availableHealthFacilities: parseData(action.payload.data.healthFacilities),
-          isFetching: false,
-          isFetched: true,
-          error: formatGraphQLError(action.payload),
-        },
-      };
-    case "CLAIM_HEALTH_FACILITIES_ERR":
-      return {
-        ...state,
-        healthFacilities: {
-          isFetching: false,
-          error: formatServerError(action.payload),
-        },
-    };
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);
     case "CLAIM_MUTATION_ERR":

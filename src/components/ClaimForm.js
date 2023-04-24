@@ -75,9 +75,8 @@ class ClaimForm extends Component {
 
   _newClaim() {
     let claim = {};
-    claim.healthFacility =
-      this.state && this.state.claim ? this.state.claim.healthFacility : this.props.claimHealthFacility;
-    claim.admin = this.state && this.state.claim ? this.state.claim.admin : this.props.claimAdmin;
+    claim.healthFacility = this?.state?.claim?.healthFacility ?? this.props.claimHealthFacility ?? JSON.parse(localStorage.getItem('claimHealthFacility'));
+    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem('admin'));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -89,6 +88,10 @@ class ClaimForm extends Component {
   componentDidMount() {
     if (!!this.props.claimHealthFacility) {
       this.props.claimHealthFacilitySet(this.props.claimHealthFacility);
+      localStorage.setItem('claimHealthFacility', JSON.stringify(this.props.claimHealthFacility));
+    }
+    if (this.props.claimAdmin) {
+      localStorage.setItem('admin', JSON.stringify(this.props.claimAdmin));
     }
     if (this.props.claim_uuid) {
       this.setState(
@@ -96,6 +99,10 @@ class ClaimForm extends Component {
         (e) => this.props.fetchClaim(this.props.modulesManager, this.props.claim_uuid, this.props.forFeedback),
       );
     }
+  }
+
+  componentWillUnmount() {
+    localStorage.clear();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -140,6 +147,7 @@ class ClaimForm extends Component {
 
   canSave = (forFeedback) => {
     if (!this.state.claim.code) return false;
+    if (this.state.lockNew) return false;
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
@@ -191,7 +199,7 @@ class ClaimForm extends Component {
 
   _save = (claim) => {
     this.setState(
-      { lockNew: !claim.uuid }, // avoid duplicates
+      { lockNew: true }, // avoid duplicates
       (e) => this.props.save(claim),
     );
   };
@@ -291,6 +299,7 @@ class ClaimForm extends Component {
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              openDirty={save}
               {...editingProps}
             />
             <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps}/>

@@ -266,6 +266,9 @@ class ClaimMasterPanel extends FormPanel {
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
                 value={!!this.state.data ? this.state.data.code : null}
+                inputProps={{
+                  "maxLength": this.codeMaxLength,
+                }}
               />
             </Grid>
           }

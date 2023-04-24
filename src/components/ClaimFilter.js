@@ -225,6 +225,7 @@ class Head extends Component {
                 onChange={this._onChangeClaimAdmin}
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
+                required={true}
               />
             </Grid>
           }
