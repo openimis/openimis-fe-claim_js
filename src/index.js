@@ -17,6 +17,7 @@ import messages_en from "./translations/en.json";
 import reducer from "./reducer";
 import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
+import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
@@ -37,6 +38,32 @@ const DEFAULT_CONFIG = {
         const params = {}
         params.region_id = decodeId(values.region.id);
         params.district_id = decodeId(values.district.id);
+        params.date_start = values.dateStart;
+        params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+    {
+      key: "claims_overview",
+      component: ClaimsOverviewReport,
+      isValid: (values) => values.dateStart && values.dateEnd,
+      getParams: (values) => {
+        const params = {}
+        if (!!values.region) {
+          params.region_id = decodeId(values.region.id);
+        }
+        if (!!values.district) {
+          params.district_id = decodeId(values.district.id);
+        }
+        if (!!values.product) {
+          params.product_id = decodeId(values.product.id);
+        }
+        if (!!values.hf) {
+          params.hf_id = decodeId(values.hf.id);
+        }
+        if (!!values.status) {
+          params.claim_status = values.status;
+        }
         params.date_start = values.dateStart;
         params.date_end = values.dateEnd;
         return params;

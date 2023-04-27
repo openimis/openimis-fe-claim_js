@@ -234,5 +234,18 @@
   "claim.ClaimPercentageReferralsReport.region": "Region",
   "claim.ClaimPercentageReferralsReport.district": "District",
   "claim.ClaimPercentageReferralsReport.dateStart": "Date From",
-  "claim.ClaimPercentageReferralsReport.dateEnd": "Date To"
+  "claim.ClaimPercentageReferralsReport.dateEnd": "Date To",
+  "claim.ClaimsOverviewReport.dateStart": "Date From",
+  "claim.ClaimsOverviewReport.dateEnd": "Date To",
+  "claim.ClaimsOverviewReport.product": "Product",
+  "claim.ClaimsOverviewReport.region": "Region",
+  "claim.ClaimsOverviewReport.district": "District",
+  "claim.ClaimsOverviewReport.hf": "Health Facility",
+  "claim.ClaimsOverviewReport.claimStatus": "Claim Status",
+  "claim.ClaimsOverviewReport.claimStatus.null": "Any",
+  "claim.ClaimsOverviewReport.claimStatus.1": "Rejected",
+  "claim.ClaimsOverviewReport.claimStatus.2": "Entered",
+  "claim.ClaimsOverviewReport.claimStatus.4": "Checked",
+  "claim.ClaimsOverviewReport.claimStatus.8": "Processed",
+  "claim.ClaimsOverviewReport.claimStatus.16": "Valuated"
 }
