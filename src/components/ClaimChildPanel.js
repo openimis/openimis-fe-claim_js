@@ -276,7 +276,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={!forReview && readOnly}
+            readOnly={true}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
