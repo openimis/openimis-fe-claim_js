@@ -19,9 +19,9 @@ const styles = theme => ({
     custompanel : theme.customPanel,
 });
 
-class ClaimChildPanelHeader extends Component {
+class ClaimChildPanelHeader extends Component { //reject all items/services button
     render() {
-      return <Fragment>{this.props.text} <Button  onClick={this.props.fnRejectAll} color="primary">
+      return <Fragment>{this.props.text} <Button  onClick={this.props.fnRejectAll} color="primary"> 
       Reject all {this.props.type}
     </Button></Fragment>;
     }
@@ -71,7 +71,6 @@ class ClaimChildPanel extends Component {
 
     componentDidMount() {
         this.setState({ data: this.initData() });
-        //this.changeItemServicesToReject();
         window.a = this.changeItemServicesToReject;
     }
 
@@ -93,7 +92,6 @@ class ClaimChildPanel extends Component {
     }
 
     _updateData = (idx, attr, v) => {
-        console.log('')
         const data = [...this.state.data];
         data[idx][attr] = v;
         if (!this.props.forReview && data.length === (idx + 1)) {
@@ -155,11 +153,7 @@ class ClaimChildPanel extends Component {
        
         this._onEditedChanged(data);
         if(this.isServiceSelected(v, attr)){
-            alert('already selected');
-            //data[idx].item = null;
-            //this._onDelete(idx);
-            // let items = this.props.edited.items;
-            // this.props.edited.items = [];
+            alert('already selected'); //todo, return material dialog
             this._onDelete(idx);
             return; 
         };
@@ -190,8 +184,6 @@ class ClaimChildPanel extends Component {
         let items = rows ? rows : [];
         let data = [...this.state.data];
         for(var i=0; i<items.length; i++){
-            // data = this._updateData(i, 'rejectionReason', -1);
-            // this._onEditedChanged(data);
             this._onChangeApproval(i,'status', 2);
             this.formatRejectedReason(data,i);
         }

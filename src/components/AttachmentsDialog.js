@@ -66,7 +66,7 @@ function AttachmentDialogGetUrlParameter(sParam) {
     }
 }
 
-class AttachmentsDialogPreview extends Component {
+class AttachmentsDialogPreview extends Component { //this component is carousel 
   attachments = [];
   state = {
       visible: false,
@@ -79,7 +79,7 @@ class AttachmentsDialogPreview extends Component {
       if(open_attachment){
           this.setState({visible: !this.state.visible})
       }
-      //detecting arrow key presses
+      //detecting arrow key presses for carousel
       document.addEventListener('keydown', function (e) {
           if (e.keyCode == 37) {
               thisRef.changeImgIndex(thisRef.state.i - 1); //arrow left
@@ -101,7 +101,7 @@ class AttachmentsDialogPreview extends Component {
       window.open(newLocation, '_blank')
   }
 
-  changeImgIndex = (i) => {
+  changeImgIndex = (i) => { 
       //const {attachments} = this.props;
       let len = this.attachments.length;
       let j = Math.abs(i) %  len; //loop betn 0 to len-1 by mod division
@@ -133,24 +133,15 @@ class AttachmentsDialogPreview extends Component {
   renderPdfBlob = (i) => {
       var thisRef = this;
       var attachment = this.attachments[i];
-      var pdfUrl='http://localhost:3000/api/claim/attach/?id=b5d814fe-c68f-49ca-80d6-ce34923dfa14';
+      //var pdfUrl='http://${url}api/claim/attach/?id=b5d814fe-c68f-49ca-80d6-ce34923dfa14'; // extracting blob pdf from claim page
+      var pdfUrl = new URL(`${window.location.origin}${baseApiUrl}/claim/?id=${this.props.claim.uuid}`);
       pdfUrl = this.getUrl(attachment);
-
       var xhr = new XMLHttpRequest();
     xhr.open('GET', pdfUrl, true);
     xhr.responseType = 'blob';
-
     xhr.onload = function(e) {
-      
       if (this['status'] == 200) {          
-        //var blob = new Blob([this['response']], {type: 'application/pdf'});
-        //var url = URL.createObjectURL(blob);
-        //var printWindow = window.open(url, '', 'width=800,height=500');
-        //printWindow.print()
-
-        var file = window.URL.createObjectURL(this.response);
-        var iframe=null;
-
+        var file = window.URL.createObjectURL(this.response); //blob object {type : 'application/pdf' }
           thisRef.forcePdfTimeoutPreview(file);
         while(false){ //didnot work 
         }
@@ -170,7 +161,6 @@ class AttachmentsDialogPreview extends Component {
           <span>{attachment.filename} {attachment.mime}</span><br/>
           {attachment.mime && attachment.mime.indexOf('image') > -1 &&
               <img src={this.getUrl(attachment)} style={{height:"80vh", width:"80vw", transform: `scale(${this.state.scale})`}}/> 
-              
           }
           {attachment.mime && attachment.mime.indexOf('image') == -1 &&
               // prevents immediate call for argument passed func,
@@ -184,7 +174,6 @@ class AttachmentsDialogPreview extends Component {
                       frameBorder="0"
                       scrolling="auto"
                   ></iframe> 
-
                   {attachment.mime.indexOf('pdf') > -1  &&  this.renderPdfBlob(i)
                    }
                   </div>
@@ -203,9 +192,6 @@ class AttachmentsDialogPreview extends Component {
       background: "#000000dd",
       zIndex: "9999"
   };
-
-
-    
 
 render() {
     const {urls, attachments} = this.props; //extract url from images
@@ -478,7 +464,7 @@ class AttachmentsDialog extends Component {
                 </Grid>
                    
                 <AttachmentsDialogPreview  
-                        attachments={claimAttachments} downloadAttachment={this.download}/>
+                        attachments={claimAttachments} downloadAttachment={this.download} claim={claim}/>
                 </DialogTitle>
         <Divider />
         <DialogContent className={classes.dialogContent}>

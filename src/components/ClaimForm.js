@@ -21,13 +21,10 @@ import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_PRINT } from "../constants";
 
 function ClaimFormGetUrlParameter(sParam) {
-    console.log('ClaimFormGetUrlParameter');
-  
       var sPageURL = decodeURIComponent(window.location.search.substring(1)),
           sURLVariables = sPageURL.split('&'),
           sParameterName,
           i;
-  
       for (i = 0; i < sURLVariables.length; i++) {
           sParameterName = sURLVariables[i].split('=');
   

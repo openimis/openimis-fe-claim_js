@@ -43,7 +43,7 @@ class ClaimSearcher extends Component {
         this.highlightAltInsurees = props.modulesManager.getConf("fe-claim", "claimFilter.highlightAltInsurees", true);
         this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
         this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
-        this.claimSn = 0;
+        this.claimSn = 0; //adding S.N in table searcher
     }
 
     canSelectAll = (selection) => this.props.claims.map(s => s.id).filter(s => !selection.map(s => s.id).includes(s)).length
@@ -102,46 +102,6 @@ class ClaimSearcher extends Component {
 
     preHeaders = (selection) => {
         var result = selection.length ?
-            // [
-            //     //{formatMessageWithValues(intl, "claim", "claimSummaries", { count })}
-            //     <Typography noWrap={true}>
-            //         <FormattedMessage
-            //             module="claim"
-            //                 id="claimSummaries"
-            //             values={{
-            //                 count: <b>{formatAmount(this.props.intl,   this.props.claimsPageInfo.totalCount )}</b>,
-            //             }}
-            //         />
-            //     </Typography>,
-            //          <Typography noWrap={true}>
-            //          <FormattedMessage
-            //              module="claim"
-            //                  id="claimSummaries.selection.claimed"
-            //              values={{
-            //                  claimed: <b>{formatAmount(this.props.intl, selection.reduce((t, v) => t + v.claimed, 0))}</b>,
-            //              }}
-            //          />
-            //      </Typography>,
-            //     <Typography noWrap={true}>
-            //         <FormattedMessage
-            //             module="claim"
-            //                 id="claimSummaries.selection.claimed"
-            //             values={{
-            //                 claimed: <b>{formatAmount(this.props.intl, selection.reduce((t, v) => t + v.claimed, 0))}</b>,
-            //             }}
-            //         />
-            //     </Typography>,
-            //     <Typography noWrap={true}>
-            //         <FormattedMessage
-            //             module="claim"
-            //             id="claimSummaries.selection.approved"
-            //             values={{
-            //                 approved: <b>{formatAmount(this.props.intl, selection.reduce((t, v) => t + v.approved, 0))}</b>,
-            //             }}
-            //         />
-            //     </Typography>,
-            //     , '', ''
-            // ]
             [
                 '', '', '', '', '', '',
                 <Typography noWrap={true}>
@@ -227,7 +187,7 @@ class ClaimSearcher extends Component {
         return [, , , , , , "right", "right"]
     }
 
-    getItemSn() {
+    getItemSn() { //get item serial number
         this.claimSn += 1;
         return this.claimSn;
     }
