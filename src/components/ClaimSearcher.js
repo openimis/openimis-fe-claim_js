@@ -75,12 +75,16 @@ class ClaimSearcher extends Component {
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
-      prms.push(`first: ${state.pageSize}`);
+      if (!state.beforeCursor && !state.afterCursor) {
+        prms.push(`first: ${state.pageSize}`);
+      }
       if (!!state.afterCursor) {
         prms.push(`after: "${state.afterCursor}"`);
+        prms.push(`first: ${state.pageSize}`);
       }
       if (!!state.beforeCursor) {
         prms.push(`before: "${state.beforeCursor}"`);
+        prms.push(`last: ${state.pageSize}`);
       }
     }
     return prms;
@@ -114,7 +118,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.claimed ? parseFloat(v.claimed) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.claimed) {
+                          return acc + parseFloat(v.claimed);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
@@ -130,7 +140,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.approved ? parseFloat(v.approved) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.approved) {
+                          return acc + parseFloat(v.approved);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
@@ -275,6 +291,9 @@ class ClaimSearcher extends Component {
     if (!count) {
       count = claimsPageInfo.totalCount;
     }
+
+    count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
     return (
       <Fragment>
         <PublishedComponent

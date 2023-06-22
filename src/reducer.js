@@ -33,6 +33,21 @@ function reducer(
     fetchedClaimCodeCount: false,
     claimCodeCount: null,
     errorClaimCodeCount: null,
+    healthFacilities: {
+      availableHealthFacilities: [],
+      isFetching: false,
+      isFetched: false,
+      error: null,
+    },
+    claimOfficers: {
+      items: [],
+      isFetching: false,
+      isFetched: false,
+      pageInfo: {
+        totalCount: 0,
+      },
+      error: null,
+    },
   },
   action,
 ) {
@@ -121,6 +136,14 @@ function reducer(
         fetchingClaims: false,
         errorClaims: formatServerError(action.payload),
       };
+    case "CLAIM_CLAIM_CLEAR":
+      return {
+        ...state,
+        fetchingClaim: false,
+        fetchedClaim: false,
+        claim: null,
+        errorClaim: null,
+      };
     case "CLAIM_CLAIM_REQ":
       return {
         ...state,
@@ -166,6 +189,14 @@ function reducer(
         fetchingLastClaimAt: false,
         errorLastClaimAt: formatServerError(action.payload),
       };
+    case "CLEAR_CLAIM_LAST_CLAIM_AT_REQ":
+      return {
+        ...state,
+        fetchingLastClaimAt: false,
+        fetchedLastClaimAt: false,
+        lastClaimAt: null,
+        errorLastClaimAt: null,
+      };
     case "CLAIM_CLAIM_CODE_COUNT_REQ":
       return {
         ...state,
@@ -186,6 +217,95 @@ function reducer(
         ...state,
         fetchingClaimCodeCount: false,
         errorClaimCodeCount: formatServerError(action.payload),
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_REQ":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: true,
+        },
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_RESP":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: false,
+          isFetched: true,
+          pageInfo: pageInfo(action.payload.data.claimOfficers),
+          items: parseData(action.payload.data.claimOfficers),
+        },
+      };
+    case "CLAIM_ENROLMENT_OFFICERS_ERR":
+      return {
+        ...state,
+        claimOfficers: {
+          ...state.claimOfficers,
+          isFetching: false,
+          isFetched: false,
+          error: formatGraphQLError(action.payload),
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_REQ":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_RESP":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: action.payload?.data.isValid,
+            validationError: formatGraphQLError(action.payload),
+          },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_ERR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: false,
+            validationError: formatServerError(action.payload),
+          },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_CLEAR":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: true,
+            isValid: false,
+            validationError: null,
+          },
+        },
+      };
+    case "CLAIM_CODE_FIELDS_VALIDATION_SET_VALID":
+      return {
+        ...state,
+        validationFields: {
+          ...state.validationFields,
+          claimCode: {
+            isValidating: false,
+            isValid: true,
+            validationError: null,
+          },
+        },
       };
     case "CLAIM_MUTATION_REQ":
       return dispatchMutationReq(state, action);

@@ -7,6 +7,7 @@ import {
   formatMutation,
   decodeId,
   openBlob,
+  graphqlWithVariables,
   formatJsonField,
   formatGQLString,
 } from "@openimis/fe-core";
@@ -37,9 +38,34 @@ export function selectRegion(region) {
   };
 }
 
-export function validateClaimCode(code) {
-  const payload = formatQuery("claims", [`code: "${code}"`], ["totalCount"]);
-  return graphql(payload, "CLAIM_CLAIM_CODE_COUNT");
+export function claimCodeValidationCheck(mm, variables) {
+  return graphqlWithVariables(
+    `
+    query ($claimCode: String!) {
+      isValid: validateClaimCode(claimCode: $claimCode)
+ }
+    `,
+    variables,
+    `CLAIM_CODE_FIELDS_VALIDATION`,
+  );
+}
+
+export function claimCodeValidationClear() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_CLEAR` });
+  };
+}
+
+export function claimCodeSetValid() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CODE_FIELDS_VALIDATION_SET_VALID` });
+  };
+}
+
+export function clearClaim() {
+  return (dispatch) => {
+    dispatch({ type: `CLAIM_CLAIM_CLEAR` });
+  };
 }
 
 export function fetchClaimAttachments(claim) {
@@ -256,10 +282,10 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, service {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
+        "id, service {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
       "items{" +
-        "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, explanation, justification, rejectionReason, status" +
+        "id, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
     );
   }
@@ -268,18 +294,55 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
 }
 
 export function fetchLastClaimAt(claim) {
+  let claimFilters = [
+    `insuree_ChfId: "${claim.insuree.chfId}"`,
+    "first: 1",
+    `status_Gt: 2`,
+    `orderBy: "-dateFrom"`,
+  ];
+
+  if (claim.status > 2) {
+    claimFilters.push(`dateFrom_Lt: "${claim.dateFrom}"`);
+  }
+
   const payload = formatPageQuery(
     "claims",
-    [
-      `insuree_ChfId: "${claim.insuree.chfId}"`,
-      `codeIsNot: "${claim.code}"`,
-      `healthFacility_Uuid: "${claim.healthFacility.uuid}"`,
-      "first: 1",
-      `orderBy: "-dateFrom"`,
-    ],
-    ["code", "dateFrom", "dateTo"],
+    claimFilters,
+    ["code", "dateFrom", "dateTo", "uuid"],
   );
   return graphql(payload, "CLAIM_LAST_CLAIM_AT");
+}
+
+export function clearLastClaimAt() {
+  return function (dispatch) {
+    dispatch({
+      type: "CLEAR_CLAIM_LAST_CLAIM_AT"
+    });
+  };
+}
+
+export function fetchClaimOfficers(mm, extraFragment, variables) {
+  return graphqlWithVariables(
+    `
+    query ClaimOfficerPicker ($search: String) {
+      claimOfficers(search: $search, first: 20) {
+        edges {
+          node {
+            id
+            uuid
+            code
+            lastName
+            otherNames
+            ${extraFragment ?? ""}
+          }
+        }
+      }
+    }
+  `,
+    variables,
+    "CLAIM_ENROLMENT_OFFICERS",
+    { skip: true },
+  )
 }
 
 export function submit(claims, clientMutationLabel, clientMutationDetails = null) {

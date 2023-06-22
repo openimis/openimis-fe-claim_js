@@ -15,11 +15,11 @@ import {
   journalize,
   coreConfirm,
   Helmet,
+  clearCurrentPaginationPage,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-
 import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE } from "../constants";
+import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -76,8 +76,6 @@ class HealthFacilitiesPage extends Component {
       );
     }
   };
-
-  filtersToQueryParams = (filters) => {};
 
   submitAll = (selection) => {
     let filters = this.props.selectedFilters;
@@ -141,6 +139,20 @@ class HealthFacilitiesPage extends Component {
     return true;
   };
 
+  componentDidMount = () => {
+    const { module } = this.props;
+    if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+  };
+
+  componentWillUnmount = () => {
+    const { location, history } = this.props;
+    const {
+      location: { pathname },
+    } = history;
+    const urlPath = location.pathname;
+    if (!pathname.includes(urlPath)) this.props.clearCurrentPaginationPage();
+  };
+
   render() {
     const { intl, classes, rights, generatingPrint } = this.props;
     if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
@@ -202,6 +214,7 @@ const mapStateToProps = (state) => ({
   confirmed: state.core.confirmed,
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
+  module: state.core?.savedPagination?.module,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -213,6 +226,7 @@ const mapDispatchToProps = (dispatch) => {
       submit,
       submitAll,
       del,
+      clearCurrentPaginationPage,
     },
     dispatch,
   );

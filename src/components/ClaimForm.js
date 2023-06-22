@@ -75,9 +75,8 @@ class ClaimForm extends Component {
 
   _newClaim() {
     let claim = {};
-    claim.healthFacility =
-      this.state && this.state.claim ? this.state.claim.healthFacility : this.props.claimHealthFacility;
-    claim.admin = this.state && this.state.claim ? this.state.claim.admin : this.props.claimAdmin;
+    claim.healthFacility = this?.state?.claim?.healthFacility ?? this.props.claimHealthFacility ?? JSON.parse(localStorage.getItem('claimHealthFacility'));
+    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem('admin'));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -89,6 +88,10 @@ class ClaimForm extends Component {
   componentDidMount() {
     if (!!this.props.claimHealthFacility) {
       this.props.claimHealthFacilitySet(this.props.claimHealthFacility);
+      localStorage.setItem('claimHealthFacility', JSON.stringify(this.props.claimHealthFacility));
+    }
+    if (this.props.claimAdmin) {
+      localStorage.setItem('admin', JSON.stringify(this.props.claimAdmin));
     }
     if (this.props.claim_uuid) {
       this.setState(
@@ -96,6 +99,10 @@ class ClaimForm extends Component {
         (e) => this.props.fetchClaim(this.props.modulesManager, this.props.claim_uuid, this.props.forFeedback),
       );
     }
+  }
+
+  componentWillUnmount() {
+    localStorage.clear();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -140,6 +147,8 @@ class ClaimForm extends Component {
 
   canSave = (forFeedback) => {
     if (!this.state.claim.code) return false;
+    if (this.state.lockNew) return false;
+    if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (!this.state.claim.insuree) return false;
@@ -190,7 +199,7 @@ class ClaimForm extends Component {
 
   _save = (claim) => {
     this.setState(
-      { lockNew: !claim.uuid }, // avoid duplicates
+      { lockNew: true }, // avoid duplicates
       (e) => this.props.save(claim),
     );
   };
@@ -246,6 +255,27 @@ class ClaimForm extends Component {
         icon: <AttachIcon />,
       });
     }
+
+    const editingProps = {
+              edited_id: claim_uuid,
+              edited: this.state.claim,
+              reset: this.state.reset,
+              back: back,
+              forcedDirty: this.state.forcedDirty,
+              add: !!add && !this.state.newClaim ? this._add : null,
+              save: !!save ? this._save : null,
+              fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+              fabAction: this._deliverReview,
+              fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+              canSave: (e) => this.canSave(forFeedback),
+              reload: (claim_uuid || readOnly) && this.reload,
+              actions: actions,
+              readOnly: readOnly,
+              forReview: forReview,
+              forFeedback: forFeedback,
+              onEditedChanged: this.onEditedChanged,
+    };
+
     return (
       <Fragment>
         <Helmet
@@ -265,29 +295,14 @@ class ClaimForm extends Component {
             />
             <Form
               module="claim"
-              edited_id={claim_uuid}
-              edited={this.state.claim}
-              reset={this.state.reset}
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
-              back={back}
-              forcedDirty={this.state.forcedDirty}
-              add={!!add && !this.state.newClaim ? this._add : null}
-              save={!!save ? this._save : null}
-              fab={forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />}
-              fabAction={this._deliverReview}
-              fabTooltip={formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip")}
-              canSave={(e) => this.canSave(forFeedback)}
-              reload={(claim_uuid || readOnly) && this.reload}
-              actions={actions}
-              readOnly={readOnly}
-              forReview={forReview}
-              forFeedback={forFeedback}
               HeadPanel={ClaimMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              onEditedChanged={this.onEditedChanged}
+              openDirty={save}
+              {...editingProps}
             />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} />
+            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps}/>
           </Fragment>
         )}
       </Fragment>
@@ -307,6 +322,7 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
+  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid
 });
 
 const mapDispatchToProps = (dispatch) => {
