@@ -96,3 +96,4 @@ None
 - `canSaveClaimWithoutServiceNorItem`, wherever user can save a claim without service nor item, default: true
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
+- `claimValidationMultipleServicesExplanationRequired`, validate if user provided explanation for service with quantity>1. Default false.
