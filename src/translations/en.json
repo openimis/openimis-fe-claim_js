@@ -234,5 +234,6 @@
   "claim.ClaimPercentageReferralsReport.region": "Region",
   "claim.ClaimPercentageReferralsReport.district": "District",
   "claim.ClaimPercentageReferralsReport.dateStart": "Date From",
-  "claim.ClaimPercentageReferralsReport.dateEnd": "Date To"
+  "claim.ClaimPercentageReferralsReport.dateEnd": "Date To",
+  "claim.ClaimMasterPanel.referHFLabel": "Referal HF"
 }

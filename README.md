@@ -96,3 +96,4 @@ None
 - `canSaveClaimWithoutServiceNorItem`, wherever user can save a claim without service nor item, default: true
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
+- `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;

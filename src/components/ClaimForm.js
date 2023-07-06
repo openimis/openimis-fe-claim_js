@@ -71,6 +71,11 @@ class ClaimForm extends Component {
       true,
     );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
+    this.claimTypeReferSymbol = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.claimTypeReferSymbol",
+      'R',
+    );
   }
 
   _newClaim() {
@@ -151,6 +156,7 @@ class ClaimForm extends Component {
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
+    if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -275,7 +281,6 @@ class ClaimForm extends Component {
               forFeedback: forFeedback,
               onEditedChanged: this.onEditedChanged,
     };
-
     return (
       <Fragment>
         <Helmet

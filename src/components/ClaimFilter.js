@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import _debounce from "lodash/debounce";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { injectIntl } from "react-intl";
 import _ from "lodash";
+import _debounce from "lodash/debounce";
+import { injectIntl } from "react-intl";
+
 import { Grid, Divider } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
+
 import {
   formatMessage,
   withModulesManager,
@@ -15,12 +17,7 @@ import {
   AmountInput,
   Contributions,
 } from "@openimis/fe-core";
-import {
-  selectClaimAdmin,
-  selectHealthFacility,
-  selectDistrict,
-  selectRegion
-} from "../actions";
+import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
@@ -267,8 +264,10 @@ const mapDispatchToProps = (dispatch) => {
       selectClaimAdmin,
       selectHealthFacility,
       selectDistrict,
-      selectRegion
-    }, dispatch);
+      selectRegion,
+    },
+    dispatch,
+  );
 };
 
 const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);
@@ -276,8 +275,13 @@ const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);
 class Details extends Component {
   debouncedOnChangeFilter = _debounce(
     this.props.onChangeFilters,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 200),
   );
+
+  _filterTextFieldValue = (k) => {
+    const { filters } = this.props;
+    return !!filters && !!filters[k] ? filters[k].value : "";
+  };
 
   render() {
     const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
@@ -336,7 +340,7 @@ class Details extends Component {
             module="claim"
             label="ClaimFilter.claimNo"
             name="claimNo"
-            value={filters["claimNo"] && filters["claimNo"]["value"]}
+            value={this._filterTextFieldValue("claimNo")}
             onChange={(v) =>
               this.debouncedOnChangeFilter([
                 {
@@ -353,7 +357,7 @@ class Details extends Component {
             module="claim"
             label="ClaimFilter.insureeCHFID"
             name="chfId"
-            value={filters["chfId"] && filters["chfId"]["value"]}
+            value={this._filterTextFieldValue("chfId")}
             onChange={(v) =>
               this.debouncedOnChangeFilter([
                 {
@@ -480,7 +484,7 @@ class Details extends Component {
             <Grid item xs={6} className={classes.item}>
               <PublishedComponent
                 pubRef="core.DatePicker"
-                value={(filters["dateProcessedFrom"] && filters["dateProcessedFrom"]["value"]) || null}
+                value={(filters["processedDateFrom"] && filters["processedDateFrom"]["value"]) || null}
                 module="claim"
                 label="ClaimFilter.processedDateFrom"
                 onChange={(d) =>

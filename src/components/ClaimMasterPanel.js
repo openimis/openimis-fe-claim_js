@@ -61,6 +61,17 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
+    this.allowReferHF = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.referHF",
+      true,
+    );
+    this.claimTypeReferSymbol = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.claimTypeReferSymbol",
+      'R',
+    );
+    this.EMPTY_STRING = ""
   }
 
   componentWillUnmount = () => {
@@ -88,7 +99,7 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-
+  
   render() {
     const {
       intl,
@@ -100,7 +111,8 @@ class ClaimMasterPanel extends FormPanel {
       forFeedback,
       isCodeValid,
       isCodeValidating,
-      codeValidationError }
+      codeValidationError,
+      userHealthFacilityFullPath }
       = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
@@ -244,6 +256,25 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
+        {!!this.allowReferHF && <ControlledField
+          module="claim"
+          id="Claim.referHealthFacility"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="location.HealthFacilityReferPicker"
+                label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom: edited.referTo) ?? this.EMPTY_STRING}
+                reset={reset}
+                readOnly={ro}
+                required={edited.visitType === this.claimTypeReferSymbol ? true : false}
+                filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
+                filterSelectedOptions={true}
+                onChange={(d) => this.updateAttribute("referHF", d)}
+              />
+            </Grid>
+          }
+        />}
         <ControlledField
           module="claim"
           id="Claim.code"

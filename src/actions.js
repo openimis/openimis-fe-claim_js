@@ -195,6 +195,11 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
+  claimTypeReferSymbol = props.modulesManager.getConf(
+    "fe-claim",
+    "claimForm.claimTypeReferSymbol",
+    'R',
+  );
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -211,6 +216,7 @@ export function formatClaimGQL(mm, claim) {
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
+    ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
@@ -265,6 +271,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "adjustment",
     "attachmentsCount",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
+    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),
