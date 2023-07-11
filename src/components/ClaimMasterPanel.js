@@ -59,7 +59,7 @@ class ClaimMasterPanel extends FormPanel {
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.insureePicker",
-      "insuree.InsureeNameByChfIdPicker",
+      "insuree.InsureeChfIdPicker",
     );
     this.allowReferHF = props.modulesManager.getConf(
       "fe-claim",
@@ -152,8 +152,9 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={3} className={classes.item}>
               <PublishedComponent
                 pubRef={this.insureePicker}
-                value={edited.insureeName}
-                onChange={(v, s) => this.updateAttribute("insureeName", v)}
+                value={edited.insuree}
+                reset={reset}
+                onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
               />
