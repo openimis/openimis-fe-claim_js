@@ -13,6 +13,8 @@ import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
+import ClaimFilterByInsureeGender from "./components/ClaimFilterByInsureeGender";
+import ClaimFilterHasAttachments from "./components/ClaimFilterHasAttachments";
 import messages_en from "./translations/en.json";
 import reducer from "./reducer";
 import { decodeId } from "@openimis/fe-core";
@@ -75,6 +77,9 @@ const DEFAULT_CONFIG = {
     { key: "claim.RejectionReasonPicker.projection", ref: null },
     { key: "claim.CreateClaim.feedbackStatus", ref: 1 },
     { key: "claim.CreateClaim.reviewStatus", ref: 1 },
+    { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
+    { key: "claim.ClaimFilterByInsureeGender", ref: ClaimFilterByInsureeGender},
+    { key: "claim.ClaimFilterHasAttachments", ref: ClaimFilterHasAttachments},    
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
   ],
@@ -87,6 +92,8 @@ const DEFAULT_CONFIG = {
   ],
   "core.MainMenu": [ClaimMainMenu],
   "claim.MasterPanel": [ClaimMasterPanelExt],
+  "claim.HealthFacilitiesFilter" :[ClaimFilterByInsureeGender,ClaimFilterHasAttachments],
+  "claim.ReviewsFilter" : [ClaimFilterByInsureeGender,ClaimFilterHasAttachments],
 };
 
 export const ClaimModule = (cfg) => {

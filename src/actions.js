@@ -194,10 +194,14 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(mm, claim) {
+export function formatClaimGQL(modulesManager, claim) {
+  // to simplify GQL and avoid additional coding, claim code is sent, even if autogenerateCode is set to true
+  const claimCodePlaceholder="auto"
+  const isAutogenerateEnabled = modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false)
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    code: "${claim.code}"
+    code: "${isAutogenerateEnabled ? claimCodePlaceholder : claim.code}"
+    autogenerateCode: ${isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
@@ -208,9 +212,10 @@ export function formatClaimGQL(mm, claim) {
     ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
     ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
-    feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
-    reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
+    feedbackStatus: ${modulesManager.getRef("claim.CreateClaim.feedbackStatus")}
+    reviewStatus: ${modulesManager.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
+    ${claim.referHF ? `${handleReferHFType(modulesManager, claim)}${decodeId(claim.referHF.id)}` : ""}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
@@ -220,10 +225,14 @@ export function formatClaimGQL(mm, claim) {
     ${formatDetails("item", claim.items)}
     ${
       !!claim.attachments && !!claim.attachments.length
-        ? `attachments: ${formatAttachments(mm, claim.attachments)}`
+        ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
   `;
+}
+
+function handleReferHFType(modulesManager, claim){
+  return (claim.visitType === modulesManager.getRef("claim.CreateClaim.claimTypeReferSymbol") ? 'referFromId: ' : 'referToId: ')
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
@@ -265,6 +274,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "adjustment",
     "attachmentsCount",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
+    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),

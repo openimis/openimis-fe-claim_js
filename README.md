@@ -97,3 +97,4 @@ None
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
 - `claimValidationMultipleServicesExplanationRequired`, validate if user provided explanation for service with quantity>1. Default false.
+- `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;

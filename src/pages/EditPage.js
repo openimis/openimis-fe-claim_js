@@ -16,13 +16,15 @@ class EditPage extends Component {
   add = () => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
+  autoGenerateClaimCode = this.props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
+
 
   save = (claim) => {
     if (!claim.uuid) {
       this.props.createClaim(
         this.props.modulesManager,
         claim,
-        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: claim.code }),
+        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: this.autoGenerateClaimCode ? "Auto" : claim.code }),
       );
     } else {
       this.props.updateClaim(
