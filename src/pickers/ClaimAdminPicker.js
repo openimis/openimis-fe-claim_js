@@ -1,6 +1,13 @@
-import React, { useState } from "react";
-import { useModulesManager, useTranslations, Autocomplete, useGraphqlQuery } from "@openimis/fe-core";
-import _debounce from "lodash/debounce";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+
+import {
+  useModulesManager,
+  useTranslations,
+  Autocomplete,
+  useGraphqlQuery,
+} from "@openimis/fe-core";
+
 
 const ClaimAdminPicker = (props) => {
   const {
@@ -17,15 +24,21 @@ const ClaimAdminPicker = (props) => {
     multiple,
     extraFragment,
     hfFilter,
+    region,
+    district,
   } = props;
+  const userHealthFacilityId = useSelector((state) =>
+    state?.loc?.userHealthFacilityFullPath?.uuid
+  );
 
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
+
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf) {
+      query ClaimAdminPicker ($search: String, $hf: String, $region_uuid: String, $district_uuid: String) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, regionUuid: $region_uuid, districtUuid: $district_uuid) {
               edges {
                   node {
                       id
@@ -52,8 +65,12 @@ const ClaimAdminPicker = (props) => {
             }
         }
         `,
-    { hf: hfFilter?.uuid, search: searchString },
-    { skip: true },
+    {
+      hf: userHealthFacilityId || hfFilter?.uuid,
+      search: searchString,
+      region_uuid: region?.uuid,
+      district_uuid: district?.uuid
+    },
   );
 
   return (

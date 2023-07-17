@@ -260,6 +260,7 @@ class ClaimChildPanel extends Component {
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
           value={this.state.data[idx].service?.priceAsked}
+          decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -499,10 +500,11 @@ class ClaimChildPanel extends Component {
           })
           : "",
       );
+
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.qtyApproved}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
         />
@@ -511,12 +513,23 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={readOnly}
+            readOnly={!forReview && readOnly}
             value={i.priceApproved}
+            decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
       }
+
+      headers.push(`edit.${type}s.pricevaluated`);
+      itemFormatters.push((i, idx) => (
+        <AmountInput
+          readOnly={true}
+          decimal={true}
+          value={i.priceValuated}
+          onChange={(v) => this._onChange(idx, "priceValuated", v)}
+        />
+      ));
     }
 
     if (this.showJustificationAtEnter || edited.status !== 2) {
@@ -524,7 +537,7 @@ class ClaimChildPanel extends Component {
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />
@@ -536,7 +549,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={readOnly}
+            readOnly={true}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
