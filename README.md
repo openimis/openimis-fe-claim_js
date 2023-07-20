@@ -100,3 +100,4 @@ None
 - `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;
 - `claimForm.claimTypeReferSymbol`, used for checking referHF option, indicate which letter represents referal. Default R.
 - `claimForm.autoGenerateClaimCode`, boolean to enable autogenerating claim code by the backend. Default false.
+- `reviews.defaultFilters`, default filters for claim review searcher. See example in the ReviewsPage.js
