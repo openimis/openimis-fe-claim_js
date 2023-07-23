@@ -11,6 +11,7 @@ import {
   NumberInput,
   Table,
   PublishedComponent,
+  withTooltip,
   AmountInput,
   TextInput,
   Error,
@@ -18,6 +19,8 @@ import {
 import { Paper, Box } from "@material-ui/core";
 import _ from "lodash";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { IconButton } from "@material-ui/core";
+import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -143,6 +146,30 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
+  rejectAllOnClick = () => {
+    const updatedData = this.state.data.map((element) => ({
+      ...element,
+      status: 2,
+      rejectionReason: -1,
+    }));
+  
+    this.setState({ data: updatedData }, () => {
+      this._onEditedChanged(updatedData);
+    });
+  };
+  
+  approveAllOnClick = () => {
+    const updatedData = this.state.data.map((element) => ({
+      ...element,
+      status: 1,
+      rejectionReason: null,
+    }));
+  
+    this.setState({ data: updatedData }, () => {
+      this._onEditedChanged(updatedData);
+    });
+  };
+
   render() {
     const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
     if (!edited) return null;
@@ -259,6 +286,22 @@ class ClaimChildPanel extends Component {
       ));
     }
 
+    preHeaders.push(
+      withTooltip(
+        <IconButton onClick={this.rejectAllOnClick}> 
+          <ThumbDown />
+        </IconButton>,
+        formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
+      )
+    )
+    preHeaders.push(
+      withTooltip(
+        <IconButton onClick={this.approveAllOnClick}> 
+          <ThumbUp />
+        </IconButton>,
+        formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
+      )
+    )
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
