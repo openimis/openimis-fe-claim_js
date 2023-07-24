@@ -231,6 +231,7 @@ class ClaimChildPanel extends Component {
         <NumberInput
           readOnly={!forReview && readOnly}
           value={i.qtyApproved}
+          max={parseInt(i.qtyProvided)}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
         />
       ));
