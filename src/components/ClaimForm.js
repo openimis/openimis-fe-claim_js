@@ -184,7 +184,7 @@ class ClaimForm extends Component {
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
         if (!this.props.forReview) items.pop();
-        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview=forReview)).length) {
+        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
       }
@@ -198,7 +198,7 @@ class ClaimForm extends Component {
           }
         }
         if (!this.props.forReview) services.pop();
-        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview=forReview)).length) {
+        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
         }
       }
