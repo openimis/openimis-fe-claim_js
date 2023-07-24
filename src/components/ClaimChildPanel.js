@@ -284,24 +284,25 @@ class ClaimChildPanel extends Component {
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
       ));
+      preHeaders.push(
+        withTooltip(
+          <IconButton onClick={this.rejectAllOnClick}> 
+            <ThumbDown />
+          </IconButton>,
+          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
+        )
+      )
+      preHeaders.push(
+        withTooltip(
+          <IconButton onClick={this.approveAllOnClick}> 
+            <ThumbUp />
+          </IconButton>,
+          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
+        )
+      )
     }
 
-    preHeaders.push(
-      withTooltip(
-        <IconButton onClick={this.rejectAllOnClick}> 
-          <ThumbDown />
-        </IconButton>,
-        formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
-      )
-    )
-    preHeaders.push(
-      withTooltip(
-        <IconButton onClick={this.approveAllOnClick}> 
-          <ThumbUp />
-        </IconButton>,
-        formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
-      )
-    )
+
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
