@@ -9,6 +9,8 @@ import {clearLastClaimAt, fetchLastClaimAt} from "../actions";
 const styles = (theme) => ({
   tableHeader: theme.table.header,
   item: theme.paper.item,
+  inactiveLabel: theme.paper.policyInactive,
+  activeLabel: theme.paper.policyActive,
 });
 
 class ClaimMasterPanelExt extends Component {
@@ -40,13 +42,40 @@ class ClaimMasterPanelExt extends Component {
     this.props.clearLastClaimAt();
   }
 
+  getPolicyStatusLabel(timeDelta){
+    let policyStatusLabel = null;
+    if (timeDelta >= 0){
+      policyStatusLabel = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
+    }
+    else{
+      policyStatusLabel = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInactive.header";
+    }
+    return policyStatusLabel;
+  }
+
+  getPolicyStatusLabelStyle(timeDelta, classes){
+    let policyStatusLabelStyle = null;
+    console.log({policyStatusLabelStyle});
+    if (timeDelta >= 0){
+      policyStatusLabelStyle = classes.activeLabel;
+    }
+    else{
+      policyStatusLabelStyle = classes.inactiveLabel;
+    }
+    return policyStatusLabelStyle;
+  }
+
   render() {
     const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt } = this.props;
+    let policyExpireDate = this.props?.currentPolicy?.policyExpireDate ? new Date(this.props?.currentPolicy?.policyExpireDate) : null;
+    let timeDelta = 2;
+    let policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
+    let policyStatusLabelStyle = this.props.currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
     return (
       <Grid container>
         <Grid item xs={6} className={classes.item}>
-          <Typography className={classes.tableTitle}>
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header" />
+          <Typography className={policyStatusLabelStyle}>
+            <FormattedMessage module="claim" id={policyStatusLabel} />
           </Typography>
           <Divider />
         </Grid>
@@ -111,6 +140,7 @@ const mapStateToProps = (state) => ({
   fetchedLastClaimAt: state.claim.fetchedLastClaimAt,
   lastClaimAt: state.claim.lastClaimAt,
   errorLastClaimAt: state.claim.errorLastClaimAt,
+  currentPolicy: state.policy.policies,
 });
 
 const mapDispatchToProps = (dispatch) => {
