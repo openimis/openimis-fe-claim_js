@@ -206,6 +206,8 @@
   "claim.Feedback.Tristate.0": "No",
   "claim.Feedback.Tristate.1": "Yes",
   "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header": "Policy Information",
+  "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header": "Policy Information (Active)",
+  "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInactive.header": "Policy Information (Inactive)",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.header": "Insuree Last Visit",
   "ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim": "No Other Visit (Claim)",
   "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit": "This is the last visit (Claim)",

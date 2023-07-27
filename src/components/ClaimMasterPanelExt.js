@@ -4,7 +4,8 @@ import { bindActionCreators } from "redux";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { Grid, Typography, Divider } from "@material-ui/core";
 import { PublishedComponent, FormattedMessage, ProgressOrError, TextInput } from "@openimis/fe-core";
-import {clearLastClaimAt, fetchLastClaimAt} from "../actions";
+import { clearLastClaimAt, fetchLastClaimAt } from "../actions";
+import { getTimeDifferenceInDays, getTimeDifferenceInDaysFromToday } from "@openimis/fe-core";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
@@ -55,7 +56,6 @@ class ClaimMasterPanelExt extends Component {
 
   getPolicyStatusLabelStyle(timeDelta, classes){
     let policyStatusLabelStyle = null;
-    console.log({policyStatusLabelStyle});
     if (timeDelta >= 0){
       policyStatusLabelStyle = classes.activeLabel;
     }
@@ -67,8 +67,7 @@ class ClaimMasterPanelExt extends Component {
 
   render() {
     const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt } = this.props;
-    let policyExpireDate = this.props?.currentPolicy?.policyExpireDate ? new Date(this.props?.currentPolicy?.policyExpireDate) : null;
-    let timeDelta = 2;
+    let timeDelta = getTimeDifferenceInDaysFromToday(this.props?.currentPolicy ? this.props?.currentPolicy[0]?.expiryDate : null);
     let policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
     let policyStatusLabelStyle = this.props.currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
     return (
