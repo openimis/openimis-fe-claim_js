@@ -42,9 +42,9 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
     }
   }
@@ -52,11 +52,7 @@ class ClaimServicesPanel extends Component {
 
 class ClaimItemsPanel extends Component {
   render() {
-    if(!this.props.forReview){
-      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
-    }else{
-      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
-    }
+    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
   }
 }
 
@@ -79,7 +75,7 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-    this.claimPrefix =props.modulesManager.getConf(
+    this.claimPrefix = props.modulesManager.getConf(
       "fe-claim",
       "claimPrex",
       0,
@@ -186,17 +182,17 @@ class ClaimForm extends Component {
     if (!this.state.claim.icd) return false;
 
     if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
+      if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
-      
-    }else{
+
+    } else {
       return false;
     }
 
@@ -292,23 +288,23 @@ class ClaimForm extends Component {
     }
 
     const editingProps = {
-              edited_id: claim_uuid,
-              edited: this.state.claim,
-              reset: this.state.reset,
-              back: back,
-              forcedDirty: this.state.forcedDirty,
-              add: !!add && !this.state.newClaim ? this._add : null,
-              save: !!save ? this._save : null,
-              fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
-              fabAction: this._deliverReview,
-              fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-              canSave: (e) => this.canSave(forFeedback),
-              reload: (claim_uuid || readOnly) && this.reload,
-              actions: actions,
-              readOnly: readOnly,
-              forReview: forReview,
-              forFeedback: forFeedback,
-              onEditedChanged: this.onEditedChanged,
+      edited_id: claim_uuid,
+      edited: this.state.claim,
+      reset: this.state.reset,
+      back: back,
+      forcedDirty: this.state.forcedDirty,
+      add: !!add && !this.state.newClaim ? this._add : null,
+      save: !!save ? this._save : null,
+      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      fabAction: this._deliverReview,
+      fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      canSave: (e) => this.canSave(forFeedback),
+      reload: (claim_uuid || readOnly) && this.reload,
+      actions: actions,
+      readOnly: readOnly,
+      forReview: forReview,
+      forFeedback: forFeedback,
+      onEditedChanged: this.onEditedChanged,
     };
     return (
       <Fragment>
@@ -332,12 +328,12 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
               onEditedChanged={this.onEditedChanged}
               openDirty={save}
               {...editingProps}
             />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps}/>
+            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
           </Fragment>
         )}
       </Fragment>
