@@ -6,6 +6,7 @@ export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const APPROVAL_STATUS = [1, 2];
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
+export const ATTACHMENT_STATUS = [1, 2];
 
 export const MODULE_NAME = "claim";
 

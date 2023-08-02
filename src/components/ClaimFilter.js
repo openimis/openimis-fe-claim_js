@@ -584,6 +584,22 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.AttachmentStatusPicker"
+            name="attachmentStatus"
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
+            onChange={(v, s) =>
+              onChangeFilters([
+                {
+                  id: "attachmentStatus",
+                  value: v,
+                  filter: !!v ? `attachmentStatus: ${v}` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
 
         <Contributions
           filters={filters}

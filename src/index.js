@@ -8,6 +8,7 @@ import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
+import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
@@ -67,6 +68,8 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimStatusPicker.projection", ref: null },
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
+    { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
+    { key: "claim.AttachmentStatusPicker.projection", ref: null },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
