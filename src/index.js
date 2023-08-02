@@ -69,7 +69,6 @@ const DEFAULT_CONFIG = {
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
-    { key: "claim.AttachmentStatusPicker.projection", ref: null },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },

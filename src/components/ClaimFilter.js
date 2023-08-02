@@ -589,12 +589,12 @@ class Details extends Component {
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
             value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
-            onChange={(v, s) =>
+            onChange={(value) =>
               onChangeFilters([
                 {
                   id: "attachmentStatus",
-                  value: v,
-                  filter: !!v ? `attachmentStatus: ${v}` : null,
+                  value: value,
+                  filter: !!value ? `attachmentStatus: ${value}` : null,
                 },
               ])
             }
