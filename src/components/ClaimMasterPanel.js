@@ -72,6 +72,11 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.claimTypeReferSymbol",
       'R',
     );
+    this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.numberOfAdditionalDiagnosis",
+      4,
+    );
     this.EMPTY_STRING = ""
   }
 
@@ -390,74 +395,28 @@ class ClaimMasterPanel extends FormPanel {
         )}
         {!forFeedback && (
           <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis1"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis1"
-                    label={formatMessage(intl, "claim", "secDiagnosis1")}
-                    value={edited.icd1}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd1", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis2"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis2"
-                    label={formatMessage(intl, "claim", "secDiagnosis2")}
-                    value={edited.icd2}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd2", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis3"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis3"
-                    label={formatMessage(intl, "claim", "secDiagnosis3")}
-                    value={edited.icd3}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd3", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis4"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis4"
-                    label={formatMessage(intl, "claim", "secDiagnosis4")}
-                    value={edited.icd4}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd4", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
+            {Array.from(
+              { length: this.numberOfAdditionalDiagnosis },
+              (_, i) => (
+                <ControlledField
+                  module="claim"
+                  id={`Claim.secDiagnosis${i + 1}`}
+                  field={
+                    <Grid item xs={3} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="medical.DiagnosisPicker"
+                        name={`secDiagnosis${i + 1}`}
+                        label={formatMessage(intl, "claim", `secDiagnosis${i + 1}`)}
+                        value={edited[`icd${i + 1}`]}
+                        reset={reset}
+                        onChange={(v, s) => this.updateAttribute(`icd${i + 1}`, v)}
+                        readOnly={ro}
+                      />
+                    </Grid>
+                  }
+                />
+              )
+            )}
           </Fragment>
         )}
         <ControlledField
