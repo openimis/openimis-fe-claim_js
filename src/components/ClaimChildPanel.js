@@ -12,6 +12,7 @@ import {
   Table,
   TableService,
   PublishedComponent,
+  withTooltip,
   AmountInput,
   TextInput,
   Error,
@@ -19,10 +20,13 @@ import {
 import { Paper, Box, TableCell } from "@material-ui/core";
 import _ from "lodash";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import { IconButton } from "@material-ui/core";
+import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
 });
+
 
 class ClaimChildPanel extends Component {
   state = {
@@ -80,13 +84,13 @@ class ClaimChildPanel extends Component {
   }
 
   _updateData = (idx, updates) => {
-    const data = [...this.state.data];
-    updates.forEach((update) => (data[idx][update.attr] = update.v));
-    if (!this.props.forReview && data.length === idx + 1) {
-      data.push({});
-    }
-    return data;
-  };
+      const data = [...this.state.data];
+      updates.forEach((update) => (data[idx][update.attr] = update.v));
+      if (!this.props.forReview && data.length === idx + 1) {
+          data.push({});
+      }
+      return data;
+  }
 
   _onEditedChanged = (data) => {
     let edited = { ...this.props.edited };
@@ -100,13 +104,9 @@ class ClaimChildPanel extends Component {
   };
 
   _price = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.price
-    );
-  };
+    let id = decodeId(v.id)
+    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
+}
 
   _code = (v) => {
     let id = decodeId(v.id);
@@ -136,7 +136,7 @@ class ClaimChildPanel extends Component {
   };
 
   _onChangeItem = (idx, attr, v) => {
-    let data = this._updateData(idx, [{ attr, v }]);
+    let data = this._updateData(idx, [{attr, v}]);
     if (!v) {
       data[idx].priceAsked = null;
       data[idx].qtyProvided = null;
@@ -156,6 +156,7 @@ class ClaimChildPanel extends Component {
     }
     this._onEditedChanged(data);
   };
+  
 
   _onChangeSubItem = (idx, udx, attr, v) => {
     /*console.log("PriceAsked ");
@@ -193,6 +194,30 @@ class ClaimChildPanel extends Component {
       { attr: "rejectionReason", v: v === 2 ? -1 : null },
     ]);
     this._onEditedChanged(data);
+  };
+
+  rejectAllOnClick = () => {
+    const updatedData = this.state.data.map((element) => ({
+      ...element,
+      status: 2,
+      rejectionReason: -1,
+    }));
+  
+    this.setState({ data: updatedData }, () => {
+      this._onEditedChanged(updatedData);
+    });
+  };
+  
+  approveAllOnClick = () => {
+    const updatedData = this.state.data.map((element) => ({
+      ...element,
+      status: 1,
+      rejectionReason: null,
+    }));
+  
+    this.setState({ data: updatedData }, () => {
+      this._onEditedChanged(updatedData);
+    });
   };
 
   render() {
@@ -234,12 +259,22 @@ class ClaimChildPanel extends Component {
       `claim.edit.items.appPrice`,
     ];
 
+    let filterItemsOptions = (options) => {
+      let currentItemsIds = edited.items ? edited.items.map((claimItem) => claimItem?.item?.id) : [];
+      return options.filter((option) => !currentItemsIds.includes(option.id));
+    }
+    let filterServicesOptions = (options) => {
+      let currentServicesIds = edited.services ? edited.services.map((claimService) => claimService?.service?.id) : [];
+      return options.filter((option) => !currentServicesIds.includes(option.id));
+    }
+
     let itemFormatters = [
       (i, idx) => (
         <Box minWidth={400}>
           <PublishedComponent
             readOnly={!!forReview || readOnly}
             pubRef={picker}
+            filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
             fullWidth
@@ -260,6 +295,7 @@ class ClaimChildPanel extends Component {
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
           value={this.state.data[idx].service?.priceAsked}
+          decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
       ),
@@ -499,10 +535,11 @@ class ClaimChildPanel extends Component {
           })
           : "",
       );
+
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.qtyApproved}
           onChange={(v) => this._onChange(idx, "qtyApproved", v)}
         />
@@ -511,20 +548,48 @@ class ClaimChildPanel extends Component {
         headers.push(`edit.${type}s.appPrice`);
         itemFormatters.push((i, idx) => (
           <AmountInput
-            readOnly={readOnly}
+            readOnly={!forReview && readOnly}
             value={i.priceApproved}
+            decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
       }
+
+      headers.push(`edit.${type}s.pricevaluated`);
+      itemFormatters.push((i, idx) => (
+        <AmountInput
+          readOnly={true}
+          decimal={true}
+          value={i.priceValuated}
+          onChange={(v) => this._onChange(idx, "priceValuated", v)}
+        />
+      ));
+      preHeaders.push(
+        withTooltip(
+          <IconButton onClick={this.rejectAllOnClick}> 
+            <ThumbDown />
+          </IconButton>,
+          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
+        )
+      )
+      preHeaders.push(
+        withTooltip(
+          <IconButton onClick={this.approveAllOnClick}> 
+            <ThumbUp />
+          </IconButton>,
+          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
+        )
+      )
     }
+
 
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
-          readOnly={readOnly}
+          readOnly={!forReview && readOnly}
           value={i.justification}
           onChange={(v) => this._onChange(idx, "justification", v)}
         />
@@ -536,7 +601,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={readOnly}
+            readOnly={true}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -567,7 +632,7 @@ class ClaimChildPanel extends Component {
         />
       </Paper>
     );
-  }
+}
 }
 
 const mapStateToProps = (state, props) => ({

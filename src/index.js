@@ -9,6 +9,7 @@ import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
+import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
@@ -16,16 +17,34 @@ import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
 import reducer from "./reducer";
+import { decodeId } from "@openimis/fe-core";
+import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
+
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
-const ROUTE_CLAIM_EDIT = "claim/claim";
+const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
 const ROUTE_REVIEWS = "claim/reviews";
-const ROUTE_CLAIM_REVIEW = "claim/review";
+const ROUTE_CLAIM_REVIEW = "claim/reviews/review";
 const ROUTE_CLAIM_FEEDBACK = "claim/feedback";
 
 const DEFAULT_CONFIG = {
   "translations": [{ key: "en", messages: messages_en }],
   "reducers": [{ key: "claim", reducer }],
+  "reports": [
+    {
+      key: "claim_percentage_referrals",
+      component: ClaimPercentageReferralsReport,
+      isValid: (values) => values.region && values.district && values.dateStart && values.dateEnd,
+      getParams: (values) => {
+        const params = {}
+        params.region_id = decodeId(values.region.id);
+        params.district_id = decodeId(values.district.id);
+        params.date_start = values.dateStart;
+        params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+  ],
   "refs": [
     { key: "claim.route.healthFacilities", ref: ROUTE_HEALTH_FACILITIES },
     { key: "claim.route.claimEdit", ref: ROUTE_CLAIM_EDIT },
@@ -50,6 +69,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimStatusPicker.projection", ref: null },
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
+    { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
@@ -59,6 +79,7 @@ const DEFAULT_CONFIG = {
     { key: "medical.ServiceFilterPicker", ref: ServiceFilterPicker },
     { key: "claim.CreateClaim.feedbackStatus", ref: 1 },
     { key: "claim.CreateClaim.reviewStatus", ref: 1 },
+    { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
   ],

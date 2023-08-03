@@ -1,11 +1,13 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import _debounce from "lodash/debounce";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-import { injectIntl } from "react-intl";
 import _ from "lodash";
+import _debounce from "lodash/debounce";
+import { injectIntl } from "react-intl";
+
 import { Grid, Divider } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
+
 import {
   formatMessage,
   withModulesManager,
@@ -218,6 +220,9 @@ class Head extends Component {
                 hfFilter={this._filterValue("healthFacility")}
                 reset={this.state.reset}
                 onChange={this._onChangeClaimAdmin}
+                region={this._filterValue("region")}
+                district={this._filterValue("district")}
+                required={true}
               />
             </Grid>
           }
@@ -254,7 +259,15 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion }, dispatch);
+  return bindActionCreators(
+    {
+      selectClaimAdmin,
+      selectHealthFacility,
+      selectDistrict,
+      selectRegion,
+    },
+    dispatch,
+  );
 };
 
 const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);
@@ -262,8 +275,13 @@ const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);
 class Details extends Component {
   debouncedOnChangeFilter = _debounce(
     this.props.onChangeFilters,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
+    this.props.modulesManager.getConf("fe-claim", "debounceTime", 200),
   );
+
+  _filterTextFieldValue = (k) => {
+    const { filters } = this.props;
+    return !!filters && !!filters[k] ? filters[k].value : "";
+  };
 
   render() {
     const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
@@ -322,7 +340,7 @@ class Details extends Component {
             module="claim"
             label="ClaimFilter.claimNo"
             name="claimNo"
-            value={filters["claimNo"] && filters["claimNo"]["value"]}
+            value={this._filterTextFieldValue("claimNo")}
             onChange={(v) =>
               this.debouncedOnChangeFilter([
                 {
@@ -339,7 +357,7 @@ class Details extends Component {
             module="claim"
             label="ClaimFilter.insureeCHFID"
             name="chfId"
-            value={filters["chfId"] && filters["chfId"]["value"]}
+            value={this._filterTextFieldValue("chfId")}
             onChange={(v) =>
               this.debouncedOnChangeFilter([
                 {
@@ -461,6 +479,44 @@ class Details extends Component {
             </Grid>
           </Grid>
         </Grid>
+        <Grid item xs={3}>
+          <Grid container>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={(filters["processedDateFrom"] && filters["processedDateFrom"]["value"]) || null}
+                module="claim"
+                label="ClaimFilter.processedDateFrom"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "processedDateFrom",
+                      value: d,
+                      filter: !!d ? `dateProcessed_Gte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+            <Grid item xs={6} className={classes.item}>
+              <PublishedComponent
+                pubRef="core.DatePicker"
+                value={(filters["processedDateTo"] && filters["processedDateTo"]["value"]) || null}
+                module="claim"
+                label="ClaimFilter.processedDateTo"
+                onChange={(d) =>
+                  onChangeFilters([
+                    {
+                      id: "processedDateTo",
+                      value: d,
+                      filter: !!d ? `dateProcessed_Lte: "${d}"` : null,
+                    },
+                  ])
+                }
+              />
+            </Grid>
+          </Grid>
+        </Grid>
         <Grid item xs={3} className={classes.item}>
           <PublishedComponent
             pubRef="medical.ServicePicker"
@@ -528,6 +584,23 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.AttachmentStatusPicker"
+            name="attachmentStatus"
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "attachmentStatus",
+                  value: value,
+                  filter: !!value ? `attachmentStatus: ${value}` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}

@@ -12,12 +12,19 @@ import {
   Contributions,
   AmountInput,
   TextInput,
+  ValidatedTextInput,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
-import { claimHealthFacilitySet, validateClaimCode } from "../actions";
+import {
+  claimCodeSetValid,
+  claimCodeValidationCheck,
+  claimCodeValidationClear,
+  claimHealthFacilitySet,
+  clearClaim,
+} from "../actions";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
@@ -38,67 +45,76 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
   };
 
+  shouldValidate = (inputValue) => {
+    const { savedClaimCode } = this.props;
+    const shouldValidate = inputValue !== (savedClaimCode);
+    return shouldValidate;
+  };
+
   constructor(props) {
     super(props);
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
+    this.autoGenerateClaimCode = props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
-    this.claimPrefix =props.modulesManager.getConf(
+    this.allowReferHF = props.modulesManager.getConf(
       "fe-claim",
-      "claimPrex",
-      0,
+      "claimForm.referHF",
+      true,
     );
-    this.hideSecDiagnos =props.modulesManager.getConf(
+    this.claimTypeReferSymbol = props.modulesManager.getConf(
       "fe-claim",
-      "hideSecDiagnos",
-      0,
+      "claimForm.claimTypeReferSymbol",
+      'R',
     );
+    this.EMPTY_STRING = ""
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this._componentDidUpdate(prevProps, prevState, snapshot)) return;
-    if (!prevProps.fetchingClaimCodeCount && this.props.fetchingClaimCodeCount) {
-      this.setState({ claimCodeError: null });
-    } else if (!prevProps.fetchedClaimCodeCount && this.props.fetchedClaimCodeCount) {
-      if (!!this.props.claimCodeCount) {
-        this.setState({ claimCodeError: formatMessage(this.props.intl, "claim", "edit.claimCodeExists") });
-        this.updateAttribute("codeError", true);
-      } else {
-        this.updateAttributes({
-          code: this.state.claimCode,
-          codeError: null,
-        });
-      }
-    }
-  }
-
-  validateClaimCode = (v) => {
-    if(this.claimPrefix==1){
-      if(this.state.data?.insuree?.chfId != undefined){
-        v = this.state.data?.insuree?.chfId + v
-      }
-    }
-    this.setState(
-      {
-        claimCodeError: null,
-        claimCode: v,
-      },
-      (e) => this.props.validateClaimCode(v),
-    );
+  componentWillUnmount = () => {
+    this.props?.clearClaim();
   };
 
-  debounceUpdateCode = _debounce(
-    this.validateClaimCode,
-    this.props.modulesManager.getConf("fe-claim", "debounceTime", 800),
-  );
+  computePriceAdjusted() {
+    let totalServices = 0;
+    let totalItems = 0;
+    if (this.props.edited.services) {
+      totalServices = this.props.edited.services.reduce(
+        (total, currentItem) =>
+          total + (!isNaN(parseFloat(currentItem.priceAdjusted)) ? parseFloat(currentItem.priceAdjusted) : 0),
+        0,
+      );
+    }
 
+    if (this.props.edited.items) {
+      totalItems = this.props.edited.items.reduce(
+        (total, currentItem) =>
+          total + (!isNaN(parseFloat(currentItem.priceAdjusted)) ? parseFloat(currentItem.priceAdjusted) : 0),
+        0,
+      );
+    }
+
+    return totalServices + totalItems;
+  }
+  
   render() {
-    const { intl, classes, edited, reset, readOnly = false, forReview, forFeedback, hideSecDiagnos } = this.props;
+    const {
+      intl,
+      classes,
+      edited,
+      reset,
+      readOnly = false,
+      forReview,
+      forFeedback,
+      isCodeValid,
+      isCodeValidating,
+      codeValidationError,
+      userHealthFacilityFullPath }
+      = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -247,22 +263,54 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.claimPrefix && (<ControlledField
+        {!!this.allowReferHF && <ControlledField
+          module="claim"
+          id="Claim.referHealthFacility"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="location.HealthFacilityReferPicker"
+                label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom: edited.referTo) ?? this.EMPTY_STRING}
+                reset={reset}
+                readOnly={ro}
+                required={edited.visitType === this.claimTypeReferSymbol ? true : false}
+                filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
+                filterSelectedOptions={true}
+                onChange={(d) => this.updateAttribute("referHF", d)}
+              />
+            </Grid>
+          }
+        />}
+        <ControlledField
           module="claim"
           id="Claim.codechfId"
           field={
-            <Grid item xs={1} className={classes.item}>
-               <TextInput
+            <Grid item xs={2} className={classes.item}>
+              <ValidatedTextInput
+                action={claimCodeValidationCheck}
+                autoFocus={true}
+                clearAction={claimCodeValidationClear}
+                codeTakenLabel="claim.codeTaken"
+                isValid={isCodeValid}
+                isValidating={isCodeValidating}
+                itemQueryIdentifier="claimCode"
+                label="claim.code"
                 module="claim"
-                label="codechfId"
-                required
-                value={edited.insuree?.chfId}
-                readOnly="true"
+                onChange={(code) => this.updateAttribute("code", code)}
+                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
+                required={this.autoGenerateClaimCode ? false : true}
+                setValidAction={claimCodeSetValid}
+                shouldValidate={this.shouldValidate}
+                validationError={codeValidationError}
+                value={!!this.state.data ? this.state.data.code : (this.autoGenerateClaimCode ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate") : null)}
+                inputProps={{
+                  "maxLength": this.codeMaxLength,
+                }}
               />
             </Grid>
           }
         />
-        )}
         <ControlledField
           module="claim"
           id="Claim.code"
@@ -343,7 +391,7 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.valuated"
               field={
                 <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={edited.valuated || null} module="claim" label="valuated" readOnly={true} />
+                  <AmountInput value={this.computePriceAdjusted()} module="claim" label="valuated" readOnly={true} />
                 </Grid>
               }
             />
@@ -487,16 +535,23 @@ class ClaimMasterPanel extends FormPanel {
   }
 }
 
-const mapStateToProps = (state, props) => ({
+const mapStateToProps = (state) => ({
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   fetchingClaimCodeCount: state.claim.fetchingClaimCodeCount,
   fetchedClaimCodeCount: state.claim.fetchedClaimCodeCount,
   claimCodeCount: state.claim.claimCodeCount,
+  savedClaimCode: state.claim.claim?.code,
   errorClaimCodeCount: state.claim.errorClaimCodeCount,
+  isCodeValid: state.claim.validationFields?.claimCode?.isValid,
+  isCodeValidating: state.claim.validationFields?.claimCode?.isValidating,
+  codeValidationError: state.claim.validationFields?.claimCode?.validationError,
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ claimHealthFacilitySet, validateClaimCode }, dispatch);
+  return bindActionCreators({
+    claimHealthFacilitySet,
+    clearClaim,
+  }, dispatch);
 };
 
 export default withModulesManager(

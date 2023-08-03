@@ -23,7 +23,7 @@ import { fetchClaimSummaries } from "../actions";
 const CLAIM_SEARCHER_CONTRIBUTION_KEY = "claim.Searcher";
 
 const styles = (theme) => ({});
-
+   
 class ClaimSearcher extends Component {
   state = {
     random: null,
@@ -75,12 +75,16 @@ class ClaimSearcher extends Component {
       this.setState({ random: null });
     }
     if (!forced.length && !random) {
-      prms.push(`first: ${state.pageSize}`);
+      if (!state.beforeCursor && !state.afterCursor) {
+        prms.push(`first: ${state.pageSize}`);
+      }
       if (!!state.afterCursor) {
         prms.push(`after: "${state.afterCursor}"`);
+        prms.push(`first: ${state.pageSize}`);
       }
       if (!!state.beforeCursor) {
         prms.push(`before: "${state.beforeCursor}"`);
+        prms.push(`last: ${state.pageSize}`);
       }
     }
     return prms;
@@ -104,6 +108,7 @@ class ClaimSearcher extends Component {
           "",
           "",
           "",
+          "",
           <Typography noWrap={true}>
             <FormattedMessage
               module="claim"
@@ -113,7 +118,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.claimed ? parseFloat(v.claimed) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.claimed) {
+                          return acc + parseFloat(v.claimed);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
@@ -129,7 +140,13 @@ class ClaimSearcher extends Component {
                   <b>
                     {formatAmount(
                       this.props.intl,
-                      selection.reduce((acc, v) => (acc + v.approved ? parseFloat(v.approved) : 0), 0),
+                      selection.reduce((acc, v) => {
+                        if (v.approved) {
+                          return acc + parseFloat(v.approved);
+                        } else {
+                          return acc;
+                        }
+                      }, 0),
                     )}
                   </b>
                 ),
@@ -139,7 +156,7 @@ class ClaimSearcher extends Component {
           "",
           "",
         ]
-      : ["\u200b", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
+      : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
     if (this.claimAttachments) {
       result.push("");
     }
@@ -155,6 +172,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.claimedDate",
+      "claimSummaries.processedDate",
       "claimSummaries.feedbackStatus",
       "claimSummaries.reviewStatus",
       "claimSummaries.claimed",
@@ -196,7 +214,7 @@ class ClaimSearcher extends Component {
   };
 
   aligns = () => {
-    return [, , , , , , "right", "right"];
+    return [, , , , , , , "right", "right"];
   };
 
   itemFormatters = () => {
@@ -212,6 +230,7 @@ class ClaimSearcher extends Component {
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
+      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
       (c) => this.feedbackColFormatter(c),
       (c) => this.reviewColFormatter(c),
       (c) => formatAmount(this.props.intl, c.claimed),
@@ -244,6 +263,7 @@ class ClaimSearcher extends Component {
     ));
     return result;
   };
+
   rowLocked = (selection, claim) => !!claim.clientMutationId;
   rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount;
   rowHighlightedAlt = (selection, claim) =>
@@ -272,6 +292,8 @@ class ClaimSearcher extends Component {
     if (!count) {
       count = claimsPageInfo.totalCount;
     }
+
+    count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return (
       <Fragment>
         <PublishedComponent
