@@ -149,14 +149,19 @@ class ClaimForm extends Component {
     );
   };
 
-  canSaveDetail = (d, type) => {
+  canSaveDetail = (d, type, forReview) => {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    if (forReview){
+      if (d.qtyProvided<d.qtyApproved){
+        return false;
+      }
+    }
     return true;
   };
 
-  canSave = (forFeedback) => {
+  canSave = (forFeedback, forReview) => {
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
     if (this.state.lockNew) return false;
     if (!this.props.isClaimCodeValid) return false;
@@ -192,7 +197,7 @@ class ClaimForm extends Component {
         } 
 
         if (!this.props.forReview) items.pop();
-        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item")).length) {
+        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
       }
@@ -219,7 +224,7 @@ class ClaimForm extends Component {
           }
         }
         if (!this.props.forReview) services.pop();
-        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
         }
       }
@@ -311,7 +316,7 @@ class ClaimForm extends Component {
               fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
               fabAction: this._deliverReview,
               fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-              canSave: (e) => this.canSave(forFeedback),
+              canSave: (e) => this.canSave(forFeedback, forReview),
               reload: (claim_uuid || readOnly) && this.reload,
               actions: actions,
               readOnly: readOnly,
