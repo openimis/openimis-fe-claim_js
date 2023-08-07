@@ -29,6 +29,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import { DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -75,7 +76,7 @@ class ClaimMasterPanel extends FormPanel {
     this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.numberOfAdditionalDiagnosis",
-      4,
+      DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
     this.EMPTY_STRING = ""
   }
