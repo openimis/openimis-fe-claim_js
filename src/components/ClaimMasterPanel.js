@@ -397,19 +397,19 @@ class ClaimMasterPanel extends FormPanel {
           <Fragment>
             {Array.from(
               { length: this.numberOfAdditionalDiagnosis },
-              (_, i) => (
+              (_, diagnosisIndex) => (
                 <ControlledField
                   module="claim"
-                  id={`Claim.secDiagnosis${i + 1}`}
+                  id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
                   field={
                     <Grid item xs={3} className={classes.item}>
                       <PublishedComponent
                         pubRef="medical.DiagnosisPicker"
-                        name={`secDiagnosis${i + 1}`}
-                        label={formatMessage(intl, "claim", `secDiagnosis${i + 1}`)}
-                        value={edited[`icd${i + 1}`]}
+                        name={`secDiagnosis${diagnosisIndex + 1}`}
+                        label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
+                        value={edited[`icd${diagnosisIndex + 1}`]}
                         reset={reset}
-                        onChange={(v, s) => this.updateAttribute(`icd${i + 1}`, v)}
+                        onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
                         readOnly={ro}
                       />
                     </Grid>
