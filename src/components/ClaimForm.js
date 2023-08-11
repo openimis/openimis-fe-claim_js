@@ -42,9 +42,9 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
     }
   }
@@ -52,9 +52,9 @@ class ClaimServicesPanel extends Component {
 
 class ClaimItemsPanel extends Component {
   render() {
-    if(!this.props.forReview){
+    if (!this.props.forReview) {
       return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
-    }else{
+    } else {
       return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
     }
   }
@@ -159,7 +159,7 @@ class ClaimForm extends Component {
     );
   };
 
-  canSaveDetail = (d, type) => {
+  canSaveDetail = (d, type, forReview) => {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
@@ -171,7 +171,7 @@ class ClaimForm extends Component {
 
   }
 
-  canSave = (forFeedback) => {
+  canSave = (forFeedback, forReview) => {
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
     if (this.state.lockNew) return false;
     if (!this.props.isClaimCodeValid) return false;
@@ -188,17 +188,17 @@ class ClaimForm extends Component {
     if (!this.state.claim.icd) return false;
 
     if (this.state.claim.services !== undefined) {
-      if(this.props.forReview){
+      if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
-      }else{
-        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length-1) {
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
           return false;
         }
       }
-      
-    }else{
+
+    } else {
       return false;
     }
 
@@ -214,7 +214,7 @@ class ClaimForm extends Component {
         items = [...this.state.claim.items];
 
         let isUnderMaximumAmount = true;
-        
+
         items.forEach(item => {
           if (parseFloat(item.qtyProvided) >= parseFloat(item?.item?.maximumAmount ?? +Infinity)) {
             isUnderMaximumAmount = false;
@@ -223,10 +223,10 @@ class ClaimForm extends Component {
 
         if (!isUnderMaximumAmount) {
           return false;
-        } 
+        }
 
         if (!this.props.forReview) items.pop();
-        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item")).length) {
+        if (items.length && items.filter((i) => !this.canSaveDetail(i, "item", forReview)).length) {
           return false;
         }
       }
@@ -245,20 +245,25 @@ class ClaimForm extends Component {
 
         if (!isUnderMaximumAmount) {
           return false;
-        } 
-        
-        if (this.claimValidationMultipleServicesExplanationRequired){
+        }
+
+        if (this.claimValidationMultipleServicesExplanationRequired) {
           const isValid = services.every(item => !(item.qtyProvided > 1 && !item?.explanation));
-          if (!isValid){
+          if (!isValid) {
             return false;
           }
         }
         if (!this.props.forReview) services.pop();
-        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+        if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
         }
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
+    if (forReview) {
+      if (d.qtyProvided < d.qtyApproved) {
+        return false;
+      }
     }
     return true;
   };
@@ -336,23 +341,23 @@ class ClaimForm extends Component {
     }
 
     const editingProps = {
-              edited_id: claim_uuid,
-              edited: this.state.claim,
-              reset: this.state.reset,
-              back: back,
-              forcedDirty: this.state.forcedDirty,
-              add: !!add && !this.state.newClaim ? this._add : null,
-              save: !!save ? this._save : null,
-              fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
-              fabAction: this._deliverReview,
-              fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-              canSave: (e) => this.canSave(forFeedback),
-              reload: (claim_uuid || readOnly) && this.reload,
-              actions: actions,
-              readOnly: readOnly,
-              forReview: forReview,
-              forFeedback: forFeedback,
-              onEditedChanged: this.onEditedChanged,
+      edited_id: claim_uuid,
+      edited: this.state.claim,
+      reset: this.state.reset,
+      back: back,
+      forcedDirty: this.state.forcedDirty,
+      add: !!add && !this.state.newClaim ? this._add : null,
+      save: !!save ? this._save : null,
+      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      fabAction: this._deliverReview,
+      fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
+      canSave: (e) => this.canSave(forFeedback, forReview),
+      reload: (claim_uuid || readOnly) && this.reload,
+      actions: actions,
+      readOnly: readOnly,
+      forReview: forReview,
+      forFeedback: forFeedback,
+      onEditedChanged: this.onEditedChanged,
     };
     return (
       <Fragment>
@@ -380,7 +385,7 @@ class ClaimForm extends Component {
               openDirty={save}
               {...editingProps}
             />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps}/>
+            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
           </Fragment>
         )}
       </Fragment>

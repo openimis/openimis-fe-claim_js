@@ -29,6 +29,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import { DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -71,6 +72,11 @@ class ClaimMasterPanel extends FormPanel {
       "fe-claim",
       "claimForm.claimTypeReferSymbol",
       'R',
+    );
+    this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.numberOfAdditionalDiagnosis",
+      DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
     this.EMPTY_STRING = ""
   }
@@ -399,74 +405,28 @@ class ClaimMasterPanel extends FormPanel {
         )}
         {!this.hideSecDiagnos && !forFeedback && (
           <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis1"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis1"
-                    label={formatMessage(intl, "claim", "secDiagnosis1")}
-                    value={edited.icd1}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd1", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis2"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis2"
-                    label={formatMessage(intl, "claim", "secDiagnosis2")}
-                    value={edited.icd2}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd2", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis3"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis3"
-                    label={formatMessage(intl, "claim", "secDiagnosis3")}
-                    value={edited.icd3}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd3", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.secDiagnosis4"
-              field={
-                <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis4"
-                    label={formatMessage(intl, "claim", "secDiagnosis4")}
-                    value={edited.icd4}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd4", v)}
-                    readOnly={ro}
-                  />
-                </Grid>
-              }
-            />
+            {Array.from(
+              { length: this.numberOfAdditionalDiagnosis },
+              (_, diagnosisIndex) => (
+                <ControlledField
+                  module="claim"
+                  id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                  field={
+                    <Grid item xs={3} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="medical.DiagnosisPicker"
+                        name={`secDiagnosis${diagnosisIndex + 1}`}
+                        label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
+                        value={edited[`icd${diagnosisIndex + 1}`]}
+                        reset={reset}
+                        onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
+                        readOnly={ro}
+                      />
+                    </Grid>
+                  }
+                />
+              )
+            )}
           </Fragment>
         )}
         <ControlledField
