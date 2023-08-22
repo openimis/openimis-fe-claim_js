@@ -312,7 +312,6 @@ class ClaimChildPanel extends Component {
       )
     }
 
-
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
@@ -330,7 +329,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={true}
+            readOnly={!i.product?.uuid}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
