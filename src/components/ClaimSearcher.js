@@ -23,11 +23,12 @@ import { fetchClaimSummaries } from "../actions";
 const CLAIM_SEARCHER_CONTRIBUTION_KEY = "claim.Searcher";
 
 const styles = (theme) => ({});
-   
+
 class ClaimSearcher extends Component {
   state = {
     random: null,
     attachmentsClaim: null,
+    showRestored: false,
   };
 
   constructor(props) {
@@ -271,6 +272,12 @@ class ClaimSearcher extends Component {
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
 
+  showRestored = (showRestored) => {
+    this.setState({ showRestored });
+  };
+
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
+
   render() {
     const {
       intl,
@@ -294,6 +301,17 @@ class ClaimSearcher extends Component {
     }
 
     count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    const claimFilter = (props) => (
+      <ClaimFilter
+        intl={props.intl}
+        classes={props.classes}
+        filters={props.filters}
+        onChangeFilters={props.onChangeFilters}
+        isShowRestored={(v) => this.showRestored(v)}
+        isShowRestoredValue={this.state.showRestored}
+      />
+    );
     return (
       <Fragment>
         <PublishedComponent
@@ -307,7 +325,7 @@ class ClaimSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={claimFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
@@ -321,6 +339,7 @@ class ClaimSearcher extends Component {
           defaultPageSize={this.defaultPageSize}
           fetch={this.fetch}
           rowIdentifier={this.rowIdentifier}
+          rowDisabled={this.isClaimNotRestored}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
           rowLocked={this.rowLocked}

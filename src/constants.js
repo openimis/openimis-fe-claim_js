@@ -4,6 +4,8 @@ export const CLAIM_STATUS = [1, 2, 4, 8, 16];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const APPROVAL_STATUS = [1, 2];
+
+export const STATUS_REJECTED = 1;
 export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
@@ -23,5 +25,6 @@ export const RIGHT_CLAIMREVIEW = 111008;
 export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
+export const RIGHT_RESTORE = 111012;
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4

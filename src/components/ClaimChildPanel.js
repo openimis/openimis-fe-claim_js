@@ -59,7 +59,7 @@ class ClaimChildPanel extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.edited_id && !this.props.edited_id) {
+    if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
       if (!this.props.forReview) {
         data.push({});
@@ -114,7 +114,7 @@ class ClaimChildPanel extends Component {
     }
     this._onEditedChanged(data);
   };
-  
+
 
   _onDelete = (idx) => {
     const data = [...this.state.data];
@@ -150,19 +150,19 @@ class ClaimChildPanel extends Component {
       status: 2,
       rejectionReason: -1,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
   };
-  
+
   approveAllOnClick = () => {
     const updatedData = this.state.data.map((element) => ({
       ...element,
       status: 1,
       rejectionReason: null,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
@@ -295,7 +295,7 @@ class ClaimChildPanel extends Component {
       ));
       preHeaders.push(
         withTooltip(
-          <IconButton onClick={this.rejectAllOnClick}> 
+          <IconButton onClick={this.rejectAllOnClick}>
             <ThumbDown />
           </IconButton>,
           formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
@@ -303,7 +303,7 @@ class ClaimChildPanel extends Component {
       )
       preHeaders.push(
         withTooltip(
-          <IconButton onClick={this.approveAllOnClick}> 
+          <IconButton onClick={this.approveAllOnClick}>
             <ThumbUp />
           </IconButton>,
           formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")

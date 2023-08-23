@@ -2,8 +2,16 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { Grid, Typography, Divider } from "@material-ui/core";
-import { PublishedComponent, FormattedMessage, ProgressOrError, TextInput } from "@openimis/fe-core";
+import { Grid, Typography, Divider, Button } from "@material-ui/core";
+import {
+  PublishedComponent,
+  FormattedMessage,
+  ProgressOrError,
+  TextInput,
+  historyPush,
+  withHistory,
+  withModulesManager
+} from "@openimis/fe-core";
 import { clearLastClaimAt, fetchLastClaimAt } from "../actions";
 import { getTimeDifferenceInDaysFromToday } from "@openimis/fe-core";
 
@@ -17,6 +25,7 @@ const styles = (theme) => ({
     padding: 10,
     color: "#e20606",
   },
+  button: {width: 130, height: 40, background: "#F5F5F5"}
 });
 
 const ACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
@@ -56,8 +65,12 @@ class ClaimMasterPanelExt extends Component {
 
   getPolicyStatusLabelStyle(timeDelta, classes) { return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel; }
 
+  onRestoreFromClick(uuid) {
+    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [uuid], true);
+  }
+
   render() {
-    const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt } = this.props;
+    const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt, restore, isRestored } = this.props;
     const timeDelta = getTimeDifferenceInDaysFromToday(this.props.currentPolicy ? this.props.currentPolicy?.[0]?.expiryDate : null);
     const policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
     const policyStatusLabelStyle = this.props.currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
@@ -120,6 +133,15 @@ class ClaimMasterPanelExt extends Component {
             </Grid>
           )}
         </Grid>
+        {isRestored && restore?.uuid &&  (
+          <Grid item xs={6} className={classes.item}>
+            <Typography>
+              <FormattedMessage module="claim" id="ClaimMasterPanelExt.restore" />
+            </Typography>
+            <Button className={classes.button} onClick={() => this.onRestoreFromClick(restore.uuid)}>
+              {restore?.code}
+            </Button>
+          </Grid>)}
       </Grid>
     );
   }
@@ -137,4 +159,5 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ fetchLastClaimAt, clearLastClaimAt }, dispatch);
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanelExt)));
+export default withHistory(
+  withModulesManager(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanelExt)))));
