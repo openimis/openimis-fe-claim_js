@@ -10,6 +10,9 @@ export const REJECTION_REASONS = _.range(-1, 20);
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
 export const ATTACHMENT_STATUS = [1, 2];
+export const IN_PATIENT_STRING = "IPD";
+export const OUT_PATIENT_STRING = "OPD";
+export const CARE_TYPE_STATUS = [IN_PATIENT_STRING, OUT_PATIENT_STRING];
 
 export const MODULE_NAME = "claim";
 

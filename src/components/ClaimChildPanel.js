@@ -41,6 +41,7 @@ class ClaimChildPanel extends Component {
       "claimForm.showJustificationAtEnter",
       false,
     );
+    this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
   initData = () => {
@@ -311,7 +312,6 @@ class ClaimChildPanel extends Component {
       )
     }
 
-
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
@@ -329,7 +329,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={true}
+            readOnly={!i.product?.uuid}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -354,6 +354,7 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          showOrdinalNumber = {this.showOrdinalNumber}
         />
       </Paper>
     );

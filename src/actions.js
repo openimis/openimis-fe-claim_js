@@ -195,14 +195,14 @@ export function formatAttachments(mm, attachments) {
   ]`;
 }
 
-export function formatClaimGQL(modulesManager, claim) {
+export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   // to simplify GQL and avoid additional coding, claim code is sent, even if autogenerateCode is set to true
   const claimCodePlaceholder="auto"
-  const isAutogenerateEnabled = modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false)
+  const isAutogenerateEnabled = shouldAutogenerate
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${isAutogenerateEnabled ? claimCodePlaceholder : claim.code}"
-    autogenerateCode: ${!!isAutogenerateEnabled}
+    autogenerate: ${!!isAutogenerateEnabled}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
@@ -214,6 +214,7 @@ export function formatClaimGQL(modulesManager, claim) {
     ${!!claim.icd4 ? `icd4Id: ${decodeId(claim.icd4.id)}` : ""}
     ${`jsonExt: ${formatJsonField(claim.jsonExt)}`}
     feedbackStatus: ${modulesManager.getRef("claim.CreateClaim.feedbackStatus")}
+    ${!!claim.careType ? `careType: "${claim.careType}"` : ""}
     reviewStatus: ${modulesManager.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
     ${claim.referHF ? `${handleReferHFType(modulesManager, claim)}${decodeId(claim.referHF.id)}` : ""}
@@ -238,7 +239,8 @@ function handleReferHFType(modulesManager, claim){
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
-  let mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
+  const shouldAutogenerate = mm.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false)
+  const mutation = formatMutation("createClaim", formatClaimGQL(mm, claim, shouldAutogenerate), clientMutationLabel);
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
     clientMutationId: mutation.clientMutationId,
@@ -248,7 +250,7 @@ export function createClaim(mm, claim, clientMutationLabel) {
 }
 
 export function updateClaim(mm, claim, clientMutationLabel) {
-  let mutation = formatMutation("updateClaim", formatClaimGQL(mm, claim), clientMutationLabel);
+  const mutation = formatMutation("updateClaim", formatClaimGQL(mm, claim, false), clientMutationLabel);
   var requestedDateTime = new Date();
   claim.clientMutationId = mutation.clientMutationId;
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_UPDATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
@@ -275,6 +277,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "explanation",
     "adjustment",
     "attachmentsCount",
+    "careType",
     "restore {uuid, code}",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
     "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
@@ -296,10 +299,10 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, service {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
+        "id, product { id, uuid }, service {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
       "items{" +
-        "id, item {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
+        "id, product { id, uuid }, item {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
     );
   }

@@ -586,6 +586,23 @@ class Details extends Component {
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
+            pubRef="claim.CareTypePicker"
+            name="careType"
+            value={filters["careType"] && filters["careType"]["value"] || null}
+            onChange={(value) =>{
+              onChangeFilters([
+                {
+                  id: "careType",
+                  value: value,
+                  filter: !!value ? `careType: "${value}"` : null,
+                },
+              ])
+            }
+            }
+          />
+        </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
             value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
