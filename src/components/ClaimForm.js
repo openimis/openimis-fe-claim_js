@@ -438,7 +438,7 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
+      save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
       fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),

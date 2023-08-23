@@ -223,7 +223,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
     ${!!claim.explanation ? `explanation: "${formatGQLString(claim.explanation)}"` : ""}
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
-    ${!!claim.restore.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
+    ${!!claim?.restore?.uuid ? `restore: "${formatGQLString(claim.restore.uuid)}"` : ""}
     ${formatDetails("service", claim.services)}
     ${formatDetails("item", claim.items)}
     ${
