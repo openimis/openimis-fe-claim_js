@@ -28,8 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import _debounce from "lodash/debounce";
-import { DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER } from "../constants";
+import { DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -78,6 +77,16 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.numberOfAdditionalDiagnosis",
       DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
     );
+    this.isExplanationMandatoryForIPD = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.isExplanationMandatoryForIPD",
+      false,
+    );
+    this.isCareTypeMandatory = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.isCareTypeMandatory",
+      false,
+    );
     this.EMPTY_STRING = ""
   }
 
@@ -106,7 +115,7 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-  
+
   render() {
     const {
       intl,
@@ -119,7 +128,11 @@ class ClaimMasterPanel extends FormPanel {
       isCodeValid,
       isCodeValidating,
       codeValidationError,
-      userHealthFacilityFullPath }
+      userHealthFacilityFullPath,
+      restore,
+      isRestored,
+      isDuplicate,
+    }
       = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
@@ -165,7 +178,7 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef={this.insureePicker}
                 value={edited.insuree}
-                reset={reset}
+                reset={reset || isDuplicate}
                 onChange={(v, s) => this.updateAttribute("insuree", v)}
                 readOnly={ro}
                 required={true}
@@ -249,6 +262,24 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
+        <ControlledField
+          module="claim"
+          id="Claim.careType"
+          field={
+            <Grid item xs={forFeedback || forReview ? 2 : 3} className={classes.item}>
+              <PublishedComponent
+                pubRef="claim.CareTypePicker"
+                name="careType"
+                withNull={!this.isCareTypeMandatory}
+                value={edited.careType}
+                reset={reset}
+                onChange={(value) => this.updateAttribute("careType", value)}
+                readOnly={ro}
+                required={this.isCareTypeMandatory}
+              />
+            </Grid>
+          }
+        />
         {!forFeedback && (
           <ControlledField
             module="claim"
@@ -280,7 +311,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom: edited.referTo) ?? this.EMPTY_STRING}
                 reset={reset}
                 readOnly={ro}
-                required={edited.visitType === this.claimTypeReferSymbol ? true : false}
+                required={edited.visitType === this.claimTypeReferSymbol}
                 filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
                 filterSelectedOptions={true}
                 onChange={(d) => this.updateAttribute("referHF", d)}
@@ -305,7 +336,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 onChange={(code) => this.updateAttribute("code", code)}
                 readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
-                required={this.autoGenerateClaimCode ? false : true}
+                required={!this.autoGenerateClaimCode}
                 setValidAction={claimCodeSetValid}
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
@@ -457,6 +488,7 @@ class ClaimMasterPanel extends FormPanel {
                     reset={reset}
                     onChange={(v) => this.updateAttribute("explanation", v)}
                     readOnly={ro}
+                    required={this.isExplanationMandatoryForIPD && edited.careType===IN_PATIENT_STRING ? true : false}
                   />
                 </Grid>
               }
@@ -488,6 +520,8 @@ class ClaimMasterPanel extends FormPanel {
           updateAttributes={this.updateAttributes}
           updateExts={this.updateExts}
           updateExt={this.updateExt}
+          restore={restore}
+          isRestored={isRestored}
           contributionKey={CLAIM_MASTER_PANEL_CONTRIBUTION_KEY}
         />
       </Grid>

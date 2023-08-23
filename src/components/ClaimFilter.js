@@ -5,7 +5,7 @@ import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
 
-import { Grid, Divider } from "@material-ui/core";
+import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 import {
@@ -284,7 +284,7 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, isShowRestored, isShowRestoredValue } = this.props;
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -586,6 +586,23 @@ class Details extends Component {
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
+            pubRef="claim.CareTypePicker"
+            name="careType"
+            value={filters["careType"] && filters["careType"]["value"] || null}
+            onChange={(value) =>{
+              onChangeFilters([
+                {
+                  id: "careType",
+                  value: value,
+                  filter: !!value ? `careType: "${value}"` : null,
+                },
+              ])
+            }
+            }
+          />
+        </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
             value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
@@ -600,6 +617,26 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <ControlledField
+            module="claim"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={isShowRestoredValue}
+                      onChange={(event) => isShowRestored(event.target.checked)}
+                    />
+                  }
+                  label={formatMessage(intl, "claim", "showRestored")}
+                />
+              </Grid>
+            }
+          />
+        </Grid>
+
 
         <Contributions
           filters={filters}
