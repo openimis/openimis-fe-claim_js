@@ -380,7 +380,7 @@ class Details extends Component {
                 {
                   id: "claimedAbove",
                   value: !v ? null : v,
-                  filter: !!v ? `claimed_Gte: ${v}` : null,
+                  filter: !!v ? `claimed_Gte: "${parseFloat(v)}"` : null,
                 },
               ])
             }
@@ -397,7 +397,7 @@ class Details extends Component {
                 {
                   id: "claimedUnder",
                   value: !v ? null : v,
-                  filter: !!v ? `claimed_Lte: ${v}` : null,
+                  filter: !!v ? `claimed_Lte: "${parseFloat(v)}"` : null,
                 },
               ])
             }
