@@ -124,6 +124,15 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
+  _checkIfItemsServicesExist = (type, edited) => {
+    if (type==="item"){
+      return Array.isArray(edited.items) ? !edited.items.length==0 : false;
+    }
+    else{
+      return Array.isArray(edited.services) ? !edited.services.length==0 : false;
+    }
+  };
+
   formatRejectedReason = (i, idx) => {
     if (i.status === 1) return null;
     return (
@@ -152,19 +161,19 @@ class ClaimChildPanel extends Component {
       status: 2,
       rejectionReason: -1,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
   };
-  
+
   approveAllOnClick = () => {
     const updatedData = this.state.data.map((element) => ({
       ...element,
       status: 1,
       rejectionReason: null,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
@@ -284,24 +293,28 @@ class ClaimChildPanel extends Component {
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
       ));
-      preHeaders.push(
-        withTooltip(
-          <IconButton onClick={this.rejectAllOnClick}> 
-            <ThumbDown />
-          </IconButton>,
-          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
-        )
-      )
-      preHeaders.push(
-        withTooltip(
-          <IconButton onClick={this.approveAllOnClick}> 
-            <ThumbUp />
-          </IconButton>,
-          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
-        )
-      )
     }
 
+    if (!!forReview && edited.status == 4){
+      if (this._checkIfItemsServicesExist(this.props.type, edited)){
+        preHeaders.push(
+          withTooltip(
+            <IconButton onClick={this.rejectAllOnClick}>
+              <ThumbDown />
+            </IconButton>,
+            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
+          )
+        )
+        preHeaders.push(
+          withTooltip(
+            <IconButton onClick={this.approveAllOnClick}>
+              <ThumbUp />
+            </IconButton>,
+            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
+          )
+        )
+      }
+    }
 
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
