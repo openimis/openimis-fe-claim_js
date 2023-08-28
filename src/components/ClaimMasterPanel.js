@@ -87,6 +87,11 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.isCareTypeMandatory",
       false,
     );
+    this.isClaimedDateFixed = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.isClaimedDateFixed",
+      false,
+    );
     this.EMPTY_STRING = ""
   }
 
@@ -224,12 +229,12 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <PublishedComponent
                 pubRef="core.DatePicker"
-                value={edited.dateClaimed}
+                value={edited.dateClaimed ?? new Date()}
                 module="claim"
                 label="claimedDate"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={ro}
+                readOnly={this.isClaimedDateFixed ?? ro}
                 required={true}
                 minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
               />

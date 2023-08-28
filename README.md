@@ -112,3 +112,4 @@ None
     },
   }
 - `claimForm.showOrdinalNumber`, show "number" column as a first column in claim searcher and item/services table. Default false.
+- `claimForm.isClaimedDateFixed`, set Date Claimed to current date and set field to read only while creating new claim. Default false.
