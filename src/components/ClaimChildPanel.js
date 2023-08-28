@@ -41,6 +41,7 @@ class ClaimChildPanel extends Component {
       "claimForm.showJustificationAtEnter",
       false,
     );
+    this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
   initData = () => {
@@ -59,7 +60,7 @@ class ClaimChildPanel extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.edited_id && !this.props.edited_id) {
+    if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
       if (!this.props.forReview) {
         data.push({});
@@ -114,7 +115,7 @@ class ClaimChildPanel extends Component {
     }
     this._onEditedChanged(data);
   };
-  
+
 
   _onDelete = (idx) => {
     const data = [...this.state.data];
@@ -150,19 +151,19 @@ class ClaimChildPanel extends Component {
       status: 2,
       rejectionReason: -1,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
   };
-  
+
   approveAllOnClick = () => {
     const updatedData = this.state.data.map((element) => ({
       ...element,
       status: 1,
       rejectionReason: null,
     }));
-  
+
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
     });
@@ -295,7 +296,7 @@ class ClaimChildPanel extends Component {
       ));
       preHeaders.push(
         withTooltip(
-          <IconButton onClick={this.rejectAllOnClick}> 
+          <IconButton onClick={this.rejectAllOnClick}>
             <ThumbDown />
           </IconButton>,
           formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
@@ -303,14 +304,13 @@ class ClaimChildPanel extends Component {
       )
       preHeaders.push(
         withTooltip(
-          <IconButton onClick={this.approveAllOnClick}> 
+          <IconButton onClick={this.approveAllOnClick}>
             <ThumbUp />
           </IconButton>,
           formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
         )
       )
     }
-
 
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
@@ -329,7 +329,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={true}
+            readOnly={!i.product?.uuid}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
@@ -354,6 +354,7 @@ class ClaimChildPanel extends Component {
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
+          showOrdinalNumber = {this.showOrdinalNumber}
         />
       </Paper>
     );

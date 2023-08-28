@@ -7,6 +7,7 @@ import FeedbackPage from "./pages/FeedbackPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
+import CareTypePicker from "./pickers/CareTypePicker"
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
@@ -66,6 +67,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
+    { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
