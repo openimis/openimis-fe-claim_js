@@ -284,7 +284,7 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, isShowRestored, isShowRestoredValue } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -471,7 +471,7 @@ class Details extends Component {
                     {
                       id: "claimDateTo",
                       value: d,
-                      filter: !!d ? `dateClaimed_Lte: "${d}"` : d,
+                      filter: !!d ? `dateClaimed_Lte: "${d}"` : null,
                     },
                   ])
                 }
@@ -605,7 +605,7 @@ class Details extends Component {
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"]}
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -626,8 +626,16 @@ class Details extends Component {
                   control={
                     <Checkbox
                       color="primary"
-                      checked={isShowRestoredValue}
-                      onChange={(event) => isShowRestored(event.target.checked)}
+                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                      onChange={(event) =>
+                        onChangeFilters([
+                          {
+                            id: "showRestored",
+                            value: event.target.checked,
+                            filter: !!event.target.checked ? `showRestored: ${event.target.checked}` : null,
+                          },
+                        ])
+                      }
                     />
                   }
                   label={formatMessage(intl, "claim", "showRestored")}
