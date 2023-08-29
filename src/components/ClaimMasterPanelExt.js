@@ -14,6 +14,7 @@ import {
 } from "@openimis/fe-core";
 import { clearLastClaimAt, fetchLastClaimAt } from "../actions";
 import { getTimeDifferenceInDaysFromToday } from "@openimis/fe-core";
+import { STATUS_ENTERED } from "../constants";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
@@ -92,6 +93,7 @@ class ClaimMasterPanelExt extends Component {
           <PublishedComponent
             pubRef="policy.InsureePolicyEligibilitySummary"
             insuree={!!claim ? claim.insuree : null}
+            targetDate={!!claim ? claim.dateFrom ?? claim.dateTo : null}
           />
         </Grid>
         <Grid item xs={6} className={classes.item}>
