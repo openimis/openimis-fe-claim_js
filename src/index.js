@@ -50,19 +50,19 @@ const DEFAULT_CONFIG = {
       getParams: (values) => {
         const params = {}
         if (!!values.region) {
-          params.region_id = decodeId(values.region.id);
+          params.requested_region_id = decodeId(values.region.id);
         }
         if (!!values.district) {
-          params.district_id = decodeId(values.district.id);
+          params.requested_district_id = decodeId(values.district.id);
         }
         if (!!values.product) {
-          params.product_id = decodeId(values.product.id);
+          params.requested_product_id = decodeId(values.product.id);
         }
         if (!!values.hf) {
-          params.hf_id = decodeId(values.hf.id);
+          params.requested_hf_id = decodeId(values.hf.id);
         }
         if (!!values.status) {
-          params.claim_status = values.status;
+          params.requested_claim_status = values.status;
         }
         params.date_start = values.dateStart;
         params.date_end = values.dateEnd;

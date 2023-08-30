@@ -11,6 +11,26 @@ const ClaimsOverviewReport = (props) => {
     <Grid container direction="column" spacing={1}>
       <Grid item>
         <PublishedComponent
+          pubRef="core.DatePicker"
+          value={values.dateStart}
+          required
+          module="claim"
+          label={formatMessage("ClaimsOverviewReport.dateStart")}
+          onChange={(dateStart) => setValues({ ...values, dateStart })}
+        />
+      </Grid>
+      <Grid item>
+        <PublishedComponent
+          pubRef="core.DatePicker"
+          value={values.dateEnd}
+          required
+          module="claim"
+          label={formatMessage("ClaimsOverviewReport.dateEnd")}
+          onChange={(dateEnd) => setValues({ ...values, dateEnd })}
+        />
+      </Grid>
+      <Grid item>
+        <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(region) =>
             setValues({
@@ -47,26 +67,6 @@ const ClaimsOverviewReport = (props) => {
           district={values.district}
           value={values.hf}
           label={formatMessage("ClaimsOverviewReport.hf")}
-        />
-      </Grid>
-      <Grid item>
-        <PublishedComponent
-          pubRef="core.DatePicker"
-          value={values.dateStart}
-          required
-          module="claim"
-          label={formatMessage("ClaimsOverviewReport.dateStart")}
-          onChange={(dateStart) => setValues({ ...values, dateStart })}
-        />
-      </Grid>
-      <Grid item>
-        <PublishedComponent
-          pubRef="core.DatePicker"
-          value={values.dateEnd}
-          required
-          module="claim"
-          label={formatMessage("ClaimsOverviewReport.dateEnd")}
-          onChange={(dateEnd) => setValues({ ...values, dateEnd })}
         />
       </Grid>
       <Grid item>
