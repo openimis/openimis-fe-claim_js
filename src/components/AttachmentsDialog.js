@@ -26,7 +26,7 @@ import {
   formatMessage,
   formatMessageWithValues,
   journalize,
-  coreConfirm,
+  coreConfirm
 } from "@openimis/fe-core";
 import {
   fetchClaimAttachments,
@@ -41,6 +41,7 @@ const styles = (theme) => ({
   dialogTitle: theme.dialog.title,
   dialogContent: theme.dialog.content,
 });
+
 
 class AttachmentsDialog extends Component {
   state = {
@@ -275,12 +276,12 @@ class AttachmentsDialog extends Component {
           <FormattedMessage module="claim" id="attachments.title" values={{ "code": claim.code }} />
         </DialogTitle>
         <Divider />
-        <DialogContent className={classes.dialogContent}>
-          <ProgressOrError progress={fetchingClaimAttachments} error={errorClaimAttachments} />
-          {!fetchingClaimAttachments && !errorClaimAttachments && (
-            <Table module="claim" items={claimAttachments} headers={headers} itemFormatters={itemFormatters} />
-          )}
-        </DialogContent>
+          <DialogContent className={classes.dialogContent}>
+            <ProgressOrError progress={fetchingClaimAttachments} error={errorClaimAttachments} />
+            {!fetchingClaimAttachments && !errorClaimAttachments && (
+              <Table module="claim" items={claimAttachments} headers={headers} itemFormatters={itemFormatters} />
+            )}
+          </DialogContent>
         <DialogActions>
           <Button onClick={this.onClose} color="primary">
             <FormattedMessage module="claim" id="close" />
