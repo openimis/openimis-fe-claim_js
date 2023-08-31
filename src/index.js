@@ -20,6 +20,7 @@ import reducer from "./reducer";
 import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
 import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
+import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
@@ -62,6 +63,35 @@ const DEFAULT_CONFIG = {
         }
         if (!!values.hf) {
           params.requested_hf_id = decodeId(values.hf.id);
+        }
+        if (!!values.status) {
+          params.requested_claim_status = values.status;
+        }
+        params.date_start = values.dateStart;
+        params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+    {
+      key: "claim_history",
+      component: ClaimHistoryReport,
+      isValid: (values) => values.dateStart && values.dateEnd && values.insuree,
+      getParams: (values) => {
+        const params = {}
+        if (!!values.region) {
+          params.requested_region_id = decodeId(values.region.id);
+        }
+        if (!!values.district) {
+          params.requested_district_id = decodeId(values.district.id);
+        }
+        if (!!values.product) {
+          params.requested_product_id = decodeId(values.product.id);
+        }
+        if (!!values.hf) {
+          params.requested_hf_id = decodeId(values.hf.id);
+        }
+        if (!!values.insuree) {
+          params.requested_insuree_id = decodeId(values.insuree.id);
         }
         if (!!values.status) {
           params.requested_claim_status = values.status;

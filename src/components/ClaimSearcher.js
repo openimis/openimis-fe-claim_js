@@ -298,10 +298,8 @@ class ClaimSearcher extends Component {
 
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
-      count = claimsPageInfo.totalCount;
+      count = claimsPageInfo?.totalCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0";
     }
-
-    count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     const claimFilter = (props) => (
       <ClaimFilter
@@ -313,6 +311,7 @@ class ClaimSearcher extends Component {
         isShowRestoredValue={this.state.showRestored}
       />
     );
+
     return (
       <Fragment>
         <PublishedComponent
