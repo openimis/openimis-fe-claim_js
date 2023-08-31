@@ -7,7 +7,9 @@ import FeedbackPage from "./pages/FeedbackPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
+import CareTypePicker from "./pickers/CareTypePicker"
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
+import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
@@ -122,8 +124,10 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
+    { key: "claim.CareTypePicker", ref: CareTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
+    { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
@@ -132,6 +136,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.RejectionReasonPicker.projection", ref: null },
     { key: "claim.CreateClaim.feedbackStatus", ref: 1 },
     { key: "claim.CreateClaim.reviewStatus", ref: 1 },
+    { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
   ],

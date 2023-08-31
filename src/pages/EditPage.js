@@ -16,13 +16,15 @@ class EditPage extends Component {
   add = () => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
+  autoGenerateClaimCode = this.props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
+
 
   save = (claim) => {
     if (!claim.uuid) {
       this.props.createClaim(
         this.props.modulesManager,
         claim,
-        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: claim.code }),
+        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: this.autoGenerateClaimCode ? "Auto" : claim.code }),
       );
     } else {
       this.props.updateClaim(
@@ -34,8 +36,12 @@ class EditPage extends Component {
   };
 
   render() {
-    const { classes, modulesManager, history, rights, claim_uuid } = this.props;
+    const { classes, modulesManager, history, rights, claim_uuid, path } = this.props;
     if (!rights.includes(RIGHT_LOAD)) return null;
+
+    const isHealthFacilityPage = () => {
+      return path.split("/").includes('healthFacilities');
+    }
 
     return (
       <div className={classes.page}>
@@ -44,6 +50,7 @@ class EditPage extends Component {
           back={(e) => historyPush(modulesManager, history, "claim.route.healthFacilities")}
           add={rights.includes(RIGHT_ADD) ? this.add : null}
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
+          isHealthFacilityPage={isHealthFacilityPage()}
         />
       </div>
     );
@@ -53,6 +60,7 @@ class EditPage extends Component {
 const mapStateToProps = (state, props) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claim_uuid: props.match.params.claim_uuid,
+  path: props.match.path,
 });
 
 const mapDispatchToProps = (dispatch) => {
