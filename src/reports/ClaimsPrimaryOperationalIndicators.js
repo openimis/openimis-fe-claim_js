@@ -23,7 +23,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           required
           withNull={false}
           value={values.year}
-          label={formatMessage("ContributionsDistributionReport.year")}
+          label={formatMessage("ClaimsPrimaryOperationalIndicators.year")}
         />
       </Grid>
       <Grid item>
