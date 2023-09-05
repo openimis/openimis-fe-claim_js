@@ -306,6 +306,10 @@ class ReviewsPage extends Component {
           "value": 4,
           "filter": "status: 4",
         },
+        claimedUnder: {
+          "value": 1000000,
+          "filter": "claimed_Lte: \"1000000\"",
+        },
       }),
     };
   }
@@ -639,8 +643,6 @@ class ReviewsPage extends Component {
         action: this.processSelected,
       });
     }
-
-    //actions.push(...extra_action);
 
     return (
       <div className={classes.page}>
