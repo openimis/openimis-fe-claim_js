@@ -28,6 +28,7 @@ class ClaimSearcher extends Component {
   state = {
     random: null,
     attachmentsClaim: null,
+    showRestored: false,
   };
 
   constructor(props) {
@@ -42,6 +43,7 @@ class ClaimSearcher extends Component {
     this.highlightAltInsurees = props.modulesManager.getConf("fe-claim", "claimFilter.highlightAltInsurees", true);
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
+    this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
   canSelectAll = (selection) =>
@@ -263,12 +265,19 @@ class ClaimSearcher extends Component {
     ));
     return result;
   };
+
   rowLocked = (selection, claim) => !!claim.clientMutationId;
   rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount;
   rowHighlightedAlt = (selection, claim) =>
     !!this.highlightAltInsurees &&
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
+
+  showRestored = (showRestored) => {
+    this.setState({ showRestored });
+  };
+
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
 
   render() {
     const {
@@ -289,10 +298,19 @@ class ClaimSearcher extends Component {
 
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
-      count = claimsPageInfo.totalCount;
+      count = claimsPageInfo?.totalCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0";
     }
 
-    count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const claimFilter = (props) => (
+      <ClaimFilter
+        intl={props.intl}
+        classes={props.classes}
+        filters={props.filters}
+        onChangeFilters={props.onChangeFilters}
+        isShowRestored={(v) => this.showRestored(v)}
+        isShowRestoredValue={this.state.showRestored}
+      />
+    );
 
     return (
       <Fragment>
@@ -307,7 +325,7 @@ class ClaimSearcher extends Component {
           canSelectAll={this.canSelectAll}
           defaultFilters={defaultFilters}
           cacheFiltersKey={cacheFiltersKey}
-          FilterPane={ClaimFilter}
+          FilterPane={claimFilter}
           FilterExt={FilterExt}
           filterPaneContributionsKey={filterPaneContributionsKey}
           items={claims}
@@ -321,6 +339,7 @@ class ClaimSearcher extends Component {
           defaultPageSize={this.defaultPageSize}
           fetch={this.fetch}
           rowIdentifier={this.rowIdentifier}
+          rowDisabled={this.isClaimNotRestored}
           filtersToQueryParams={this.filtersToQueryParams}
           defaultOrderBy="-dateClaimed"
           rowLocked={this.rowLocked}
@@ -336,6 +355,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
+          showOrdinalNumber = {this.showOrdinalNumber}
         />
       </Fragment>
     );
