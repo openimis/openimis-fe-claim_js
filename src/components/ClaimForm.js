@@ -38,7 +38,9 @@ import {
   CARE_TYPE_STATUS,
   IN_PATIENT_STRING,
   RIGHT_RESTORE,
-  STATUS_REJECTED
+  STATUS_REJECTED,
+  STORAGE_KEY_ADMIN,
+  STORAGE_KEY_CLAIM_HEALTH_FACILITY
 } from "../constants";
 
 
@@ -109,8 +111,8 @@ class ClaimForm extends Component {
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(localStorage.getItem("claimHealthFacility"));
-    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem("admin"));
+      JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -160,10 +162,10 @@ class ClaimForm extends Component {
   componentDidMount() {
     if (!!this.props.claimHealthFacility) {
       this.props.claimHealthFacilitySet(this.props.claimHealthFacility);
-      localStorage.setItem("claimHealthFacility", JSON.stringify(this.props.claimHealthFacility));
+      localStorage.setItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY, JSON.stringify(this.props.claimHealthFacility));
     }
     if (this.props.claimAdmin) {
-      localStorage.setItem("admin", JSON.stringify(this.props.claimAdmin));
+      localStorage.setItem(STORAGE_KEY_ADMIN, JSON.stringify(this.props.claimAdmin));
     }
     if (this.props.claim_uuid) {
       this.setState(
@@ -174,7 +176,8 @@ class ClaimForm extends Component {
   }
 
   componentWillUnmount() {
-    localStorage.clear();
+    localStorage.removeItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
+    localStorage.removeItem(STORAGE_KEY_ADMIN);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {

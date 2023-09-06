@@ -33,3 +33,6 @@ export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4
+
+export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
+export const STORAGE_KEY_ADMIN = 'admin';
