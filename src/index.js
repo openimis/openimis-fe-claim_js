@@ -116,9 +116,6 @@ const DEFAULT_CONFIG = {
         if (!!values.hf) {
           params.requested_hf_id = decodeId(values.hf.id);
         }
-        if (!!values.insuree) {
-          params.requested_insuree_id = decodeId(values.insuree.id);
-        }
         if (!!values.month) {
           params.requested_month = values.month;
         }
