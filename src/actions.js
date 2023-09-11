@@ -196,7 +196,7 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
-  // to simplify GQL and avoid additional coding, claim code is sent, even if autogenerateCode is set to true
+  // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
   const claimCodePlaceholder="auto"
   const isAutogenerateEnabled = shouldAutogenerate
   return `
@@ -334,6 +334,29 @@ export function clearLastClaimAt() {
   return function (dispatch) {
     dispatch({
       type: "CLEAR_CLAIM_LAST_CLAIM_AT"
+    });
+  };
+}
+
+
+export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
+  let claimFilters = [
+    `chfid: "${chfid}"`,
+    `icd: "${icd.code}"`,
+  ];
+
+  const payload = formatPageQuery(
+    "claimWithSameDiagnosis",
+    claimFilters,
+    ["code", "dateFrom", "dateTo", "uuid"],
+  );
+  return graphql(payload, "CLAIM_SAME_DIAGNOSIS");
+}
+
+export function clearLastClaimWithSameDiagnosis() {
+  return function (dispatch) {
+    dispatch({
+      type: "CLEAR_CLAIM_SAME_DIAGNOSIS"
     });
   };
 }

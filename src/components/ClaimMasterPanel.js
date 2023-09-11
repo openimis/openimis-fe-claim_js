@@ -510,6 +510,9 @@ class ClaimMasterPanel extends FormPanel {
         <Contributions
           claim={edited}
           readOnly={ro}
+          insuree={edited.insuree}
+          dateTo={edited.dateTo}
+          dateFrom={edited.dateFrom}
           updateAttribute={this.updateAttribute}
           updateAttributes={this.updateAttributes}
           updateExts={this.updateExts}
