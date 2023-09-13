@@ -29,7 +29,7 @@ function reducer(
     lastClaimAt: {},
     fetchingSameDiagnosisClaim: false,
     fetchedSameDiagnosisClaim: false,
-    sameDiagnosisClaim: {},
+    sameDiagnosisClaim: null,
     errorSameDiagnosisClaim: null,
     submittingMutation: false,
     mutation: {},

@@ -21,7 +21,7 @@ import {
   fetchLastClaimWithSameDiagnosis,
 } from "../actions";
 import { getTimeDifferenceInDaysFromToday, getTimeDifferenceInDays, formatMessage } from "@openimis/fe-core";
-import { STATUS_ENTERED } from "../constants";
+import { DEFAULT } from "../constants";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
@@ -41,13 +41,21 @@ const INACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInact
 const DEFAULT_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
 
 class ClaimMasterPanelExt extends Component {
+  constructor(props) {
+    super(props);
+    this.isAdditionalPanelEnabled = this.props.modulesManager.getConf(
+      "fe-claim",
+      "ClaimMasterPanelExt.isAdditionalPanelEnabled",
+      DEFAULT.IS_ADDITIONAL_PANEL_ENABLED,
+    );
+  }
   componentDidMount() {
     this.props.clearLastClaimAt();
     const { claim } = this.props;
-    if (!!claim && !!claim.insuree && !!claim.healthFacility) {
+    if (!!claim?.insuree && !!claim?.healthFacility) {
       this.props.fetchLastClaimAt(claim);
     }
-    if (!!claim && !!claim.insuree && !!claim.insuree.chfId && !!claim.icd) {
+    if (!!claim?.insuree?.chfId && !!claim?.icd) {
       this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
     }
   }
@@ -110,7 +118,6 @@ class ClaimMasterPanelExt extends Component {
     const policyStatusLabelStyle = this.props.currentPolicy
       ? this.getPolicyStatusLabelStyle(timeDelta, classes)
       : classes.item;
-    const isAdditionalPanelEnabled = this.props.modulesManager.getConf("fe-claim", "isAdditionalPanelEnabled", true);
     const visitDuration = getTimeDifferenceInDays(
       this?.props?.dateTo ?? new Date(),
       this?.props?.dateFrom ?? new Date(),
@@ -191,36 +198,41 @@ class ClaimMasterPanelExt extends Component {
           </Typography>
           <Divider />
         </Grid>
-        {isAdditionalPanelEnabled && (
+        {this.isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>
-            <NumberInput
-              module="claim"
-              label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
-              name="insureeAge"
-              readOnly={true}
-              withNull={true}
-              value={this?.props?.insuree?.age ?? 1}
-            />
-            <NumberInput
-              module="claim"
-              label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
-              name="lastClaimDays"
-              displayZero={true}
-              readOnly={true}
-              value={visitDuration === 0 ? 1 : visitDuration}
-            />
-            <PublishedComponent
-              pubRef="location.HealthFacilityPicker"
-              label={formatMessage(this.props.intl, "admin", "ClaimMasterPanelExt.InsureeInfo.FSP")}
-              value={this?.props?.insuree?.healthFacility ?? null}
-              district={null}
-              module="claim"
-              readOnly={true}
-            />
-            <Divider />
+            <Grid className={classes.item}>
+              <NumberInput
+                module="claim"
+                label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
+                name="insureeAge"
+                readOnly={true}
+                withNull={true}
+                value={this?.props?.insuree?.age ?? 1}
+              />
+            </Grid>
+            <Grid className={classes.item}>
+              <NumberInput
+                module="claim"
+                label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
+                name="lastClaimDays"
+                displayZero={true}
+                readOnly={true}
+                value={visitDuration === 0 ? 1 : visitDuration}
+              />
+            </Grid>
+            <Grid className={classes.item}>
+              <PublishedComponent
+                pubRef="location.HealthFacilityPicker"
+                label={formatMessage(this.props.intl, "admin", "ClaimMasterPanelExt.InsureeInfo.FSP")}
+                value={this?.props?.insuree?.healthFacility ?? null}
+                district={null}
+                module="claim"
+                readOnly={true}
+              />
+            </Grid>
           </Grid>
         )}
-        {isAdditionalPanelEnabled && (
+        {this.isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>
             <ProgressOrError progress={fetchingSameDiagnosisClaim} error={errorSameDiagnosisClaim} />
             {!!fetchedSameDiagnosisClaim && !sameDiagnosisClaim && (

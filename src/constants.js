@@ -33,3 +33,7 @@ export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4
+
+export const DEFAULT = {
+    IS_ADDITIONAL_PANEL_ENABLED: true,
+};
