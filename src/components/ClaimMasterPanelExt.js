@@ -187,7 +187,12 @@ class ClaimMasterPanelExt extends Component {
         </Grid>
         {this.isAdditionalPanelEnabled && <AdditionalPanelHeaders />}
         {this.isAdditionalPanelEnabled && (
-          <AdditionalPanelInsuree dateTo={dateTo} dateFrom={dateFrom} insuree={insuree} />
+          <AdditionalPanelInsuree
+            dateTo={dateTo}
+            dateFrom={dateFrom}
+            insuree={insuree}
+            dateClaimed={claim?.dateClaimed}
+          />
         )}
         {this.isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>

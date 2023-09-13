@@ -3,13 +3,7 @@ import React from "react";
 import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 
-import {
-  useModulesManager,
-  useTranslations,
-  TextInput,
-  PublishedComponent,
-  getTimeDifferenceInDays,
-} from "@openimis/fe-core";
+import { useModulesManager, useTranslations, TextInput, PublishedComponent } from "@openimis/fe-core";
 import { calculateAge, calculateDuration } from "../utils/utils";
 
 export const useStyles = makeStyles((theme) => ({
@@ -17,13 +11,13 @@ export const useStyles = makeStyles((theme) => ({
   item: theme.paper.item,
 }));
 
-const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree }) => {
+const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed }) => {
   const modulesManager = useModulesManager();
   const classes = useStyles();
   const { formatMessage } = useTranslations("claim", modulesManager);
 
   const visitDuration = calculateDuration(dateTo, dateFrom, formatMessage);
-  const insureeAge = calculateAge(insuree?.dob, formatMessage);
+  const insureeAge = calculateAge(insuree?.dob, dateClaimed, formatMessage);
 
   return (
     <Grid item xs={6} className={classes.item}>

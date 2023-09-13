@@ -1,13 +1,13 @@
 import { getTimeDifferenceInDays } from "@openimis/fe-core";
 import { DAYS } from "../constants";
 
-export const calculateAge = (dob, formatMessage) => {
-  if (!dob) return formatMessage("calculateAge.util.dobNotProvided");
+export const calculateAge = (dob, dateClaimed, formatMessage) => {
+  if (!dob) return `${formatMessage("calculateAge.util.dobNotProvided")}`;
 
-  const currentDate = new Date();
+  const dateToCalculate = dateClaimed ?? new Date();
   const birthDate = new Date(dob);
 
-  const diffInDays = getTimeDifferenceInDays(currentDate, birthDate);
+  const diffInDays = getTimeDifferenceInDays(dateToCalculate, birthDate);
 
   if (diffInDays < DAYS.IN_A_WEEK) {
     return `${diffInDays} ${formatMessage("calculateAge.util.days")}`;
