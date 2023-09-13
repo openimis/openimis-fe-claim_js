@@ -1,15 +1,16 @@
 import React, { Component } from "react";
-import { injectIntl } from "react-intl";
-import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
+import { injectIntl } from "react-intl";
+
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
+
 import {
   PublishedComponent,
   FormattedMessage,
   ProgressOrError,
   TextInput,
-  NumberInput,
   historyPush,
   withHistory,
   withModulesManager,
@@ -20,8 +21,11 @@ import {
   clearLastClaimWithSameDiagnosis,
   fetchLastClaimWithSameDiagnosis,
 } from "../actions";
-import { getTimeDifferenceInDaysFromToday, getTimeDifferenceInDays, formatMessage } from "@openimis/fe-core";
+import { getTimeDifferenceInDaysFromToday, formatMessage } from "@openimis/fe-core";
 import { DEFAULT } from "../constants";
+import AdditionalPanelHeaders from "./AdditionalPanelHeaders";
+import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
+import AdditionalPanelClaim from "./AdditionalPanelClaim";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
@@ -49,6 +53,7 @@ class ClaimMasterPanelExt extends Component {
       DEFAULT.IS_ADDITIONAL_PANEL_ENABLED,
     );
   }
+
   componentDidMount() {
     this.props.clearLastClaimAt();
     const { claim } = this.props;
@@ -118,10 +123,6 @@ class ClaimMasterPanelExt extends Component {
     const policyStatusLabelStyle = this.props.currentPolicy
       ? this.getPolicyStatusLabelStyle(timeDelta, classes)
       : classes.item;
-    const visitDuration = getTimeDifferenceInDays(
-      this?.props?.dateTo ?? new Date(),
-      this?.props?.dateFrom ?? new Date(),
-    );
 
     return (
       <Grid container>
@@ -180,57 +181,19 @@ class ClaimMasterPanelExt extends Component {
                   readOnly={true}
                 />
               </Grid>
-              <Button className={classes.button} onClick={() => this.goToClaimUuid(lastClaimAt.uuid)}>
+              <Button variant="contained" color="primary" onClick={() => this.goToClaimUuid(lastClaimAt.uuid)}>
                 {formatMessage(intl, "claim", "ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}
               </Button>
             </Grid>
           )}
         </Grid>
-        <Grid item xs={6} className={classes.item}>
-          <Typography className={classes.tableTitle}>
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeInfo.Header" />
-          </Typography>
-          <Divider />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
-          <Typography className={classes.tableTitle}>
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeInfo.lastClaimSameDiagnosis.Header" />
-          </Typography>
-          <Divider />
-        </Grid>
+        {this.isAdditionalPanelEnabled && <AdditionalPanelHeaders />}
         {this.isAdditionalPanelEnabled && (
-          <Grid item xs={6} className={classes.item}>
-            <Grid className={classes.item}>
-              <NumberInput
-                module="claim"
-                label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
-                name="insureeAge"
-                readOnly={true}
-                withNull={true}
-                value={this?.props?.insuree?.age ?? 1}
-              />
-            </Grid>
-            <Grid className={classes.item}>
-              <NumberInput
-                module="claim"
-                label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
-                name="lastClaimDays"
-                displayZero={true}
-                readOnly={true}
-                value={visitDuration === 0 ? 1 : visitDuration}
-              />
-            </Grid>
-            <Grid className={classes.item}>
-              <PublishedComponent
-                pubRef="location.HealthFacilityPicker"
-                label={formatMessage(this.props.intl, "admin", "ClaimMasterPanelExt.InsureeInfo.FSP")}
-                value={this?.props?.insuree?.healthFacility ?? null}
-                district={null}
-                module="claim"
-                readOnly={true}
-              />
-            </Grid>
-          </Grid>
+          <AdditionalPanelInsuree
+            dateTo={this.props.dateTo}
+            dateFrom={this.props.dateFrom}
+            insuree={this.props.insuree}
+          />
         )}
         {this.isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>
@@ -242,37 +205,7 @@ class ClaimMasterPanelExt extends Component {
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
             )}
             {!!fetchedSameDiagnosisClaim && !!sameDiagnosisClaim && sameDiagnosisClaim?.uuid !== claim.uuid && (
-              <Grid container>
-                <Grid xs={4} item className={classes.item}>
-                  <TextInput
-                    module="claim"
-                    label="ClaimMasterPanelExt.InsureeLastVisit.claimCode"
-                    readOnly={true}
-                    value={sameDiagnosisClaim.code}
-                  />
-                </Grid>
-                <Grid xs={4} item className={classes.item}>
-                  <PublishedComponent
-                    pubRef="core.DatePicker"
-                    value={sameDiagnosisClaim.dateFrom}
-                    module="claim"
-                    label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtFrom"
-                    readOnly={true}
-                  />
-                </Grid>
-                <Grid xs={4} item className={classes.item}>
-                  <PublishedComponent
-                    pubRef="core.DatePicker"
-                    value={sameDiagnosisClaim.dateTo}
-                    module="claim"
-                    label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtTo"
-                    readOnly={true}
-                  />
-                </Grid>
-                <Button className={classes.button} onClick={() => this.goToClaimUuid(sameDiagnosisClaim.uuid)}>
-                  {formatMessage(intl, "claim", "ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}
-                </Button>
-              </Grid>
+              <AdditionalPanelClaim sameDiagnosisClaim={sameDiagnosisClaim} />
             )}
           </Grid>
         )}
