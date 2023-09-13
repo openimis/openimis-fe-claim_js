@@ -306,6 +306,10 @@
   "claim.attachmentStatus.null": "All",
   "claim.attachmentStatus.1": "With attachment",
   "claim.attachmentStatus.2": "Without attachment",
-  "claim.showRestored": "Show Restored"
+  "claim.showRestored": "Show Restored",
+  "claim.calculateAge.util.dobNotProvided": "Date of birth not provided",
+  "claim.calculateAge.util.days": "Day(s)",
+  "claim.calculateAge.util.weeks": "Week(s)",
+  "claim.calculateAge.util.months": "Month(s)",
+  "claim.calculateAge.util.years": "Year(s)"
 }
-

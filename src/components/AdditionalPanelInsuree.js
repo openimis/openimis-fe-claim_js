@@ -6,10 +6,11 @@ import { makeStyles } from "@material-ui/styles";
 import {
   useModulesManager,
   useTranslations,
-  NumberInput,
+  TextInput,
   PublishedComponent,
   getTimeDifferenceInDays,
 } from "@openimis/fe-core";
+import { calculateAge, calculateDuration } from "../utils/utils";
 
 export const useStyles = makeStyles((theme) => ({
   tableHeader: theme.table.header,
@@ -19,30 +20,31 @@ export const useStyles = makeStyles((theme) => ({
 const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree }) => {
   const modulesManager = useModulesManager();
   const classes = useStyles();
-  const { formatMessage } = useTranslations("admin", modulesManager);
+  const { formatMessage } = useTranslations("claim", modulesManager);
 
-  const visitDuration = getTimeDifferenceInDays(dateTo ?? new Date(), dateFrom ?? new Date());
+  const visitDuration = calculateDuration(dateTo, dateFrom, formatMessage);
+  const insureeAge = calculateAge(insuree?.dob, formatMessage);
 
   return (
     <Grid item xs={6} className={classes.item}>
       <Grid className={classes.item}>
-        <NumberInput
+        <TextInput
           module="claim"
           label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
           name="insureeAge"
           readOnly={true}
           withNull={true}
-          value={insuree?.age ?? 1}
+          value={insureeAge}
         />
       </Grid>
       <Grid className={classes.item}>
-        <NumberInput
+        <TextInput
           module="claim"
           label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
           name="lastClaimDays"
           displayZero={true}
           readOnly={true}
-          value={visitDuration === 0 ? 1 : visitDuration}
+          value={visitDuration}
         />
       </Grid>
       <Grid className={classes.item}>
