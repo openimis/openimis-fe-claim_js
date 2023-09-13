@@ -159,25 +159,27 @@ export function formatDetail(type, detail) {
   console.log(detail);
   let subServices = [];
   let subItems = [];
-  if(detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined ){
-    detail.service.servicesLinked.forEach(d =>{
-      subItems.push(d);
-    })
-  }
-  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
-    detail.claimlinkedItem.forEach(d =>{
-      subItems.push(d);
-    })
-  }
-  if(detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined){
-    detail.service.serviceserviceSet.forEach(d =>{
-      subServices.push(d);
-    })
-  }
-  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
-    detail.claimlinkedService.forEach(d =>{
-      subServices.push(d);
-    })
+  if (type == 'service') {
+    if (detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined) {
+      detail.service.servicesLinked.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
+      detail.claimlinkedItem.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined) {
+      detail.service.serviceserviceSet.forEach(d => {
+        subServices.push(d);
+      })
+    };
+    if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
+      detail.claimlinkedService.forEach(d => {
+        subServices.push(d);
+      })
+    }
   }
   
   return `{
@@ -185,8 +187,8 @@ export function formatDetail(type, detail) {
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${type == 'service' && subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
     ${
       detail.explanation !== undefined && detail.explanation !== null
