@@ -13,7 +13,7 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
-import { STATUS_WITH_AT_LEAST_ENTERED_STATUS } from "./constants";
+import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS } from "./constants";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {
@@ -315,7 +315,7 @@ export function fetchLastClaimAt(claim) {
   let claimFilters = [
     `insuree_ChfId: "${claim.insuree.chfId}"`,
     "first: 1",
-    STATUS_WITH_AT_LEAST_ENTERED_STATUS,
+    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
     `orderBy: "-dateFrom"`,
   ];
 
@@ -343,7 +343,7 @@ export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
   const claimFilters = [
     `chfid: "${chfid}"`,
     `icd: "${icd.code}"`,
-    STATUS_WITH_AT_LEAST_ENTERED_STATUS,
+    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
   ];
 
   const projection = ["code", "dateFrom", "dateTo", "uuid", "status"];
