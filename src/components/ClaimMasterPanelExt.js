@@ -30,11 +30,7 @@ import AdditionalPanelClaim from "./AdditionalPanelClaim";
 const styles = (theme) => ({
   tableHeader: theme.table.header,
   item: theme.paper.item,
-  activeLabel: {
-    padding: 10,
-  },
   inactiveLabel: {
-    padding: 10,
     color: "#e20606",
   },
   button: { width: 130, height: 40, background: "#F5F5F5" },
