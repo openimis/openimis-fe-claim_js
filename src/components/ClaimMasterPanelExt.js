@@ -14,6 +14,8 @@ import {
   historyPush,
   withHistory,
   withModulesManager,
+  getTimeDifferenceInDaysFromToday,
+  formatMessage,
 } from "@openimis/fe-core";
 import {
   clearLastClaimAt,
@@ -21,7 +23,6 @@ import {
   clearLastClaimWithSameDiagnosis,
   fetchLastClaimWithSameDiagnosis,
 } from "../actions";
-import { getTimeDifferenceInDaysFromToday, formatMessage } from "@openimis/fe-core";
 import { DEFAULT } from "../constants";
 import AdditionalPanelHeaders from "./AdditionalPanelHeaders";
 import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
