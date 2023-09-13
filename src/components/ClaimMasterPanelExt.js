@@ -47,7 +47,7 @@ const DEFAULT_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.heade
 class ClaimMasterPanelExt extends Component {
   constructor(props) {
     super(props);
-    this.isAdditionalPanelEnabled = this.props.modulesManager.getConf(
+    this.isAdditionalPanelEnabled = props.modulesManager.getConf(
       "fe-claim",
       "ClaimMasterPanelExt.isAdditionalPanelEnabled",
       DEFAULT.IS_ADDITIONAL_PANEL_ENABLED,
@@ -60,7 +60,7 @@ class ClaimMasterPanelExt extends Component {
     if (!!claim?.insuree && !!claim?.healthFacility) {
       this.props.fetchLastClaimAt(claim);
     }
-    if (!!claim?.insuree?.chfId && !!claim?.icd) {
+    if (this.isAdditionalPanelEnabled && !!claim?.insuree?.chfId && !!claim?.icd) {
       this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
     }
   }
@@ -78,7 +78,7 @@ class ClaimMasterPanelExt extends Component {
         prevProps.claim.healthFacility.chfId !== claim.healthFacility.chfId)
     ) {
       this.props.fetchLastClaimAt(claim);
-      if (!!claim.insuree.chfId && !!claim.icd) {
+      if (this.isAdditionalPanelEnabled && !!claim.insuree.chfId && !!claim.icd) {
         this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId);
       }
     }

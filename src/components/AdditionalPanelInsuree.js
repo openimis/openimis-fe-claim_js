@@ -38,7 +38,7 @@ const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree }) => {
       <Grid className={classes.item}>
         <NumberInput
           module="claim"
-          label="ClaimMasterPanelExt.InsureeInfo."
+          label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
           name="lastClaimDays"
           displayZero={true}
           readOnly={true}
