@@ -32,7 +32,7 @@ export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
 
-export const STATUS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
+export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = 'status_Gt: 2';
 
 export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4;
 export const DEFAULT_QUANTITY_MAX_VALUE = 10000;
