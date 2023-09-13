@@ -12,10 +12,15 @@ import {
   NumberInput,
   historyPush,
   withHistory,
-  withModulesManager
+  withModulesManager,
 } from "@openimis/fe-core";
-import { clearLastClaimAt, fetchLastClaimAt, clearLastClaimWithSameDiagnosis, fetchLastClaimWithSameDiagnosis } from "../actions";
-import { getTimeDifferenceInDaysFromToday, getTimeDifferenceInDays, formatMessage} from "@openimis/fe-core";
+import {
+  clearLastClaimAt,
+  fetchLastClaimAt,
+  clearLastClaimWithSameDiagnosis,
+  fetchLastClaimWithSameDiagnosis,
+} from "../actions";
+import { getTimeDifferenceInDaysFromToday, getTimeDifferenceInDays, formatMessage } from "@openimis/fe-core";
 import { STATUS_ENTERED } from "../constants";
 
 const styles = (theme) => ({
@@ -28,12 +33,12 @@ const styles = (theme) => ({
     padding: 10,
     color: "#e20606",
   },
-  button: {width: 130, height: 40, background: "#F5F5F5"}
+  button: { width: 130, height: 40, background: "#F5F5F5" },
 });
 
 const ACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
 const INACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInactive.header";
-const DEFAULT_LABEL =  "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
+const DEFAULT_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
 
 class ClaimMasterPanelExt extends Component {
   componentDidMount() {
@@ -43,7 +48,7 @@ class ClaimMasterPanelExt extends Component {
       this.props.fetchLastClaimAt(claim);
     }
     if (!!claim && !!claim.insuree && !!claim.insuree.chfId && !!claim.icd) {
-      this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree)
+      this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
     }
   }
 
@@ -61,7 +66,7 @@ class ClaimMasterPanelExt extends Component {
     ) {
       this.props.fetchLastClaimAt(claim);
       if (!!claim.insuree.chfId && !!claim.icd) {
-        this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId)
+        this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId);
       }
     }
   }
@@ -70,22 +75,46 @@ class ClaimMasterPanelExt extends Component {
     this.props.clearLastClaimAt();
   }
 
-  getPolicyStatusLabel(timeDelta) { return timeDelta >= 0 ? ACTIVE_LABEL : INACTIVE_LABEL; };
+  getPolicyStatusLabel(timeDelta) {
+    return timeDelta >= 0 ? ACTIVE_LABEL : INACTIVE_LABEL;
+  }
 
-  getPolicyStatusLabelStyle(timeDelta, classes) { return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel; }
+  getPolicyStatusLabelStyle(timeDelta, classes) {
+    return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel;
+  }
 
   goToClaimUuid(uuid) {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [uuid], true);
   }
 
   render() {
-    const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt, restore, isRestored, 
-      intl, fetchedSameDiagnosisClaim, fetchingSameDiagnosisClaim, sameDiagnosisClaim, errorSameDiagnosisClaim } = this.props;
-    const timeDelta = getTimeDifferenceInDaysFromToday(this.props.currentPolicy ? this.props.currentPolicy?.[0]?.expiryDate : null);
+    const {
+      classes,
+      claim,
+      fetchingLastClaimAt,
+      errorLastClaimAt,
+      fetchedLastClaimAt,
+      lastClaimAt,
+      restore,
+      isRestored,
+      intl,
+      fetchedSameDiagnosisClaim,
+      fetchingSameDiagnosisClaim,
+      sameDiagnosisClaim,
+      errorSameDiagnosisClaim,
+    } = this.props;
+    const timeDelta = getTimeDifferenceInDaysFromToday(
+      this.props.currentPolicy ? this.props.currentPolicy?.[0]?.expiryDate : null,
+    );
     const policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
-    const policyStatusLabelStyle = this.props.currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
+    const policyStatusLabelStyle = this.props.currentPolicy
+      ? this.getPolicyStatusLabelStyle(timeDelta, classes)
+      : classes.item;
     const isAdditionalPanelEnabled = this.props.modulesManager.getConf("fe-claim", "isAdditionalPanelEnabled", true);
-    const visitDuration = getTimeDifferenceInDays(this?.props?.dateTo ?? new Date(), this?.props?.dateFrom ?? new Date());
+    const visitDuration = getTimeDifferenceInDays(
+      this?.props?.dateTo ?? new Date(),
+      this?.props?.dateFrom ?? new Date(),
+    );
 
     return (
       <Grid container>
@@ -162,81 +191,80 @@ class ClaimMasterPanelExt extends Component {
           </Typography>
           <Divider />
         </Grid>
-        {isAdditionalPanelEnabled &&(
+        {isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>
-              <NumberInput
-                module="claim"
-                label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
-                name="insureeAge"
-                readOnly={true}
-                withNull={true}
-                value={this?.props?.insuree?.age ?? 1}
-              />
-              <NumberInput
-                module="claim"
-                label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
-                name="lastClaimDays"
-                displayZero={true}
-                readOnly={true}
-                value={visitDuration===0 ? 1 : visitDuration}
-              />
-              <PublishedComponent
-                pubRef="location.HealthFacilityPicker"
-                label={formatMessage(this.props.intl, "admin", "ClaimMasterPanelExt.InsureeInfo.FSP")}
-                value={this?.props?.insuree?.healthFacility ?? null}
-                district={null}
-                module="claim"
-                readOnly={true}
-              />
+            <NumberInput
+              module="claim"
+              label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
+              name="insureeAge"
+              readOnly={true}
+              withNull={true}
+              value={this?.props?.insuree?.age ?? 1}
+            />
+            <NumberInput
+              module="claim"
+              label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
+              name="lastClaimDays"
+              displayZero={true}
+              readOnly={true}
+              value={visitDuration === 0 ? 1 : visitDuration}
+            />
+            <PublishedComponent
+              pubRef="location.HealthFacilityPicker"
+              label={formatMessage(this.props.intl, "admin", "ClaimMasterPanelExt.InsureeInfo.FSP")}
+              value={this?.props?.insuree?.healthFacility ?? null}
+              district={null}
+              module="claim"
+              readOnly={true}
+            />
             <Divider />
           </Grid>
-          )
-        }
-        {isAdditionalPanelEnabled &&(
-        <Grid item xs={6} className={classes.item}>
-          <ProgressOrError progress={fetchingSameDiagnosisClaim} error={errorSameDiagnosisClaim} />
-          {!!fetchedSameDiagnosisClaim && !sameDiagnosisClaim && (
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
-          )}
-          {!!fetchedSameDiagnosisClaim && sameDiagnosisClaim?.uuid === claim.uuid && (
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
-          )}
-          {!!fetchedSameDiagnosisClaim && !!sameDiagnosisClaim && sameDiagnosisClaim?.uuid !== claim.uuid && (
-            <Grid container>
-              <Grid xs={4} item className={classes.item}>
-                <TextInput
-                  module="claim"
-                  label="ClaimMasterPanelExt.InsureeLastVisit.claimCode"
-                  readOnly={true}
-                  value={sameDiagnosisClaim.code}
-                />
+        )}
+        {isAdditionalPanelEnabled && (
+          <Grid item xs={6} className={classes.item}>
+            <ProgressOrError progress={fetchingSameDiagnosisClaim} error={errorSameDiagnosisClaim} />
+            {!!fetchedSameDiagnosisClaim && !sameDiagnosisClaim && (
+              <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
+            )}
+            {!!fetchedSameDiagnosisClaim && sameDiagnosisClaim?.uuid === claim.uuid && (
+              <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
+            )}
+            {!!fetchedSameDiagnosisClaim && !!sameDiagnosisClaim && sameDiagnosisClaim?.uuid !== claim.uuid && (
+              <Grid container>
+                <Grid xs={4} item className={classes.item}>
+                  <TextInput
+                    module="claim"
+                    label="ClaimMasterPanelExt.InsureeLastVisit.claimCode"
+                    readOnly={true}
+                    value={sameDiagnosisClaim.code}
+                  />
+                </Grid>
+                <Grid xs={4} item className={classes.item}>
+                  <PublishedComponent
+                    pubRef="core.DatePicker"
+                    value={sameDiagnosisClaim.dateFrom}
+                    module="claim"
+                    label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtFrom"
+                    readOnly={true}
+                  />
+                </Grid>
+                <Grid xs={4} item className={classes.item}>
+                  <PublishedComponent
+                    pubRef="core.DatePicker"
+                    value={sameDiagnosisClaim.dateTo}
+                    module="claim"
+                    label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtTo"
+                    readOnly={true}
+                  />
+                </Grid>
+                <Button className={classes.button} onClick={() => this.goToClaimUuid(sameDiagnosisClaim.uuid)}>
+                  {formatMessage(intl, "claim", "ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}
+                </Button>
               </Grid>
-              <Grid xs={4} item className={classes.item}>
-                <PublishedComponent
-                  pubRef="core.DatePicker"
-                  value={sameDiagnosisClaim.dateFrom}
-                  module="claim"
-                  label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtFrom"
-                  readOnly={true}
-                />
-              </Grid>
-              <Grid xs={4} item className={classes.item}>
-                <PublishedComponent
-                  pubRef="core.DatePicker"
-                  value={sameDiagnosisClaim.dateTo}
-                  module="claim"
-                  label="ClaimMasterPanelExt.InsureeLastVisit.lastClaimAtTo"
-                  readOnly={true}
-                />
-              </Grid>
-              <Button className={classes.button} onClick={() => this.goToClaimUuid(sameDiagnosisClaim.uuid)}>
-                {formatMessage(intl, "claim", "ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}
-              </Button>
-            </Grid>
-          )}
-        </Grid>)
-        }
-        {isRestored && restore?.uuid &&  (
+            )}
+          </Grid>
+        )}
+        {isRestored && restore?.uuid && (
           <Grid item xs={6} className={classes.item}>
             <Typography>
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.restore" />
@@ -244,7 +272,8 @@ class ClaimMasterPanelExt extends Component {
             <Button className={classes.button} onClick={() => this.goToClaimUuid(restore.uuid)}>
               {restore?.code}
             </Button>
-          </Grid>)}
+          </Grid>
+        )}
       </Grid>
     );
   }
@@ -263,8 +292,14 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ fetchLastClaimAt, clearLastClaimAt, fetchLastClaimWithSameDiagnosis, clearLastClaimWithSameDiagnosis }, dispatch);
+  return bindActionCreators(
+    { fetchLastClaimAt, clearLastClaimAt, fetchLastClaimWithSameDiagnosis, clearLastClaimWithSameDiagnosis },
+    dispatch,
+  );
 };
 
 export default withHistory(
-  withModulesManager(connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimMasterPanelExt))))));
+  withModulesManager(
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimMasterPanelExt)))),
+  ),
+);
