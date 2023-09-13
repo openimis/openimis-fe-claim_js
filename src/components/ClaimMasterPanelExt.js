@@ -33,7 +33,6 @@ const styles = (theme) => ({
   inactiveLabel: {
     color: "#e20606",
   },
-  button: { width: 130, height: 40, background: "#F5F5F5" },
 });
 
 const ACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
@@ -51,18 +50,18 @@ class ClaimMasterPanelExt extends Component {
   }
 
   componentDidMount() {
-    this.props.clearLastClaimAt();
-    const { claim } = this.props;
+    const { claim, clearLastClaimAt, fetchLastClaimAt, fetchLastClaimWithSameDiagnosis } = this.props;
+    clearLastClaimAt();
     if (!!claim?.insuree && !!claim?.healthFacility) {
-      this.props.fetchLastClaimAt(claim);
+      fetchLastClaimAt(claim);
     }
     if (this.isAdditionalPanelEnabled && !!claim?.insuree?.chfId && !!claim?.icd) {
-      this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
+      fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
     }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { claim } = this.props;
+    const { claim, fetchLastClaimAt, fetchLastClaimWithSameDiagnosis } = this.props;
     if (
       !!claim &&
       !!claim.insuree &&
@@ -73,15 +72,16 @@ class ClaimMasterPanelExt extends Component {
         prevProps.claim.insuree.chfId !== claim.insuree.chfId ||
         prevProps.claim.healthFacility.chfId !== claim.healthFacility.chfId)
     ) {
-      this.props.fetchLastClaimAt(claim);
+      fetchLastClaimAt(claim);
       if (this.isAdditionalPanelEnabled && !!claim.insuree.chfId && !!claim.icd) {
-        this.props.fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId);
+        fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId);
       }
     }
   }
 
   componentWillUnmount() {
-    this.props.clearLastClaimAt();
+    const { clearLastClaimAt } = this.props;
+    clearLastClaimAt();
   }
 
   getPolicyStatusLabel(timeDelta) {
@@ -93,7 +93,8 @@ class ClaimMasterPanelExt extends Component {
   }
 
   goToClaimUuid(uuid) {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [uuid], true);
+    const { modulesManager, history } = this.props;
+    historyPush(modulesManager, history, "claim.route.claimEdit", [uuid], true);
   }
 
   render() {
@@ -111,14 +112,14 @@ class ClaimMasterPanelExt extends Component {
       fetchingSameDiagnosisClaim,
       sameDiagnosisClaim,
       errorSameDiagnosisClaim,
+      currentPolicy,
+      dateTo,
+      dateFrom,
+      insuree,
     } = this.props;
-    const timeDelta = getTimeDifferenceInDaysFromToday(
-      this.props.currentPolicy ? this.props.currentPolicy?.[0]?.expiryDate : null,
-    );
-    const policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
-    const policyStatusLabelStyle = this.props.currentPolicy
-      ? this.getPolicyStatusLabelStyle(timeDelta, classes)
-      : classes.item;
+    const timeDelta = getTimeDifferenceInDaysFromToday(currentPolicy ? currentPolicy?.[0]?.expiryDate : null);
+    const policyStatusLabel = currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
+    const policyStatusLabelStyle = currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
 
     return (
       <Grid container>
@@ -185,11 +186,7 @@ class ClaimMasterPanelExt extends Component {
         </Grid>
         {this.isAdditionalPanelEnabled && <AdditionalPanelHeaders />}
         {this.isAdditionalPanelEnabled && (
-          <AdditionalPanelInsuree
-            dateTo={this.props.dateTo}
-            dateFrom={this.props.dateFrom}
-            insuree={this.props.insuree}
-          />
+          <AdditionalPanelInsuree dateTo={dateTo} dateFrom={dateFrom} insuree={insuree} />
         )}
         {this.isAdditionalPanelEnabled && (
           <Grid item xs={6} className={classes.item}>
@@ -210,7 +207,7 @@ class ClaimMasterPanelExt extends Component {
             <Typography>
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.restore" />
             </Typography>
-            <Button className={classes.button} onClick={() => this.goToClaimUuid(restore.uuid)}>
+            <Button variant="contained" color="primary" onClick={() => this.goToClaimUuid(restore.uuid)}>
               {restore?.code}
             </Button>
           </Grid>
