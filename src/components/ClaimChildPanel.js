@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
+import _ from "lodash";
+
+import { Paper, Box, IconButton } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
+import { ThumbUp, ThumbDown } from "@material-ui/icons";
+
 import {
   formatAmount,
   formatMessage,
@@ -16,11 +21,8 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { Paper, Box } from "@material-ui/core";
-import _ from "lodash";
+import { DEFAULT_QUANTITY_MAX_VALUE } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
-import { IconButton } from "@material-ui/core";
-import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -42,6 +44,11 @@ class ClaimChildPanel extends Component {
       false,
     );
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.quantityMaxValue = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.quantityMaxValue",
+      DEFAULT_QUANTITY_MAX_VALUE,
+    );
   }
 
   initData = () => {
@@ -243,6 +250,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
+          max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
       (i, idx) => (

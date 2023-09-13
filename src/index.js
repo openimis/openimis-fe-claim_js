@@ -21,7 +21,7 @@ import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
 import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
-
+import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -98,6 +98,32 @@ const DEFAULT_CONFIG = {
         }
         params.date_start = values.dateStart;
         params.date_end = values.dateEnd;
+        return params;
+      },
+    },
+    {
+      key: "claims_primary_operational_indicators",
+      component: ClaimsPrimaryOperationalIndicators,
+      isValid: (values) => values.year && values.region,
+      getParams: (values) => {
+        const params = {}
+        if (!!values.district) {
+          params.requested_district_id = decodeId(values.district.id);
+        }
+        if (!!values.product) {
+          params.requested_product_id = decodeId(values.product.id);
+        }
+        if (!!values.hf) {
+          params.requested_hf_id = decodeId(values.hf.id);
+        }
+        if (!!values.month) {
+          params.requested_month = values.month;
+        }
+        if (!!values.quarter) {
+          params.requested_quarter = values.quarter;
+        }
+        params.requested_region_id = decodeId(values.region.id);
+        params.requested_year = values.year;
         return params;
       },
     },
