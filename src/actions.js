@@ -13,6 +13,7 @@ import {
 } from "@openimis/fe-core";
 import _ from "lodash";
 import _uuid from "lodash-uuid";
+import { CLAIMS_WITH_AT_LEAST_ENTERED_STATUS } from "./constants";
 
 export function selectClaimAdmin(admin) {
   return (dispatch) => {
@@ -237,7 +238,7 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
-  // to simplify GQL and avoid additional coding, claim code is sent, even if autogenerateCode is set to true
+  // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
   const claimCodePlaceholder="auto"
   const isAutogenerateEnabled = shouldAutogenerate
   return `
@@ -358,7 +359,7 @@ export function fetchLastClaimAt(claim) {
   let claimFilters = [
     `insuree_ChfId: "${claim.insuree.chfId}"`,
     "first: 1",
-    `status_Gt: 2`,
+    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
     `orderBy: "-dateFrom"`,
   ];
 
@@ -378,6 +379,31 @@ export function clearLastClaimAt() {
   return function (dispatch) {
     dispatch({
       type: "CLEAR_CLAIM_LAST_CLAIM_AT"
+    });
+  };
+}
+
+export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
+  const claimFilters = [
+    `chfid: "${chfid}"`,
+    `icd: "${icd.code}"`,
+    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
+  ];
+
+  const projection = ["code", "dateFrom", "dateTo", "uuid", "status"];
+
+  const payload = formatPageQuery(
+    "claimWithSameDiagnosis",
+    claimFilters,
+    projection,
+  );
+  return graphql(payload, "CLAIM_SAME_DIAGNOSIS");
+}
+
+export function clearLastClaimWithSameDiagnosis() {
+  return function (dispatch) {
+    dispatch({
+      type: "CLEAR_CLAIM_SAME_DIAGNOSIS"
     });
   };
 }

@@ -27,6 +27,10 @@ function reducer(
     fetchedLastClaimAt: false,
     errorLastClaimAt: null,
     lastClaimAt: {},
+    fetchingSameDiagnosisClaim: false,
+    fetchedSameDiagnosisClaim: false,
+    sameDiagnosisClaim: null,
+    errorSameDiagnosisClaim: null,
     submittingMutation: false,
     mutation: {},
     fetchingClaimCodeCount: false,
@@ -196,6 +200,37 @@ function reducer(
         fetchedLastClaimAt: false,
         lastClaimAt: null,
         errorLastClaimAt: null,
+      };
+    case "CLAIM_SAME_DIAGNOSIS_REQ":
+      return {
+        ...state,
+        fetchingSameDiagnosisClaim: true,
+        fetchedSameDiagnosisClaim: false,
+        sameDiagnosisClaim: null,
+        errorSameDiagnosisClaim: null,
+      };
+    case "CLAIM_SAME_DIAGNOSIS_RESP":
+      var claims = parseData(action.payload.data.claimWithSameDiagnosis);
+      return {
+        ...state,
+        fetchingSameDiagnosisClaim: false,
+        fetchedSameDiagnosisClaim: true,
+        sameDiagnosisClaim: !!claims && claims.length > 0 ? claims[0] : null,
+        errorSameDiagnosisClaim: formatGraphQLError(action.payload),
+      };
+    case "CLAIM_SAME_DIAGNOSIS_ERR":
+      return {
+        ...state,
+        fetchingSameDiagnosisClaim: false,
+        errorSameDiagnosisClaim: formatServerError(action.payload),
+      };
+    case "CLEAR_CLAIM_SAME_DIAGNOSIS_REQ":
+      return {
+        ...state,
+        fetchingSameDiagnosisClaim: false,
+        fetchedSameDiagnosisClaim: false,
+        sameDiagnosisClaim: null,
+        errorSameDiagnosisClaim: null,
       };
     case "CLAIM_CLAIM_CODE_COUNT_REQ":
       return {

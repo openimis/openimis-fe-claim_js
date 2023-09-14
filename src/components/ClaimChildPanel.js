@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
+import _ from "lodash";
+
+import { Paper, Box, IconButton } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
+import { ThumbUp, ThumbDown } from "@material-ui/icons";
+
 import {
   formatAmount,
   formatMessage,
@@ -17,11 +22,8 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { Paper, Box, TableCell } from "@material-ui/core";
-import _ from "lodash";
+import { DEFAULT_QUANTITY_MAX_VALUE } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
-import { IconButton } from "@material-ui/core";
-import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
 const styles = (theme) => ({
   paper: theme.paper.paper,
@@ -43,6 +45,11 @@ class ClaimChildPanel extends Component {
       false,
     );
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.quantityMaxValue = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.quantityMaxValue",
+      DEFAULT_QUANTITY_MAX_VALUE,
+    );
   }
 
   initData = () => {
@@ -175,6 +182,15 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
+  _checkIfItemsServicesExist = (type, edited) => {
+    if (type==="item"){
+      return Array.isArray(edited.items) ? !edited.items.length==0 : false;
+    }
+    else{
+      return Array.isArray(edited.services) ? !edited.services.length==0 : false;
+    }
+  };
+
   formatRejectedReason = (i, idx) => {
     if (i.status === 1) return null;
     return (
@@ -290,6 +306,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly || true}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
+          max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
       (i, idx) => (
@@ -567,24 +584,28 @@ class ClaimChildPanel extends Component {
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
       ));
-      preHeaders.push(
-        withTooltip(
-          <IconButton onClick={this.rejectAllOnClick}>
-            <ThumbDown />
-          </IconButton>,
-          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
-        )
-      )
-      preHeaders.push(
-        withTooltip(
-          <IconButton onClick={this.approveAllOnClick}>
-            <ThumbUp />
-          </IconButton>,
-          formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
-        )
-      )
     }
 
+    if (!!forReview && edited.status == 4){
+      if (this._checkIfItemsServicesExist(this.props.type, edited)){
+        preHeaders.push(
+          withTooltip(
+            <IconButton onClick={this.rejectAllOnClick}>
+              <ThumbDown />
+            </IconButton>,
+            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
+          )
+        )
+        preHeaders.push(
+          withTooltip(
+            <IconButton onClick={this.approveAllOnClick}>
+              <ThumbUp />
+            </IconButton>,
+            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
+          )
+        )
+      }
+    }
     if (this.showJustificationAtEnter || edited.status !== 2) {
       preHeaders.push("");
       headers.push(`edit.${type}s.justification`);

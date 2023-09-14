@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
+import { injectIntl } from "react-intl";
+
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
+
 import {
   PublishedComponent,
   FormattedMessage,
@@ -10,39 +13,56 @@ import {
   TextInput,
   historyPush,
   withHistory,
-  withModulesManager
+  withModulesManager,
+  getTimeDifferenceInDaysFromToday,
+  formatMessage,
 } from "@openimis/fe-core";
-import { clearLastClaimAt, fetchLastClaimAt } from "../actions";
-import { getTimeDifferenceInDaysFromToday } from "@openimis/fe-core";
+import {
+  clearLastClaimAt,
+  fetchLastClaimAt,
+  clearLastClaimWithSameDiagnosis,
+  fetchLastClaimWithSameDiagnosis,
+} from "../actions";
+import { DEFAULT } from "../constants";
+import AdditionalPanelHeaders from "./AdditionalPanelHeaders";
+import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
+import AdditionalPanelClaim from "./AdditionalPanelClaim";
 
 const styles = (theme) => ({
   tableHeader: theme.table.header,
   item: theme.paper.item,
-  activeLabel: {
-    padding: 10,
-  },
   inactiveLabel: {
-    padding: 10,
     color: "#e20606",
   },
-  button: {width: 130, height: 40, background: "#F5F5F5"}
 });
 
 const ACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
 const INACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInactive.header";
-const DEFAULT_LABEL =  "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
+const DEFAULT_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummary.header";
 
 class ClaimMasterPanelExt extends Component {
+  constructor(props) {
+    super(props);
+    this.isAdditionalPanelEnabled = props.modulesManager.getConf(
+      "fe-claim",
+      "ClaimMasterPanelExt.isAdditionalPanelEnabled",
+      DEFAULT.IS_ADDITIONAL_PANEL_ENABLED,
+    );
+  }
+
   componentDidMount() {
-    this.props.clearLastClaimAt();
-    const { claim } = this.props;
-    if (!!claim && !!claim.insuree && !!claim.healthFacility) {
-      this.props.fetchLastClaimAt(claim);
+    const { claim, clearLastClaimAt, fetchLastClaimAt, fetchLastClaimWithSameDiagnosis } = this.props;
+    clearLastClaimAt();
+    if (!!claim?.insuree && !!claim?.healthFacility) {
+      fetchLastClaimAt(claim);
+    }
+    if (this.isAdditionalPanelEnabled && !!claim?.insuree?.chfId && !!claim?.icd) {
+      fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree);
     }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { claim } = this.props;
+    const { claim, fetchLastClaimAt, fetchLastClaimWithSameDiagnosis } = this.props;
     if (
       !!claim &&
       !!claim.insuree &&
@@ -53,27 +73,55 @@ class ClaimMasterPanelExt extends Component {
         prevProps.claim.insuree.chfId !== claim.insuree.chfId ||
         prevProps.claim.healthFacility.chfId !== claim.healthFacility.chfId)
     ) {
-      this.props.fetchLastClaimAt(claim);
+      fetchLastClaimAt(claim);
+      if (this.isAdditionalPanelEnabled && !!claim.insuree.chfId && !!claim.icd) {
+        fetchLastClaimWithSameDiagnosis(claim.icd, claim.insuree.chfId);
+      }
     }
   }
 
   componentWillUnmount() {
-    this.props.clearLastClaimAt();
+    const { clearLastClaimAt } = this.props;
+    clearLastClaimAt();
   }
 
-  getPolicyStatusLabel(timeDelta) { return timeDelta >= 0 ? ACTIVE_LABEL : INACTIVE_LABEL; };
+  getPolicyStatusLabel(timeDelta) {
+    return timeDelta >= 0 ? ACTIVE_LABEL : INACTIVE_LABEL;
+  }
 
-  getPolicyStatusLabelStyle(timeDelta, classes) { return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel; }
+  getPolicyStatusLabelStyle(timeDelta, classes) {
+    return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel;
+  }
 
-  onRestoreFromClick(uuid) {
-    historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [uuid], true);
+  goToClaimUuid(uuid) {
+    const { modulesManager, history } = this.props;
+    historyPush(modulesManager, history, "claim.route.claimEdit", [uuid], true);
   }
 
   render() {
-    const { classes, claim, fetchingLastClaimAt, errorLastClaimAt, fetchedLastClaimAt, lastClaimAt, restore, isRestored } = this.props;
-    const timeDelta = getTimeDifferenceInDaysFromToday(this.props.currentPolicy ? this.props.currentPolicy?.[0]?.expiryDate : null);
-    const policyStatusLabel = this.props.currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
-    const policyStatusLabelStyle = this.props.currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
+    const {
+      classes,
+      claim,
+      fetchingLastClaimAt,
+      errorLastClaimAt,
+      fetchedLastClaimAt,
+      lastClaimAt,
+      restore,
+      isRestored,
+      intl,
+      fetchedSameDiagnosisClaim,
+      fetchingSameDiagnosisClaim,
+      sameDiagnosisClaim,
+      errorSameDiagnosisClaim,
+      currentPolicy,
+      dateTo,
+      dateFrom,
+      insuree,
+    } = this.props;
+    const timeDelta = getTimeDifferenceInDaysFromToday(currentPolicy ? currentPolicy?.[0]?.expiryDate : null);
+    const policyStatusLabel = currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
+    const policyStatusLabelStyle = currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
+
     return (
       <Grid container>
         <Grid item xs={6} className={classes.item}>
@@ -89,7 +137,11 @@ class ClaimMasterPanelExt extends Component {
           <Divider />
         </Grid>
         <Grid item xs={6} className={classes.item}>
-          
+          <PublishedComponent
+            pubRef="policy.InsureePolicyEligibilitySummary"
+            insuree={!!claim ? claim.insuree : null}
+            targetDate={!!claim ? claim.dateFrom ?? claim.dateTo : null}
+          />
         </Grid>
         <Grid item xs={6} className={classes.item}>
           <ProgressOrError progress={fetchingLastClaimAt} error={errorLastClaimAt} />
@@ -127,18 +179,45 @@ class ClaimMasterPanelExt extends Component {
                   readOnly={true}
                 />
               </Grid>
+              <Button variant="contained" color="primary" onClick={() => this.goToClaimUuid(lastClaimAt.uuid)}>
+                {formatMessage(intl, "claim", "ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}
+              </Button>
             </Grid>
           )}
         </Grid>
-        {isRestored && restore?.uuid &&  (
+        {this.isAdditionalPanelEnabled && <AdditionalPanelHeaders />}
+        {this.isAdditionalPanelEnabled && (
+          <AdditionalPanelInsuree
+            dateTo={dateTo}
+            dateFrom={dateFrom}
+            insuree={insuree}
+            dateClaimed={claim?.dateClaimed}
+          />
+        )}
+        {this.isAdditionalPanelEnabled && (
+          <Grid item xs={6} className={classes.item}>
+            <ProgressOrError progress={fetchingSameDiagnosisClaim} error={errorSameDiagnosisClaim} />
+            {!!fetchedSameDiagnosisClaim && !sameDiagnosisClaim && (
+              <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
+            )}
+            {!!fetchedSameDiagnosisClaim && sameDiagnosisClaim?.uuid === claim.uuid && (
+              <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
+            )}
+            {!!fetchedSameDiagnosisClaim && !!sameDiagnosisClaim && sameDiagnosisClaim?.uuid !== claim.uuid && (
+              <AdditionalPanelClaim sameDiagnosisClaim={sameDiagnosisClaim} />
+            )}
+          </Grid>
+        )}
+        {isRestored && restore?.uuid && (
           <Grid item xs={6} className={classes.item}>
             <Typography>
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.restore" />
             </Typography>
-            <Button className={classes.button} onClick={() => this.onRestoreFromClick(restore.uuid)}>
+            <Button variant="contained" color="primary" onClick={() => this.goToClaimUuid(restore.uuid)}>
               {restore?.code}
             </Button>
-          </Grid>)}
+          </Grid>
+        )}
       </Grid>
     );
   }
@@ -149,12 +228,22 @@ const mapStateToProps = (state) => ({
   fetchedLastClaimAt: state.claim.fetchedLastClaimAt,
   lastClaimAt: state.claim.lastClaimAt,
   errorLastClaimAt: state.claim.errorLastClaimAt,
+  fetchingSameDiagnosisClaim: state.claim.fetchingSameDiagnosisClaim,
+  fetchedSameDiagnosisClaim: state.claim.fetchedSameDiagnosisClaim,
+  sameDiagnosisClaim: state.claim.sameDiagnosisClaim,
+  errorSameDiagnosisClaim: state.claim.errorSameDiagnosisClaim,
   currentPolicy: state.policy.policies,
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ fetchLastClaimAt, clearLastClaimAt }, dispatch);
+  return bindActionCreators(
+    { fetchLastClaimAt, clearLastClaimAt, fetchLastClaimWithSameDiagnosis, clearLastClaimWithSameDiagnosis },
+    dispatch,
+  );
 };
 
 export default withHistory(
-  withModulesManager(connect(mapStateToProps, mapDispatchToProps)(withTheme(withStyles(styles)(ClaimMasterPanelExt)))));
+  withModulesManager(
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimMasterPanelExt)))),
+  ),
+);
