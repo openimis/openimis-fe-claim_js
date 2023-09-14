@@ -296,12 +296,7 @@ class ClaimForm extends Component {
         let isUnderMaximumAmount = true;
 
         items.forEach((item) => {
-<<<<<<< HEAD
-
-          if (parseFloat(item.qtyProvided) >= parseFloat(item?.item?.maximumAmount ?? +Infinity)) {
-=======
           if (parseFloat(item.qtyProvided) > parseFloat(item?.item?.maximumAmount ?? this.quantityMaxValue)) {
->>>>>>> af24109ac98f4195c9110fd446b7c6a315722f23
             isUnderMaximumAmount = false;
           }
         });
