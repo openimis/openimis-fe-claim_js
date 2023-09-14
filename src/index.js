@@ -9,6 +9,7 @@ import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
+import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
 import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
@@ -160,6 +161,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.FeedbackStatusPicker.projection", ref: null },
     { key: "claim.RejectionReasonPicker", ref: RejectionReasonPicker },
     { key: "claim.RejectionReasonPicker.projection", ref: null },
+    { key: "medical.ServiceFilterPicker", ref: ServiceFilterPicker },
     { key: "claim.CreateClaim.feedbackStatus", ref: 1 },
     { key: "claim.CreateClaim.reviewStatus", ref: 1 },
     { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },

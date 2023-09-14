@@ -42,6 +42,7 @@ import {
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
+import ClaimChildPanelReview from "./ClaimChildPanelReview";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
@@ -54,13 +55,21 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    if (!this.props.forReview) {
+      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
+    } else {
+      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
+    }
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    if (!this.props.forReview) {
+      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
+    } else {
+      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
+    }
   }
 }
 
@@ -85,6 +94,7 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
+
     this.claimValidationMultipleServicesExplanationRequired = props.modulesManager.getConf(
       "fe-claim",
       "claimValidationMultipleServicesExplanationRequired",
@@ -221,6 +231,7 @@ class ClaimForm extends Component {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    if (d[type].priceAsked === null || d[type].priceAsked === undefined || d[type].priceAsked === "" || d[type].priceAsked === "0") return false;
     if (forReview) {
       if (d.qtyProvided < d.qtyApproved) {
         return false;
@@ -228,6 +239,10 @@ class ClaimForm extends Component {
     }
     return true;
   };
+
+  checkQtySubService = () => {
+
+  }
 
   canSave = (forFeedback, forReview) => {
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
@@ -240,20 +255,40 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
+    if (!this.state.claim.dateTo) return false;
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if (this.state.claim.services !== undefined) {
+      if (this.props.forReview) {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
+          return false;
+        }
+      } else {
+        if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length - 1) {
+          return false;
+        }
+      }
+
+    } else {
+      return false;
+    }
+
+
     if (this.isCareTypeMandatory){
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
     if (this.isExplanationMandatoryForIPD){
       if (this.state.claim.careType===IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
+
     if (!forFeedback) {
+      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
       //if there are items or services, they have to be complete
+
       let items = [];
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
@@ -275,6 +310,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
+
       let services = [];
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
@@ -292,7 +328,9 @@ class ClaimForm extends Component {
         }
 
         if (this.claimValidationMultipleServicesExplanationRequired) {
+
           const isValid = services.every((item) => !(item.qtyProvided > 1 && !item?.explanation));
+
           if (!isValid) {
             return false;
           }
@@ -302,7 +340,12 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
+    if (forReview) {
+      if (d.qtyProvided < d.qtyApproved) {
+        return false;
+      }
     }
     return true;
   };
@@ -432,6 +475,7 @@ class ClaimForm extends Component {
     ];
 
     const editingProps = {
+
       isDuplicate: this.state.isDuplicate,
       isRestored: this.state.isRestored || this.state.claim?.restore,
       restore: this.state.claim?.restore,
@@ -441,6 +485,7 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
+
       save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
       fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,

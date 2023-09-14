@@ -150,7 +150,12 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
+    if(edited.code && this.claimPrefix){
+      edited.code = edited.code.replace(edited.insuree?.chfId, '');
+    }
+
     let ro = readOnly || !!forReview || !!forFeedback;
+
     return (
       <Grid container>
         <ControlledField
@@ -216,6 +221,7 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateTo", d)}
                 readOnly={ro}
+                required={true}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
               />
@@ -318,7 +324,7 @@ class ClaimMasterPanel extends FormPanel {
         />}
         <ControlledField
           module="claim"
-          id="Claim.code"
+          id="Claim.codechfId"
           field={
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
@@ -347,23 +353,26 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
-          id="Claim.guarantee"
+          id="Claim.code"
           field={
-            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+            <Grid item xs={this.claimPrefix ? 1 : 2} className={classes.item}>
               <TextInput
                 module="claim"
-                label="guaranteeId"
-                value={edited.guaranteeId}
+                label="code"
+                required
+                value={edited.code}
+                error={this.state.claimCodeError}
                 reset={reset}
-                onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                onChange={this.debounceUpdateCode}
                 readOnly={ro}
                 inputProps={{
-                  "maxLength": this.guaranteeIdMaxLength,
+                  "maxLength": this.codeMaxLength,
                 }}
               />
             </Grid>
           }
         />
+        
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -428,7 +437,7 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
-        {!forFeedback && (
+        {!this.hideSecDiagnos && !forFeedback && (
           <Fragment>
             {Array.from(
               { length: this.numberOfAdditionalDiagnosis },
