@@ -13,6 +13,7 @@ import {
   AmountInput,
   TextInput,
   ValidatedTextInput,
+  ConstantBasedPicker,
 } from "@openimis/fe-core";
 import { Grid } from "@material-ui/core";
 import _ from "lodash";
@@ -29,6 +30,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
+import {YES_NO} from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -64,7 +66,7 @@ class ClaimMasterPanel extends FormPanel {
     this.allowReferHF = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.referHF",
-      true,
+      false,
     );
     this.claimTypeReferSymbol = props.modulesManager.getConf(
       "fe-claim",
@@ -99,7 +101,7 @@ class ClaimMasterPanel extends FormPanel {
 
     return totalServices + totalItems;
   }
-  
+
   render() {
     const {
       intl,
@@ -218,7 +220,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
+{/*        <ControlledField
           module="claim"
           id="Claim.visitType"
           field={
@@ -230,7 +232,7 @@ class ClaimMasterPanel extends FormPanel {
                 value={edited.visitType}
                 reset={reset}
                 onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
+                readOnly={true}
                 required={true}
               />
             </Grid>
@@ -275,6 +277,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />}
+        */}
         <ControlledField
           module="claim"
           id="Claim.code"
@@ -304,7 +307,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
+{/*        <ControlledField
           module="claim"
           id="Claim.guarantee"
           field={
@@ -322,7 +325,7 @@ class ClaimMasterPanel extends FormPanel {
               />
             </Grid>
           }
-        />
+        />*/}
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -394,13 +397,12 @@ class ClaimMasterPanel extends FormPanel {
               id="Claim.secDiagnosis1"
               field={
                 <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis1"
-                    label={formatMessage(intl, "claim", "secDiagnosis1")}
-                    value={edited.icd1}
+                  <TextInput
+                    module="claim"
+                    label="dischargeDiagnosis"
+                    value={edited.dischargeDiagnosis}
                     reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd1", v)}
+                    onChange={(v) => this.updateAttribute("dischargeDiagnosis", v)}
                     readOnly={ro}
                   />
                 </Grid>
@@ -408,22 +410,39 @@ class ClaimMasterPanel extends FormPanel {
             />
             <ControlledField
               module="claim"
-              id="Claim.secDiagnosis2"
+              id="Claim.maternalDeath"
               field={
                 <Grid item xs={3} className={classes.item}>
-                  <PublishedComponent
-                    pubRef="medical.DiagnosisPicker"
-                    name="secDiagnosis2"
-                    label={formatMessage(intl, "claim", "secDiagnosis2")}
-                    value={edited.icd2}
-                    reset={reset}
-                    onChange={(v, s) => this.updateAttribute("icd2", v)}
-                    readOnly={ro}
-                  />
+                    <ConstantBasedPicker
+                        module="claim"
+                        label="maternalDeath"
+                        onChange={(value) =>
+                          this.updateAttribute("maternalDeath", value)
+                        }
+                        constants={YES_NO}
+                        withNull
+                      />
                 </Grid>
               }
             />
             <ControlledField
+              module="claim"
+              id="Claim.childDeath"
+              field={
+                <Grid item xs={3} className={classes.item}>
+                    <ConstantBasedPicker
+                        module="claim"
+                        label="childDeath"
+                        onChange={(value) =>
+                          this.updateAttribute("childDeath", value)
+                        }
+                        constants={YES_NO}
+                        withNull
+                      />
+                </Grid>
+              }
+            />
+            {/*<ControlledField
               module="claim"
               id="Claim.secDiagnosis3"
               field={
@@ -456,7 +475,7 @@ class ClaimMasterPanel extends FormPanel {
                   />
                 </Grid>
               }
-            />
+            />*/}
           </Fragment>
         )}
         <ControlledField
@@ -510,17 +529,7 @@ class ClaimMasterPanel extends FormPanel {
               />
             )}
           </Fragment>
-        )}
-        <Contributions
-          claim={edited}
-          readOnly={ro}
-          updateAttribute={this.updateAttribute}
-          updateAttributes={this.updateAttributes}
-          updateExts={this.updateExts}
-          updateExt={this.updateExt}
-          contributionKey={CLAIM_MASTER_PANEL_CONTRIBUTION_KEY}
-        />
-      </Grid>
+        )}</Grid>
     );
   }
 }

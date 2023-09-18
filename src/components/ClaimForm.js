@@ -87,6 +87,15 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.jsonExt = {};
+    // Fetch the insuree number from the URL when forwarded from the Insuree page
+    // const queryParams = new URLSearchParams(window.location.search);
+    // const chfId = queryParams.get('chfId');
+
+    const chfIdText = localStorage.getItem('claimHealthFacilityChfID')
+    if (chfIdText) {
+      claim.insuree = JSON.parse(chfIdText);
+    }
+
     return claim;
   }
 
@@ -163,7 +172,8 @@ class ClaimForm extends Component {
     if (!this.state.claim.dateFrom) return false;
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
-    if (!this.state.claim.icd) return false;
+    //if (!this.state.claim.icd) return false;
+    if (!this.state.claim.dischargeDiagnosis) return false;
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;

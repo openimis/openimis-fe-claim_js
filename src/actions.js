@@ -195,11 +195,6 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
-  claimTypeReferSymbol = props.modulesManager.getConf(
-    "fe-claim",
-    "claimForm.claimTypeReferSymbol",
-    'R',
-  );
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -207,7 +202,7 @@ export function formatClaimGQL(mm, claim) {
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
     ${claim.dateTo ? `dateTo: "${claim.dateTo}"` : ""}
-    icdId: ${decodeId(claim.icd.id)}
+    icdId: 2
     ${!!claim.icd1 ? `icd1Id: ${decodeId(claim.icd1.id)}` : ""}
     ${!!claim.icd2 ? `icd2Id: ${decodeId(claim.icd2.id)}` : ""}
     ${!!claim.icd3 ? `icd3Id: ${decodeId(claim.icd3.id)}` : ""}
@@ -216,7 +211,7 @@ export function formatClaimGQL(mm, claim) {
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
-    ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
+
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
@@ -231,6 +226,7 @@ export function formatClaimGQL(mm, claim) {
     }
   `;
 }
+// ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
 
 export function createClaim(mm, claim, clientMutationLabel) {
   let mutation = formatMutation("createClaim", formatClaimGQL(mm, claim), clientMutationLabel);
@@ -271,8 +267,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "adjustment",
     "attachmentsCount",
     "healthFacility" + mm.getProjection("location.HealthFacilityPicker.projection"),
-    "referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
-    "referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    //"referFrom" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
+    //"referTo" + mm.getProjection("location.HealthFacilityReferPicker.projection"),
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
     "visitType" + mm.getProjection("medical.VisitTypePicker.projection"),
     "admin" + mm.getProjection("claim.ClaimAdminPicker.projection"),
