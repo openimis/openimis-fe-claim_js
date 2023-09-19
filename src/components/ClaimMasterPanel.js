@@ -61,11 +61,6 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
-    this.allowReferHF = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.referHF",
-      true,
-    );
   }
 
   componentWillUnmount = () => {
@@ -94,10 +89,6 @@ class ClaimMasterPanel extends FormPanel {
     return totalServices + totalItems;
   }
 
-  filterReferHF(options, currentHFUuid=this.props.userHealthFacilityFullPath.uuid){
-    return options.filter((option)=>option.uuid!==currentHFUuid)
-  }
-  
   render() {
     const {
       intl,
@@ -109,8 +100,7 @@ class ClaimMasterPanel extends FormPanel {
       forFeedback,
       isCodeValid,
       isCodeValidating,
-      codeValidationError,
-      userHealthFacilityFullPath }
+      codeValidationError }
       = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
@@ -254,25 +244,6 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.allowReferHF && <ControlledField
-          module="claim"
-          id="Claim.referHealthFacility"
-          field={
-            <Grid item xs={3} className={classes.item}>
-              <PublishedComponent
-                pubRef="location.HealthFacilityPicker"
-                label={formatMessage(intl, "claim", "referHF")}
-                value={edited.referHF}
-                reset={reset}
-                readOnly={false}
-                required={edited.visitType==='R' ? true : false}
-                filterOptions={(options)=>options?.filter((option)=>option.uuid!==userHealthFacilityFullPath?.uuid)}
-                filterSelectedOptions={true}
-                onChange={(d) => this.updateAttribute("referHF", d)}
-              />
-            </Grid>
-          }
-        />}
         <ControlledField
           module="claim"
           id="Claim.code"
