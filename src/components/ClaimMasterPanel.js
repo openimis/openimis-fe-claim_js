@@ -403,6 +403,7 @@ class ClaimMasterPanel extends FormPanel {
                     value={edited.jsonExt.dischargeDiagnosis}
                     reset={reset}
                     onChange={(v) => this.updateExt("dischargeDiagnosis", v)}
+                    required
                     readOnly={ro}
                   />
                 </Grid>
