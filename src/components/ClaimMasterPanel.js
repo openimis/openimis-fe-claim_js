@@ -260,11 +260,11 @@ class ClaimMasterPanel extends FormPanel {
           field={
             <Grid item xs={3} className={classes.item}>
               <PublishedComponent
-                pubRef="location.HealthFacilityReferPicker"
+                pubRef="location.HealthFacilityPicker"
                 label={formatMessage(intl, "claim", "referHF")}
-                value={(edited.visitType==='R' ? edited.referFrom: edited.referTo) ?? ""}
+                value={edited.referHF}
                 reset={reset}
-                readOnly={ro}
+                readOnly={false}
                 required={edited.visitType==='R' ? true : false}
                 filterOptions={(options)=>options?.filter((option)=>option.uuid!==userHealthFacilityFullPath?.uuid)}
                 filterSelectedOptions={true}
