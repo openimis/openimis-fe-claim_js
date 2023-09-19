@@ -195,11 +195,6 @@ export function formatAttachments(mm, attachments) {
 }
 
 export function formatClaimGQL(mm, claim) {
-  claimTypeReferSymbol = props.modulesManager.getConf(
-    "fe-claim",
-    "claimForm.claimTypeReferSymbol",
-    'R',
-  );
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
     code: "${claim.code}"
@@ -216,7 +211,7 @@ export function formatClaimGQL(mm, claim) {
     feedbackStatus: ${mm.getRef("claim.CreateClaim.feedbackStatus")}
     reviewStatus: ${mm.getRef("claim.CreateClaim.reviewStatus")}
     dateClaimed: "${claim.dateClaimed}"
-    ${claim.visitType === claimTypeReferSymbol ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
+    ${claim.visitType==='R' ? `referFromId` : `referToId`}: ${decodeId(claim.referHF.id)}
     healthFacilityId: ${decodeId(claim.healthFacility.id)}
     visitType: "${claim.visitType}"
     ${!!claim.guaranteeId ? `guaranteeId: "${claim.guaranteeId}"` : ""}
