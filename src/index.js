@@ -22,6 +22,7 @@ import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsRe
 import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
+import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -175,6 +176,7 @@ const DEFAULT_CONFIG = {
   ],
   "core.MainMenu": [ClaimMainMenu],
   "claim.MasterPanel": [ClaimMasterPanelExt],
+  "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
 };
 
 export const ClaimModule = (cfg) => {
