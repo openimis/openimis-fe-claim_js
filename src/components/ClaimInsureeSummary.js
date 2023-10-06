@@ -4,7 +4,6 @@ import { useIntl } from "react-intl";
 
 import { Typography, Grid, Paper, IconButton, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import AddIcon from "@material-ui/icons/Add";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import { useModulesManager, useTranslations, Table, useHistory, historyPush, formatAmount } from "@openimis/fe-core";
@@ -41,8 +40,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
   const { formatMessage, formatMessageWithValues, formatDateFromISO } = useTranslations(MODULE_NAME, modulesManager);
 
   const { claims, fetchingClaims, errorClaims, claimsPageInfo } = useSelector((store) => store.claim);
-
-  const onCreateNewClaim = () => historyPush(modulesManager, history, "claim.route.healthFacilities");
+  const { health_facility_id } = useSelector((store) => store.core.user.i_user);
 
   const goToClaim = (claim) => historyPush(modulesManager, history, "claim.route.claimEdit", [claim.uuid]);
 
@@ -58,7 +56,10 @@ const ClaimInsureeSummary = ({ insuree }) => {
     (claim) => formatMessage(`claimStatus.${claim?.status}`),
     (claim) => (
       <Tooltip title={formatMessage("ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}>
-        <IconButton onClick={() => goToClaim(claim)}>
+        <IconButton
+          disabled={claim?.healthFacility?.id !== health_facility_id}
+          onClick={() => goToClaim(claim)}
+        >
           <VisibilityIcon />
         </IconButton>
       </Tooltip>
@@ -79,15 +80,6 @@ const ClaimInsureeSummary = ({ insuree }) => {
           <Typography className={classes.tableTitle}>
             {formatMessageWithValues("claimSummaries", { count: claimsPageInfo?.totalCount })}
           </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Grid className={classes.item} container justify="flex-end">
-            <Tooltip title={formatMessage("newClaim.tooltip")}>
-              <IconButton onClick={onCreateNewClaim}>
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
         </Grid>
       </Grid>
       <Table
