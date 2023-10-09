@@ -121,3 +121,5 @@ None
 - `claimForm.isClaimedDateFixed`, set Date Claimed to current date and set field to read only while creating new claim. Default false.
 - `claimForm.quantityMaxValue`, defines the max number of provided quantity. By default: __10.000__.
 - `ClaimMasterPanelExt.isAdditionalPanelEnabled`: Determines whether to display additional panels, including information about the insuree and details about claim related to the same diagnosis. By default: __false__.
+- `explanationRequiredIfQuantityAboveThreshold`: Determines if an explanation field should be mandatory and if an error should be displayed when the provided quantity exceeds the specified threshold. If set to true, an error will be triggered when the provided quantity goes beyond the threshold set in __quantityExplanationThreshold__. By default: __false__.
+- `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if __explanationRequiredIfQuantityAboveThreshold__ is set to true, an error will be triggered indicating that an explanation is required. By default: __1__.

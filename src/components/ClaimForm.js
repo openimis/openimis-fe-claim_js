@@ -37,7 +37,7 @@ import {
   STATUS_REJECTED,
   STORAGE_KEY_ADMIN,
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
-  DEFAULT_QUANTITY_MAX_VALUE
+  DEFAULT
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -80,6 +80,16 @@ class ClaimForm extends Component {
 
   constructor(props) {
     super(props);
+    this.explanationRequiredIfQuantityAboveThreshold = props.modulesManager.getConf(
+      "fe-claim",
+      "explanationRequiredIfQuantityAboveThreshold",
+      DEFAULT.EXPLANATION_REQUIRED_IF_ABOVE_THRESHOLD,
+    );
+    this.quantityExplanationThreshold = props.modulesManager.getConf(
+      "fe-claim",
+      "quantityExplanationThreshold",
+      DEFAULT.QUANTITY_EXPLANATION_THRESHOLD,
+    );
     this.canSaveClaimWithoutServiceNorItem = props.modulesManager.getConf(
       "fe-claim",
       "canSaveClaimWithoutServiceNorItem",
@@ -102,7 +112,7 @@ class ClaimForm extends Component {
     this.quantityMaxValue = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.quantityMaxValue",
-      DEFAULT_QUANTITY_MAX_VALUE,
+      DEFAULT.QUANTITY_MAX_VALUE,
     );
   }
 
@@ -221,6 +231,13 @@ class ClaimForm extends Component {
     if (!d[type]) return false;
     if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+    if (
+      this.explanationRequiredIfQuantityAboveThreshold &&
+      !d.explanation &&
+      d.qtyProvided > this.quantityExplanationThreshold
+    ) {
+      return false;
+    }
     if (forReview) {
       if (d.qtyProvided < d.qtyApproved) {
         return false;

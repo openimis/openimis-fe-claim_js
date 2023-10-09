@@ -21,7 +21,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT_QUANTITY_MAX_VALUE } from "../constants";
+import { DEFAULT } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -36,6 +36,16 @@ class ClaimChildPanel extends Component {
 
   constructor(props) {
     super(props);
+    this.explanationRequiredIfQuantityAboveThreshold = props.modulesManager.getConf(
+      "fe-claim",
+      "explanationRequiredIfQuantityAboveThreshold",
+      DEFAULT.EXPLANATION_REQUIRED_IF_ABOVE_THRESHOLD,
+    );
+    this.quantityExplanationThreshold = props.modulesManager.getConf(
+      "fe-claim",
+      "quantityExplanationThreshold",
+      DEFAULT.QUANTITY_EXPLANATION_THRESHOLD,
+    );
     this.fixedPricesAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtEnter", false);
     this.fixedPricesAtReview = props.modulesManager.getConf("fe-claim", "claimForm.fixedPricesAtReview", false);
     this.showJustificationAtEnter = props.modulesManager.getConf(
@@ -47,7 +57,7 @@ class ClaimChildPanel extends Component {
     this.quantityMaxValue = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.quantityMaxValue",
-      DEFAULT_QUANTITY_MAX_VALUE,
+      DEFAULT.QUANTITY_MAX_VALUE,
     );
   }
 
@@ -265,6 +275,15 @@ class ClaimChildPanel extends Component {
         <TextInput
           readOnly={!!forReview || readOnly}
           value={i.explanation}
+          error={
+            this.explanationRequiredIfQuantityAboveThreshold &&
+            !i.explanation &&
+            i.qtyProvided > this.quantityExplanationThreshold
+              ? formatMessageWithValues(this.props.intl, "claim", "ClaimChildPanel.review.explanationRequired", {
+                  threshold: this.quantityExplanationThreshold,
+                })
+              : null
+          }
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
       ),
