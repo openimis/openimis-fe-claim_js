@@ -40,7 +40,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
   const { formatMessage, formatMessageWithValues, formatDateFromISO } = useTranslations(MODULE_NAME, modulesManager);
 
   const { claims, fetchingClaims, errorClaims, claimsPageInfo } = useSelector((store) => store.claim);
-  const { health_facility_id } = useSelector((store) => store.core.user.i_user);
+  const healthFacilityId = useSelector((store) => store.core.user.i_user.health_facility_id);
 
   const goToClaim = (claim) => historyPush(modulesManager, history, "claim.route.claimEdit", [claim.uuid]);
 
@@ -57,7 +57,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
     (claim) => (
       <Tooltip title={formatMessage("ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}>
         <IconButton
-          disabled={claim?.healthFacility?.id !== health_facility_id}
+          disabled={claim?.healthFacility?.id !== healthFacilityId}
           onClick={() => goToClaim(claim)}
         >
           <VisibilityIcon />
