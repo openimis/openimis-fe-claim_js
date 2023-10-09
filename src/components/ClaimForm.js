@@ -95,11 +95,6 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-    this.claimValidationMultipleServicesExplanationRequired = props.modulesManager.getConf(
-      "fe-claim",
-      "claimValidationMultipleServicesExplanationRequired",
-      false,
-    );
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
     this.autoGenerateClaimCode = props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
@@ -308,8 +303,10 @@ class ClaimForm extends Component {
           return false;
         }
 
-        if (this.claimValidationMultipleServicesExplanationRequired) {
-          const isValid = services.every((item) => !(item.qtyProvided > 1 && !item?.explanation));
+        if (this.explanationRequiredIfQuantityAboveThreshold) {
+          const isValid = services.every(
+            (item) => !(item.qtyProvided > this.quantityExplanationThreshold && !item?.explanation),
+          );
           if (!isValid) {
             return false;
           }
