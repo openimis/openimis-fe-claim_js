@@ -277,6 +277,7 @@ class ClaimChildPanel extends Component {
           value={i.explanation}
           error={
             this.explanationRequiredIfQuantityAboveThreshold &&
+            type === "service" &&
             !i.explanation &&
             i.qtyProvided > this.quantityExplanationThreshold
               ? formatMessageWithValues(this.props.intl, "claim", "ClaimChildPanel.review.explanationRequired", {

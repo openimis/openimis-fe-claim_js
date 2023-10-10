@@ -228,6 +228,7 @@ class ClaimForm extends Component {
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (
       this.explanationRequiredIfQuantityAboveThreshold &&
+      type === "service" && 
       !d.explanation &&
       d.qtyProvided > this.quantityExplanationThreshold
     ) {
@@ -303,14 +304,6 @@ class ClaimForm extends Component {
           return false;
         }
 
-        if (this.explanationRequiredIfQuantityAboveThreshold) {
-          const isValid = services.every(
-            (item) => !(item.qtyProvided > this.quantityExplanationThreshold && !item?.explanation),
-          );
-          if (!isValid) {
-            return false;
-          }
-        }
         if (!this.props.forReview) services.pop();
         if (services.length && services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length) {
           return false;
