@@ -30,7 +30,7 @@ import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
 import _debounce from "lodash/debounce";
-import {YES_NO} from "../constants";
+import { YES_NO_NA } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -400,9 +400,9 @@ class ClaimMasterPanel extends FormPanel {
                   <TextInput
                     module="claim"
                     label="dischargeDiagnosis"
-                    value={edited.dischargeDiagnosis}
+                    value={edited.jsonExt.dischargeDiagnosis}
                     reset={reset}
-                    onChange={(v) => this.updateAttribute("dischargeDiagnosis", v)}
+                    onChange={(v) => this.updateExt("dischargeDiagnosis", v)}
                     readOnly={ro}
                   />
                 </Grid>
@@ -417,10 +417,11 @@ class ClaimMasterPanel extends FormPanel {
                         module="claim"
                         label="maternalDeath"
                         onChange={(value) =>
-                          this.updateAttribute("maternalDeath", value)
+                          this.updateExt("maternalDeath", value)
                         }
-                        constants={YES_NO}
+                        constants={YES_NO_NA}
                         withNull
+                        required
                       />
                 </Grid>
               }
@@ -434,10 +435,11 @@ class ClaimMasterPanel extends FormPanel {
                         module="claim"
                         label="childDeath"
                         onChange={(value) =>
-                          this.updateAttribute("childDeath", value)
+                          this.updateExt("childDeath", value)
                         }
-                        constants={YES_NO}
+                        constants={YES_NO_NA}
                         withNull
+                        required
                       />
                 </Grid>
               }
