@@ -174,6 +174,8 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     //if (!this.state.claim.icd) return false;
     // if (!this.state.claim.dischargeDiagnosis) return false;
+    if (!this.state.claim.jsonExt.maternalDeath) return false;
+    if (!this.state.claim.jsonExt.childDeath) return false;
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
