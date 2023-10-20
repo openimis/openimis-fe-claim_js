@@ -174,7 +174,7 @@ class ClaimMasterPanel extends FormPanel {
                 module="claim"
                 label="visitDateFrom"
                 reset={reset}
-                onChange={(d) => this.updateAttribute("dateFrom", d)}
+                onChange={(d) => this.updateAttributes({"dateFrom": d, "dateTo": d})}
                 readOnly={ro}
                 required={true}
                 maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
