@@ -419,6 +419,7 @@ class ClaimMasterPanel extends FormPanel {
                         onChange={(value) =>
                           this.updateExt("maternalDeath", value)
                         }
+                        value={edited.jsonExt.maternalDeath}
                         constants={YES_NO_NA}
                         withNull
                         required
@@ -437,6 +438,7 @@ class ClaimMasterPanel extends FormPanel {
                         onChange={(value) =>
                           this.updateExt("childDeath", value)
                         }
+                        value={edited.jsonExt.childDeath}
                         constants={YES_NO_NA}
                         withNull
                         required
