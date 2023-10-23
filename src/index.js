@@ -23,6 +23,7 @@ import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
+import { getClaimsProjections } from "./actions";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -182,3 +183,6 @@ const DEFAULT_CONFIG = {
 export const ClaimModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
 };
+export {
+  getClaimsProjections
+}

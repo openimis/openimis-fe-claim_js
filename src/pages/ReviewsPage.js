@@ -19,6 +19,7 @@ import {
   coreAlert,
   Helmet,
   clearCurrentPaginationPage,
+  Contributions
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
@@ -37,6 +38,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 
 const CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY = "claim.ReviewsFilter";
 const CLAIM_REVIEWS_ACTION_CONTRIBUTION_KEY = "claim.ReviewSelectionAction";
+const CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY = "claimSampling.claimSamplingButton";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -197,6 +199,9 @@ class RawRandomAndValueFilters extends Component {
   };
   render() {
     const { classes } = this.props;
+    // console.log("!23123123123");
+    // console.log(this.state);
+    // console.log(this.state.filters);
     return (
       <Grid container justify="center" alignItems="center" direction="row">
         <Grid item xs={3} className={classes.item}>
@@ -271,10 +276,21 @@ class RawRandomAndValueFilters extends Component {
             }}
           />
         </Grid>
+        <Grid item>
+          <Contributions
+            contributionKey={CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY}
+            filters={this.state.filters}
+            // currentFilters=this.state
+          />
+        </Grid>
       </Grid>
     );
   }
 }
+
+// const rights = useSelector((state) => state.core?.user?.i_user?.rights ?? []);
+// const hasRights = (rightsList) => rightsList.every((x) => rights.includes(x));
+// hasRights(RIGHT_REGISTERS_DIAGNOSES)
 
 const mapStateToFixFilterProps = (state) => ({
   claimsPageInfo: state.claim.claimsPageInfo,

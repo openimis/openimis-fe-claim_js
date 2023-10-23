@@ -676,6 +676,7 @@ class Details extends Component {
 class ClaimFilter extends Component {
   render() {
     const { classes } = this.props;
+    console.log(this.props);
     return (
       <form className={classes.container} noValidate autoComplete="off">
         <BoundHead {...this.props} />

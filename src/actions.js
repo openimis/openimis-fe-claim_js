@@ -133,7 +133,7 @@ export function downloadAttachment(attach) {
   };
 }
 
-export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
+export function getClaimsProjections(mm, withAttachmentsCount) {
   var projections = [
     "uuid",
     "code",
@@ -152,7 +152,13 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
   }
-  const payload = formatPageQueryWithCount("claims", filters, projections);
+  return projections;
+}
+
+export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
+  // those projections are used by claim sampling functionality
+  // hence they were moved to a separate method that is later imported
+  const payload = formatPageQueryWithCount("claims", filters, getClaimsProjections(mm, withAttachmentsCount));
   return graphql(payload, "CLAIM_CLAIM_SEARCHER");
 }
 
