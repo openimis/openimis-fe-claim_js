@@ -664,7 +664,7 @@ class Details extends Component {
               <Divider />
             </Grid>
             <Grid item xs={12}>
-              <FilterExt onChangeFilters={onChangeFilters} />
+              <FilterExt onChangeFilters={onChangeFilters} filters={filters} />
             </Grid>
           </Fragment>
         )}

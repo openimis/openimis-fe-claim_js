@@ -19,6 +19,7 @@ import {
   coreAlert,
   Helmet,
   clearCurrentPaginationPage,
+  Contributions,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
@@ -37,6 +38,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 
 const CLAIM_REVIEWS_FILTER_CONTRIBUTION_KEY = "claim.ReviewsFilter";
 const CLAIM_REVIEWS_ACTION_CONTRIBUTION_KEY = "claim.ReviewSelectionAction";
+const CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY = "claimSampling.claimSamplingButton";
 
 const styles = (theme) => ({
   page: theme.page,
@@ -196,9 +198,12 @@ class RawRandomAndValueFilters extends Component {
     );
   };
   render() {
-    const { classes } = this.props;
+    const { classes, filters } = this.props;
+    const { filters: additionalFilters } = this.state;
+    const allFilters = { ...filters, ...additionalFilters };
+
     return (
-      <Grid container justify="center" alignItems="center" direction="row">
+      <Grid container direction="row">
         <Grid item xs={3} className={classes.item}>
           <NumberInput
             module="claim"
@@ -245,7 +250,7 @@ class RawRandomAndValueFilters extends Component {
             onChange={this.valueChange}
           />
         </Grid>
-        <Grid item xs={3}>
+        <Grid className={classes.item} xs={3}>
           <NumberInput
             module="claim"
             label="ClaimFilter.Reviews.variance"
@@ -271,6 +276,7 @@ class RawRandomAndValueFilters extends Component {
             }}
           />
         </Grid>
+        <Contributions contributionKey={CLAIM_SAMPLING_BATCH_CONTRIBUTION_KEY} filters={allFilters} />
       </Grid>
     );
   }
@@ -639,8 +645,6 @@ class ReviewsPage extends Component {
         action: this.processSelected,
       });
     }
-
-    //actions.push(...extra_action);
 
     return (
       <div className={classes.page}>
