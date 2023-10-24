@@ -392,6 +392,7 @@ class ClaimMasterPanel extends FormPanel {
                 hfFilter={edited.healthFacility}
                 //readOnly
                 required
+                restrictSelf={true}
               />
             </Grid>
           }

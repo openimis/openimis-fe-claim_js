@@ -26,6 +26,7 @@ const ClaimAdminPicker = (props) => {
     hfFilter,
     region,
     district,
+    restrictSelf,
   } = props;
   const userHealthFacilityId = useSelector((state) =>
     state?.loc?.userHealthFacilityFullPath?.uuid
@@ -37,8 +38,10 @@ const ClaimAdminPicker = (props) => {
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
-      query ClaimAdminPicker ($search: String, $hf: String, $region_uuid: String, $district_uuid: String) {
-          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, regionUuid: $region_uuid, districtUuid: $district_uuid) {
+      query ClaimAdminPicker ($search: String, $hf: String, $region_uuid: String, $district_uuid: String,
+                              $restrict_self: Boolean) {
+          claimAdmins(search: $search, first: 20, healthFacility_Uuid: $hf, regionUuid: $region_uuid,
+                      districtUuid: $district_uuid, restrictSelf: $restrict_self) {
               edges {
                   node {
                       id
@@ -69,7 +72,8 @@ const ClaimAdminPicker = (props) => {
       hf: userHealthFacilityId || hfFilter?.uuid,
       search: searchString,
       region_uuid: region?.uuid,
-      district_uuid: district?.uuid
+      district_uuid: district?.uuid,
+      restrict_self: restrictSelf,
     },
   );
 
