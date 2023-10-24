@@ -73,6 +73,13 @@ const ClaimAdminPicker = (props) => {
     },
   );
 
+  useEffect(() => {
+    if (data?.claimAdmins?.edges?.length === 1 && !value) {
+        const singleOption = data.claimAdmins.edges[0].node;
+        onChange(singleOption, `${singleOption.code} ${singleOption.lastName} ${singleOption.otherNames}`);
+    }
+  }, [data, value, onChange]);
+
   return (
     <Autocomplete
       multiple={multiple}
