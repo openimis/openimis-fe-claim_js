@@ -160,10 +160,10 @@ class ClaimForm extends Component {
   };
 
   canSave = (forFeedback) => {
-    if (!this.state.claim.code) return false;
+    // if (!this.state.claim.code) return false;
     if (this.state.lockNew) return false;
-    if (!this.props.isClaimCodeValid) return false;
-    if (!!this.state.claim.codeError) return false;
+    // if (!this.props.isClaimCodeValid) return false;
+    // if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     // if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
     if (!this.state.claim.insuree) return false;

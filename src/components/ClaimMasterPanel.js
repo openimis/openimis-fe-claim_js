@@ -48,9 +48,10 @@ class ClaimMasterPanel extends FormPanel {
   };
 
   shouldValidate = (inputValue) => {
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== (savedClaimCode);
-    return shouldValidate;
+    // const { savedClaimCode } = this.props;
+    // const shouldValidate = inputValue !== (savedClaimCode);
+    // return shouldValidate;
+    return true;
   };
 
   constructor(props) {
@@ -285,7 +286,7 @@ class ClaimMasterPanel extends FormPanel {
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput
                 action={claimCodeValidationCheck}
-                autoFocus={true}
+                // autoFocus={true}
                 clearAction={claimCodeValidationClear}
                 codeTakenLabel="claim.codeTaken"
                 isValid={isCodeValid}
@@ -294,15 +295,14 @@ class ClaimMasterPanel extends FormPanel {
                 label="claim.code"
                 module="claim"
                 onChange={(code) => this.updateAttribute("code", code)}
-                readOnly={readOnly || !!forReview || !!forFeedback}
-                required={true}
+                // readOnly={readOnly || !!forReview || !!forFeedback}
+                // required={true}
                 setValidAction={claimCodeSetValid}
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
                 value={!!this.state.data ? this.state.data.code : null}
-                inputProps={{
-                  "maxLength": this.codeMaxLength,
-                }}
+                readOnly={true}
+                disabled={true}
               />
             </Grid>
           }
