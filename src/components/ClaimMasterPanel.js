@@ -51,7 +51,7 @@ class ClaimMasterPanel extends FormPanel {
     // const { savedClaimCode } = this.props;
     // const shouldValidate = inputValue !== (savedClaimCode);
     // return shouldValidate;
-    return true;
+    return false;
   };
 
   constructor(props) {

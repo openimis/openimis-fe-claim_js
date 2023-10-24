@@ -197,7 +197,7 @@ export function formatAttachments(mm, attachments) {
 export function formatClaimGQL(mm, claim) {
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
-    ${!!claim.code ? `code: "${code}"` : ""}
+    ${!!claim.code ? `code: "${claim.code}"` : ""}
     insureeId: ${decodeId(claim.insuree.id)}
     adminId: ${decodeId(claim.admin.id)}
     dateFrom: "${claim.dateFrom}"
