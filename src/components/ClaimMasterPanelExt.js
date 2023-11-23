@@ -149,7 +149,7 @@ class ClaimMasterPanelExt extends Component {
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
           )}
           {!!fetchedLastClaimAt && lastClaimAt?.uuid === claim.uuid && (
-            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit" />
+            <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsFirstVisit" />
           )}
           {!!fetchedLastClaimAt && !!lastClaimAt && lastClaimAt?.uuid !== claim.uuid && (
             <Grid container>

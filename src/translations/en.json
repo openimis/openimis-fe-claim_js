@@ -216,7 +216,7 @@
   "claim.ClaimMasterPanelExt.InsureePolicyEligibilitySummaryInactive.header": "Policy Information (Inactive)",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.header": "Insuree Last Visit",
   "ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim": "No Other Visit (Claim)",
-  "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsLastVisit": "This is the last visit (Claim)",
+  "ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsFirstVisit": "This is the first visit (Claim)",
   "ClaimMasterPanelExt.sameDiagnosisClaim.noClaim": "Claim with the same diagnosis not found.",
   "ClaimMasterPanelExt.sameDiagnosisClaim.onlyThis": "This is the only claim with such a diagnosis.",
   "claim.ClaimMasterPanelExt.InsureeLastVisit.claimCode": "Claim No.",
