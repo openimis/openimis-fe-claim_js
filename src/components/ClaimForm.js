@@ -483,7 +483,7 @@ class ClaimForm extends Component {
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              openDirty={save}
+              openDirty={save||forReview}
               additionalTooltips={tooltips}
               {...editingProps}
             />
