@@ -97,7 +97,7 @@ None
 - `canSaveClaimWithoutServiceNorItem`, wherever user can save a claim without service nor item, default: true
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
-- `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;
+- `claimForm.isReferHFMandatory`, boolean to make referal HF mandatory when visit type = Referal. Default false;
 - `claimForm.claimTypeReferSymbol`, used for checking referHF option, indicate which letter represents referal. Default R.
 - `claimForm.autoGenerateClaimCode`, boolean to enable autogenerating claim code by the backend. Default false.
 - `claimForm.numberOfAdditionalDiagnosis`, integer to enable required number of additional diagnoses. Default 4, up to 4 supported.

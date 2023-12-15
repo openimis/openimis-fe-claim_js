@@ -157,7 +157,7 @@ class RawRandomAndValueFilters extends Component {
         {
           id: "claimedAbove",
           value: this.state.value,
-          filter: `claimed_Gte: ${this.state.value}`,
+          filter: `claimed_Gte: "${this.state.value}"`,
         },
       ];
     }

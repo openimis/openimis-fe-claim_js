@@ -37,7 +37,7 @@ import {
   STATUS_REJECTED,
   STORAGE_KEY_ADMIN,
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
-  DEFAULT
+  DEFAULT,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -109,6 +109,7 @@ class ClaimForm extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
   }
 
   _newClaim() {
@@ -117,12 +118,13 @@ class ClaimForm extends Component {
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
       JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
-    claim.admin = this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
+    claim.admin =
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
-    claim.code = ""
+    claim.code = "";
     claim.jsonExt = {};
     return claim;
   }
@@ -155,13 +157,13 @@ class ClaimForm extends Component {
       adjustment: null,
       valuated: null,
       referFrom: null,
-      referTo: null
-    }
+      referTo: null,
+    };
   }
 
   _duplicateClaim(claim) {
     const restoredClaim = this._restoreClaim(claim);
-    return { ...restoredClaim, insuree: null, code: "", restore: null}
+    return { ...restoredClaim, insuree: null, code: "", restore: null };
   }
 
   componentDidMount() {
@@ -194,9 +196,14 @@ class ClaimForm extends Component {
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
       );
     } else if (prevProps.claim_uuid && !this.props.claim_uuid && this.state.isDuplicate) {
-      this.setState({ claim: this._duplicateClaim(this.state.claim), newClaim: true, lockNew: false, claim_uuid: null })
+      this.setState({
+        claim: this._duplicateClaim(this.state.claim),
+        newClaim: true,
+        lockNew: false,
+        claim_uuid: null,
+      });
     } else if (prevProps.claim_uuid && !this.props.claim_uuid && this.state.isRestored) {
-      this.setState({ claim: this._restoreClaim(this.state.claim), newClaim: true, lockNew: false, claim_uuid: null })
+      this.setState({ claim: this._restoreClaim(this.state.claim), newClaim: true, lockNew: false, claim_uuid: null });
     } else if (prevProps.claim_uuid && !this.props.claim_uuid) {
       this.setState({ claim: this._newClaim(), newClaim: true, lockNew: false, claim_uuid: null });
     } else if (prevProps.submittingMutation && !this.props.submittingMutation) {
@@ -228,7 +235,7 @@ class ClaimForm extends Component {
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (
       this.explanationRequiredIfQuantityAboveThreshold &&
-      type === "service" && 
+      type === "service" &&
       !d.explanation &&
       d.qtyProvided > this.quantityExplanationThreshold
     ) {
@@ -248,7 +255,12 @@ class ClaimForm extends Component {
     if (!this.props.isClaimCodeValid) return false;
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
-    if (this.state.claim.visitType === this.claimTypeReferSymbol && !this.state.claim.referHF) return false;
+    if (
+      !!this.isReferHFMandatory &&
+      this.state.claim.visitType === this.claimTypeReferSymbol &&
+      !this.state.claim.referHF
+    )
+      return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -256,11 +268,11 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (this.isCareTypeMandatory){
+    if (this.isCareTypeMandatory) {
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
-    if (this.isExplanationMandatoryForIPD){
-      if (this.state.claim.careType===IN_PATIENT_STRING && !this.state.claim.explanation) return false;
+    if (this.isExplanationMandatoryForIPD) {
+      if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
@@ -403,7 +415,8 @@ class ClaimForm extends Component {
       {
         condition:
           rights.includes(RIGHT_RESTORE) &&
-          claim_uuid && isHealthFacilityPage &&
+          claim_uuid &&
+          isHealthFacilityPage &&
           this.state.claim?.status === STATUS_REJECTED,
         content: (
           <span>
@@ -458,7 +471,7 @@ class ClaimForm extends Component {
       readOnly: readOnly,
       forReview: forReview,
       forFeedback: forFeedback,
-      onEditedChanged: this.onEditedChanged
+      onEditedChanged: this.onEditedChanged,
     };
     return (
       <Fragment>
@@ -483,7 +496,7 @@ class ClaimForm extends Component {
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
               Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              openDirty={save||forReview}
+              openDirty={save || forReview}
               additionalTooltips={tooltips}
               {...editingProps}
             />
@@ -507,7 +520,7 @@ const mapStateToProps = (state, props) => ({
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
   generating: state.claim.generating,
-  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid
+  isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
 });
 
 const mapDispatchToProps = (dispatch) => {
