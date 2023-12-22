@@ -416,7 +416,7 @@ class Details extends Component {
                     {
                       id: "visitDateFrom",
                       value: d,
-                      filter: !!d ? `dateFrom: "${d}"` : null,
+                      filter: !!d ? `dateFrom_Gte: "${d}"` : null,
                     },
                   ])
                 }
@@ -433,7 +433,7 @@ class Details extends Component {
                     {
                       id: "visitDateTo",
                       value: d,
-                      filter: !!d ? `dateTo: "${d}"` : null,
+                      filter: !!d ? `dateTo_Lte: "${d}"` : null,
                     },
                   ])
                 }
