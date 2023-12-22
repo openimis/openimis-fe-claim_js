@@ -193,16 +193,24 @@ class ClaimSearcher extends Component {
   };
 
   sorts = () => {
-    var result = [
+    const result = [];
+
+    if (this.showOrdinalNumber) {
+      result.push(null);
+    }
+
+    result.push(
       ["code", true],
       [this.props.modulesManager.getRef("location.HealthFacilityPicker.sort"), true],
       [this.props.modulesManager.getRef("insuree.InsureePicker.sort"), true],
-      ["dateClaimed", false],
+      ["dateClaimed", true],
+      null,
       null,
       null,
       ["claimed", false],
       ["approved", false],
-    ];
+    );
+
     if (this.claimAttachments) {
       result.push(null);
     }
@@ -347,7 +355,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
-          showOrdinalNumber = {this.showOrdinalNumber}
+          showOrdinalNumber={this.showOrdinalNumber}
         />
       </Fragment>
     );
