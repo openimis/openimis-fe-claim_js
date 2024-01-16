@@ -5,7 +5,7 @@ import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
 
-import { Grid, Divider } from "@material-ui/core";
+import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 
 import {
@@ -284,7 +284,7 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -380,7 +380,7 @@ class Details extends Component {
                 {
                   id: "claimedAbove",
                   value: !v ? null : v,
-                  filter: !!v ? `claimed_Gte: ${v}` : null,
+                  filter: !!v ? `claimed_Gte: "${parseFloat(v)}"` : null,
                 },
               ])
             }
@@ -397,7 +397,7 @@ class Details extends Component {
                 {
                   id: "claimedUnder",
                   value: !v ? null : v,
-                  filter: !!v ? `claimed_Lte: ${v}` : null,
+                  filter: !!v ? `claimed_Lte: "${parseFloat(v)}"` : null,
                 },
               ])
             }
@@ -471,7 +471,7 @@ class Details extends Component {
                     {
                       id: "claimDateTo",
                       value: d,
-                      filter: !!d ? `dateClaimed_Lte: "${d}"` : d,
+                      filter: !!d ? `dateClaimed_Lte: "${d}"` : null,
                     },
                   ])
                 }
@@ -584,6 +584,67 @@ class Details extends Component {
             }
           />
         </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.CareTypePicker"
+            name="careType"
+            value={filters["careType"] && filters["careType"]["value"] || null}
+            onChange={(value) =>{
+              onChangeFilters([
+                {
+                  id: "careType",
+                  value: value,
+                  filter: !!value ? `careType: "${value}"` : null,
+                },
+              ])
+            }
+            }
+          />
+        </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.AttachmentStatusPicker"
+            name="attachmentStatus"
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
+            onChange={(value) =>
+              onChangeFilters([
+                {
+                  id: "attachmentStatus",
+                  value: value,
+                  filter: !!value ? `attachmentStatus: ${value}` : null,
+                },
+              ])
+            }
+          />
+        </Grid>
+        <Grid item xs={1} className={classes.item}>
+          <ControlledField
+            module="claim"
+            field={
+              <Grid item xs={2} className={classes.item}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                      onChange={(event) =>
+                        onChangeFilters([
+                          {
+                            id: "showRestored",
+                            value: event.target.checked,
+                            filter: !!event.target.checked ? `showRestored: ${event.target.checked}` : null,
+                          },
+                        ])
+                      }
+                    />
+                  }
+                  label={formatMessage(intl, "claim", "showRestored")}
+                />
+              </Grid>
+            }
+          />
+        </Grid>
+
 
         <Contributions
           filters={filters}
@@ -603,7 +664,7 @@ class Details extends Component {
               <Divider />
             </Grid>
             <Grid item xs={12}>
-              <FilterExt onChangeFilters={onChangeFilters} />
+              <FilterExt onChangeFilters={onChangeFilters} filters={filters} />
             </Grid>
           </Fragment>
         )}

@@ -42,6 +42,7 @@ class ClaimSearcher extends Component {
     this.highlightAltInsurees = props.modulesManager.getConf("fe-claim", "claimFilter.highlightAltInsurees", true);
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
+    this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
   }
 
   canSelectAll = (selection) =>
@@ -263,12 +264,23 @@ class ClaimSearcher extends Component {
     ));
     return result;
   };
+
   rowLocked = (selection, claim) => !!claim.clientMutationId;
+
   rowHighlighted = (selection, claim) => !!this.highlightAmount && claim.claimed > this.highlightAmount;
+
   rowHighlightedAlt = (selection, claim) =>
     !!this.highlightAltInsurees &&
     selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
     !selection.includes(claim);
+
+  isRestoredClaim = (claim) => claim?.restore;
+
+  showRestored = (showRestored) => {
+    this.setState({ showRestored });
+  };
+
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
 
   render() {
     const {
@@ -289,10 +301,8 @@ class ClaimSearcher extends Component {
 
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
-      count = claimsPageInfo.totalCount;
+      count = (claimsPageInfo?.totalCount || 0).toLocaleString();
     }
-
-    count = count.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return (
       <Fragment>
@@ -326,6 +336,7 @@ class ClaimSearcher extends Component {
           rowLocked={this.rowLocked}
           rowHighlighted={this.rowHighlighted}
           rowHighlightedAlt={this.rowHighlightedAlt}
+          rowSecondaryHighlighted={this.isRestoredClaim}
           withSelection="multiple"
           selectionMessage={"claimSummaries.selection.count"}
           preHeaders={this.preHeaders}
@@ -336,6 +347,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
+          showOrdinalNumber = {this.showOrdinalNumber}
         />
       </Fragment>
     );
