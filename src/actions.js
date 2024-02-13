@@ -282,10 +282,10 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, product { id, uuid }, service {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
+        "id, product { id, uuid }, service {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
       "items{" +
-        "id, product { id, uuid }, item {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
+        "id, product { id, uuid }, item {id code name price} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
         "}",
     );
   }
