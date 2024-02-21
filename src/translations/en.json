@@ -123,6 +123,7 @@
   "claim.edit.services.totalApproved": "Total Approved: {totalApproved}",
   "claim.edit.services.service": "Service",
   "claim.edit.services.quantity": "Quantity",
+  "claim.ClaimChildPanel.quantity.error": "Quantity has to be greater than 0",
   "claim.edit.services.price": "Price",
   "claim.edit.services.explanation": "Explanation",
   "claim.edit.services.justification": "Justification",

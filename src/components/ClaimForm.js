@@ -240,7 +240,8 @@ class ClaimForm extends Component {
 
   canSaveDetail = (d, type, forReview) => {
     if (!d[type]) return false;
-    if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "") return false;
+    if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "" || d.qtyProvided <= 0)
+      return false;
     if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
     if (
       this.explanationRequiredIfQuantityAboveThreshold &&
