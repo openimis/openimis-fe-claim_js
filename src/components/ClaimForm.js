@@ -238,24 +238,28 @@ class ClaimForm extends Component {
     );
   };
 
-  canSaveDetail = (d, type, forReview) => {
-    if (!d[type]) return false;
-    if (d.qtyProvided === null || d.qtyProvided === undefined || d.qtyProvided === "" || d.qtyProvided <= 0)
-      return false;
-    if (d.priceAsked === null || d.priceAsked === undefined || d.priceAsked === "") return false;
+  canSaveDetail = (detail, type, forReview) => {
+    if (!detail[type]) return false;
+
+    const qtyProvided = Number(detail.qtyProvided);
+    if (isNaN(qtyProvided) || qtyProvided <= 0) return false;
+
+    const priceAsked = Number(detail.priceAsked);
+    if (isNaN(priceAsked) || priceAsked < 0) return false;
+
     if (
       this.explanationRequiredIfQuantityAboveThreshold &&
       type === "service" &&
-      !d.explanation &&
-      d.qtyProvided > this.quantityExplanationThreshold
+      !detail.explanation &&
+      qtyProvided > this.quantityExplanationThreshold
     ) {
       return false;
     }
-    if (forReview) {
-      if (d.qtyProvided < d.qtyApproved) {
-        return false;
-      }
+
+    if (forReview && qtyProvided < detail.qtyApproved) {
+      return false;
     }
+
     return true;
   };
 
