@@ -256,9 +256,7 @@ class ClaimForm extends Component {
       return false;
     }
 
-    if (forReview && qtyProvided < detail.qtyApproved) {
-      return false;
-    }
+    if (forReview && qtyProvided < detail.qtyApproved) return false;
 
     return true;
   };
