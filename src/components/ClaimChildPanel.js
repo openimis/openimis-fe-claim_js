@@ -156,11 +156,21 @@ class ClaimChildPanel extends Component {
   };
 
   rejectAllOnClick = () => {
-    const updatedData = this.state.data.map((element) => ({
-      ...element,
-      status: 2,
-      rejectionReason: -1,
-    }));
+    const updatedData = this.state.data.map((element) => {
+      let newElement = {}
+      if (element.status === 2 && element.rejectionReason !== -1 ) {
+        newElement = {
+          ...element,
+        }
+      } else {
+        newElement = {
+          ...element,
+          status: 2,
+          rejectionReason: -1,
+        }
+      }
+      return newElement;
+    });
 
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
@@ -168,11 +178,21 @@ class ClaimChildPanel extends Component {
   };
 
   approveAllOnClick = () => {
-    const updatedData = this.state.data.map((element) => ({
-      ...element,
-      status: 1,
-      rejectionReason: null,
-    }));
+    const updatedData = this.state.data.map((element) => {
+      let newElement = {}
+      if (element.status === 2 && element.rejectionReason !== -1 ) {
+        newElement = {
+          ...element,
+        }
+      } else {
+        newElement = {
+          ...element,
+          status: 1,
+          rejectionReason: null,
+        }
+      }
+      return newElement;
+    });
 
     this.setState({ data: updatedData }, () => {
       this._onEditedChanged(updatedData);
@@ -333,7 +353,7 @@ class ClaimChildPanel extends Component {
       itemFormatters.push(
         (i, idx) => (
           <PublishedComponent
-            readOnly={edited.status !== 4}
+            readOnly={edited.status !== 4 || !i?.product?.uuid}
             pubRef="claim.ApprovalStatusPicker"
             withNull={false}
             withLabel={false}
