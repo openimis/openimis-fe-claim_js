@@ -97,8 +97,7 @@ None
 - `canSaveClaimWithoutServiceNorItem`, wherever user can save a claim without service nor item, default: true
 - `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
-- `claimValidationMultipleServicesExplanationRequired`, validate if user provided explanation for service with quantity>1. Default false.
-- `claimForm.referHF`, boolean to enable/disable referal HF (mandatory when visit type = Referal, optional without). Default true;
+- `claimForm.isReferHFMandatory`, boolean to make referal HF mandatory when visit type = Referal. Default false;
 - `claimForm.claimTypeReferSymbol`, used for checking referHF option, indicate which letter represents referal. Default R.
 - `claimForm.autoGenerateClaimCode`, boolean to enable autogenerating claim code by the backend. Default false.
 - `claimForm.numberOfAdditionalDiagnosis`, integer to enable required number of additional diagnoses. Default 4, up to 4 supported.
@@ -121,3 +120,5 @@ None
 - `claimForm.isClaimedDateFixed`, set Date Claimed to current date and set field to read only while creating new claim. Default false.
 - `claimForm.quantityMaxValue`, defines the max number of provided quantity. By default: __10.000__.
 - `ClaimMasterPanelExt.isAdditionalPanelEnabled`: Determines whether to display additional panels, including information about the insuree and details about claim related to the same diagnosis. By default: __false__.
+- `explanationRequiredIfQuantityAboveThreshold`: Determines if an explanation field should be mandatory and if an error should be displayed when the provided quantity exceeds the specified threshold. If set to true, an error will be triggered when the provided quantity goes beyond the threshold set in __quantityExplanationThreshold__. By default: __false__.
+- `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if __explanationRequiredIfQuantityAboveThreshold__ is set to true, an error will be triggered indicating that an explanation is required. By default: __1__.

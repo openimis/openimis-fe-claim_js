@@ -8,9 +8,11 @@ import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
 import CareTypePicker from "./pickers/CareTypePicker"
+import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
 import AttachmentStatusPicker from "./pickers/AttachmentStatusPicker";
+import ClaimAttachmentPredefinedTypePicker from "./pickers/ClaimAttachmentPredefinedTypePicker";
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
@@ -23,6 +25,7 @@ import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsRe
 import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
+import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -152,9 +155,11 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
     { key: "claim.CareTypePicker", ref: CareTypePicker},
+    { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
+    { key: "claim.ClaimAttachmentPredefinedTypePicker", ref: ClaimAttachmentPredefinedTypePicker },
     { key: "claim.ApprovalStatusPicker", ref: ApprovalStatusPicker },
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
@@ -177,6 +182,7 @@ const DEFAULT_CONFIG = {
   ],
   "core.MainMenu": [ClaimMainMenu],
   "claim.MasterPanel": [ClaimMasterPanelExt],
+  "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
 };
 
 export const ClaimModule = (cfg) => {
