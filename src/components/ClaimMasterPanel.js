@@ -1,8 +1,12 @@
 import React, { Fragment } from "react";
-import { withTheme, withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
+import _ from "lodash";
+
+import { Grid } from "@material-ui/core";
+import { withTheme, withStyles } from "@material-ui/core/styles";
+
 import {
   formatMessage,
   ControlledField,
@@ -14,10 +18,6 @@ import {
   TextInput,
   ValidatedTextInput,
 } from "@openimis/fe-core";
-import { Grid } from "@material-ui/core";
-import _ from "lodash";
-import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
-import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import {
   claimCodeSetValid,
   claimCodeValidationCheck,
@@ -25,10 +25,17 @@ import {
   claimHealthFacilitySet,
   clearClaim,
 } from "../actions";
+import {
+  CLAIM_DETAIL_REJECTED_STATUS,
+  DEFAULT,
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
+  IN_PATIENT_STRING,
+} from "../constants";s
+import { claimedAmount, approvedAmount } from "../helpers/amounts";
+import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -139,8 +146,9 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if(edited.code && this.claimPrefix){
-      edited.code = edited.code.replace(edited.insuree?.chfId, '');
+    
+    if (edited.code && this.claimPrefix) {
+      edited.code = edited.code.replace(edited.insuree?.chfId, "");
     }
 
     let ro = readOnly || !!forReview || !!forFeedback;
@@ -372,7 +380,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        
+
         {!!forFeedback && (
           <Fragment>
             <ControlledField

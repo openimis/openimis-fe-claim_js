@@ -1,12 +1,16 @@
 import React, { Component, Fragment } from "react";
-import { withTheme, withStyles } from "@material-ui/core/styles";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import moment from "moment";
+import _ from "lodash";
+
+import { withTheme, withStyles } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
 import ReplayIcon from "@material-ui/icons/Replay";
 import PrintIcon from "@material-ui/icons/ListAlt";
 import AttachIcon from "@material-ui/icons/AttachFile";
+
 import {
   Contributions,
   ProgressOrError,
@@ -21,14 +25,9 @@ import {
   Helmet,
 } from "@openimis/fe-core";
 import { fetchClaim, claimHealthFacilitySet, print, generate } from "../actions";
-import moment from "moment";
-import _ from "lodash";
-
-import ClaimMasterPanel from "./ClaimMasterPanel";
-import ClaimChildPanel from "./ClaimChildPanel";
-import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
-
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_PRINT } from "../constants";
+import ClaimMasterPanel from "./ClaimMasterPanel";
+import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
 import ClaimChildPanelReview from "./ClaimChildPanelReview";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
@@ -71,11 +70,7 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-    this.claimPrefix =props.modulesManager.getConf(
-      "fe-claim",
-      "claimPrex",
-      0,
-    );
+    this.claimPrefix = props.modulesManager.getConf("fe-claim", "claimPrex", 0);
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
   }
 
@@ -144,10 +139,6 @@ class ClaimForm extends Component {
     return true;
   };
 
-  checkQtySubService = () => {
-    
-  }
-
   canSave = (forFeedback) => {
     console.log(this.state);
     if (!this.state.claim.code) return false;
@@ -161,11 +152,9 @@ class ClaimForm extends Component {
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
     if (!forFeedback) {
-      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
-      //if there are items or services, they have to be complete
       let items = [];
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
@@ -202,7 +191,7 @@ class ClaimForm extends Component {
 
   _save = (claim) => {
     this.setState(
-      { lockNew: !claim.uuid }, // avoid duplicates
+      { lockNew: !claim.uuid },
       (e) => this.props.save(claim),
     );
   };
@@ -213,7 +202,7 @@ class ClaimForm extends Component {
 
   _deliverReview = (claim) => {
     this.setState(
-      { lockNew: !claim.uuid }, // avoid duplicates submissions
+      { lockNew: !claim.uuid },
       (e) => this.props.deliverReview(claim),
     );
   };

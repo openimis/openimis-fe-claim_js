@@ -109,7 +109,6 @@ class ClaimForm extends Component {
       "canSaveClaimWithoutServiceNorItem",
       true,
     );
-
     this.claimValidationMultipleServicesExplanationRequired = props.modulesManager.getConf(
       "fe-claim",
       "claimValidationMultipleServicesExplanationRequired",
@@ -276,10 +275,6 @@ class ClaimForm extends Component {
     return true;
   };
 
-  checkQtySubService = () => {
-
-  }
-
   canSave = (forFeedback, forReview) => {
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
     if (this.state.lockNew) return false;
@@ -300,7 +295,7 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (this.state.claim.services !== undefined) {
+    if (this.state.claim.services) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
@@ -310,25 +305,22 @@ class ClaimForm extends Component {
           return false;
         }
       }
-
     } else {
       return false;
     }
 
-
     if (this.isCareTypeMandatory){
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
+
     if (this.isExplanationMandatoryForIPD) {
       if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
 
     if (!forFeedback) {
-      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
-      //if there are items or services, they have to be complete
 
       let items = [];
       if (!!this.state.claim.items) {
@@ -560,7 +552,6 @@ class ClaimForm extends Component {
     ];
 
     const editingProps = {
-
       isDuplicate: this.state.isDuplicate,
       isRestored: this.state.isRestored || this.state.claim?.restore,
       restore: this.state.claim?.restore,
@@ -570,7 +561,6 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-
       save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
       fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
