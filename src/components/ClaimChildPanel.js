@@ -63,15 +63,17 @@ class ClaimChildPanel extends Component {
 
   initData = () => {
     let data = [];
-    if (!!this.props.edited[`${this.props.type}s`]) {
 
+    if (!!this.props.edited[`${this.props.type}s`]) {
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
     }
+
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
     }
+
     return data;
   };
 
@@ -98,13 +100,13 @@ class ClaimChildPanel extends Component {
   }
 
   _updateData = (idx, updates) => {
-      const data = [...this.state.data];
-      updates.forEach((update) => (data[idx][update.attr] = update.v));
-      if (!this.props.forReview && data.length === idx + 1) {
-          data.push({});
-      }
-      return data;
-  }
+    const data = [...this.state.data];
+    updates.forEach((update) => (data[idx][update.attr] = update.v));
+    if (!this.props.forReview && data.length === idx + 1) {
+      data.push({});
+    }
+    return data;
+  };
 
   _onEditedChanged = (data) => {
     let edited = { ...this.props.edited };
@@ -118,9 +120,13 @@ class ClaimChildPanel extends Component {
   };
 
   _price = (v) => {
-    let id = decodeId(v.id)
-    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
-}
+    let id = decodeId(v.id);
+    return (
+      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
+        id
+      ] || v.price
+    );
+  };
 
   _code = (v) => {
     const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
@@ -132,26 +138,26 @@ class ClaimChildPanel extends Component {
   _serviceSet = (v) => {
     const { type, edited, [`servicesPricelists`]: servicesPricelists } = this.props;
     const id = decodeId(v.id);
-  
+
     return servicesPricelists?.[edited.healthFacility[`${type}sPricelist`]?.id]?.[id] ?? v.serviceserviceSet;
   };
 
   _serviceLinked = (v) => {
     const { type, edited, [`servicesPricelists`]: servicesPricelists } = this.props;
     const id = decodeId(v.id);
-  
+
     return servicesPricelists?.[edited.healthFacility[`${type}sPricelist`]?.id]?.[id] ?? v.servicesLinked;
   };
 
   _onChangeItem = (idx, attr, v) => {
-    let data = this._updateData(idx, [{attr, v}]);
+    let data = this._updateData(idx, [{ attr, v }]);
     if (!v) {
       data[idx].priceAsked = null;
       data[idx].qtyProvided = null;
       data[idx].qtyAppr = null;
     } else {
       data[idx].priceAsked = this._price(v);
-      if (!('item' in data[idx])) {
+      if (!("item" in data[idx])) {
         data[idx].subItems = this._serviceLinked(v);
         data[idx].subServices = this._serviceSet(v);
       }
@@ -164,7 +170,6 @@ class ClaimChildPanel extends Component {
     }
     this._onEditedChanged(data);
   };
-
 
   _onChangeSubItem = (idx) => {
     const { data } = this.state;
@@ -182,11 +187,10 @@ class ClaimChildPanel extends Component {
   };
 
   _checkIfItemsServicesExist = (type, edited) => {
-    if (type==="item"){
-      return Array.isArray(edited.items) ? !edited.items.length==0 : false;
-    }
-    else{
-      return Array.isArray(edited.services) ? !edited.services.length==0 : false;
+    if (type === "item") {
+      return Array.isArray(edited.items) ? !edited.items.length == 0 : false;
+    } else {
+      return Array.isArray(edited.services) ? !edited.services.length == 0 : false;
     }
   };
 
@@ -321,11 +325,11 @@ class ClaimChildPanel extends Component {
     let filterItemsOptions = (options) => {
       let currentItemsIds = edited.items ? edited.items.map((claimItem) => claimItem?.item?.id) : [];
       return options.filter((option) => !currentItemsIds.includes(option.id));
-    }
+    };
     let filterServicesOptions = (options) => {
       let currentServicesIds = edited.services ? edited.services.map((claimService) => claimService?.service?.id) : [];
       return options.filter((option) => !currentServicesIds.includes(option.id));
-    }
+    };
 
     let itemFormatters = [
       (i, idx) => (
@@ -333,7 +337,7 @@ class ClaimChildPanel extends Component {
           <PublishedComponent
             readOnly={!!forReview || readOnly}
             pubRef={picker}
-            filterOptions={this.props.type==='item' ? filterItemsOptions : filterServicesOptions}
+            filterOptions={this.props.type === "item" ? filterItemsOptions : filterServicesOptions}
             withLabel={false}
             value={i[type]}
             fullWidth
@@ -376,7 +380,7 @@ class ClaimChildPanel extends Component {
           }
           onChange={(v) => this._onChange(idx, "explanation", v)}
         />
-      )
+      ),
     ];
 
     let subServicesItemsFormatters = [

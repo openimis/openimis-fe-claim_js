@@ -30,7 +30,7 @@ import {
   DEFAULT,
   DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
   IN_PATIENT_STRING,
-} from "../constants";s
+} from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";

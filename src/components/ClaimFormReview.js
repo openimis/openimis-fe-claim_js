@@ -190,10 +190,7 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    this.setState(
-      { lockNew: !claim.uuid },
-      (e) => this.props.save(claim),
-    );
+    this.setState({ lockNew: !claim.uuid }, (e) => this.props.save(claim));
   };
 
   print = (claimUuid) => {
@@ -201,10 +198,7 @@ class ClaimForm extends Component {
   };
 
   _deliverReview = (claim) => {
-    this.setState(
-      { lockNew: !claim.uuid },
-      (e) => this.props.deliverReview(claim),
-    );
+    this.setState({ lockNew: !claim.uuid }, (e) => this.props.deliverReview(claim));
   };
 
   render() {
