@@ -375,11 +375,6 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
-    if (forReview) {
-      if (d.qtyProvided < d.qtyApproved) {
-        return false;
-      }
-    }
     return true;
   };
 

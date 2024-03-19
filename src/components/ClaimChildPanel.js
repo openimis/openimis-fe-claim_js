@@ -303,11 +303,6 @@ class ClaimChildPanel extends Component {
       );
     }
 
-    const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
-      2,
-    );
-
     let headers = [
       `edit.${type}s.${type}`,
       `edit.${type}s.quantity`,
@@ -384,8 +379,8 @@ class ClaimChildPanel extends Component {
     ];
 
     let subServicesItemsFormatters = [
-      (i, idx) =>
-        i.subServices.map((u, udx) => (
+      (i, idx) => {
+        return i.subServices?.map((u, udx) => (
           <tr>
             <TableCell>
               <TextInput readOnly={true} value={u.service.code} />
@@ -431,9 +426,10 @@ class ClaimChildPanel extends Component {
               <AmountInput readOnly={true} value={u.priceAsked} />
             </TableCell>
           </tr>
-        )),
+        ));
+      },
       (i, idx) =>
-        i.subItems.map((u, udx) => {
+        i.subItems?.map((u, udx) => {
           return (
             <tr>
               <TableCell>
@@ -486,7 +482,7 @@ class ClaimChildPanel extends Component {
 
     let subServicesItemsFormattersReview = [
       (i, idx) =>
-        i.claimlinkedService.map((u, udx) => (
+        i.claimlinkedService?.map((u, udx) => (
           <tr>
             <TableCell>
               <TextInput readOnly={true} value={u.service.code} />
@@ -530,7 +526,7 @@ class ClaimChildPanel extends Component {
           </tr>
         )),
       (i, idx) =>
-        i.claimlinkedItem.map((u, udx) => {
+        i.claimlinkedItem?.map((u, udx) => {
           return (
             <tr>
               <TableCell>
