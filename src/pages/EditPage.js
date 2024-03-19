@@ -20,6 +20,7 @@ class EditPage extends Component {
       "claimForm.autoGenerateClaimCode",
       DEFAULT.AUTOGENERATE_CLAIM_CODE,
     );
+    this.claimPrefix = this.props.modulesManager.getConf("fe-claim", "claimPrex", 0);
   }
 
   add = () => {
@@ -27,6 +28,10 @@ class EditPage extends Component {
   };
 
   save = async (claim) => {
+    if (this.claimPrefix === 1) {
+      claim.code = claim.insuree.chfId + claim.code;
+    }
+
     if (!claim.uuid) {
       this.props.createClaim(
         this.props.modulesManager,
