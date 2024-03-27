@@ -95,7 +95,6 @@ None
 - `claimForm.showAdjustmentAtEnter`, boolean to display adjustment field at claim entry. Default false;
 - `claimForm.insureePicker`, the insuree picker to use when filling a claim. Default insuree.InsureeChfIdPicker (the exact chfid entry picker). Other pre-canned option (from insuree reference module): insuree.InsureePicker (dialog picker with search on chfid, last name and other names)
 - `canSaveClaimWithoutServiceNorItem`, wherever user can save a claim without service nor item, default: true
-- `canSubmitClaimWithZero`, wherever user can submit with 0 as claimed amount (probably a claim without service/item), default: false
 - `claimAttachments`, boolean to enable/disable claim attachments. Default true;
 - `claimForm.isReferHFMandatory`, boolean to make referal HF mandatory when visit type = Referal. Default false;
 - `claimForm.claimTypeReferSymbol`, used for checking referHF option, indicate which letter represents referal. Default R.
