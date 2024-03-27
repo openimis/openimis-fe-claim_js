@@ -38,7 +38,6 @@ class HealthFacilitiesPage extends Component {
         "filter": "status: 2",
       },
     });
-    this.canSubmitClaimWithZero = props.modulesManager.getConf("fe-claim", "canSubmitClaimWithZero", false);
     this.state = {
       defaultFilters,
       confirmedAction: null,
@@ -55,10 +54,7 @@ class HealthFacilitiesPage extends Component {
   }
 
   canSubmitSelected = (selection) =>
-    !!selection &&
-    selection.length &&
-    selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
-      selection.length;
+    !!selection && selection.length && selection.filter((s) => s.status === 2).length === selection.length;
 
   canSubmitAll = (selection) => !selection || selection.length == 0;
 
