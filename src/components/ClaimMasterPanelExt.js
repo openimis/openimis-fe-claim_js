@@ -23,7 +23,7 @@ import {
   clearLastClaimWithSameDiagnosis,
   fetchLastClaimWithSameDiagnosis,
 } from "../actions";
-import { DEFAULT } from "../constants";
+import { DEFAULT, POLICY_ACTIVE_STATUS } from "../constants";
 import AdditionalPanelHeaders from "./AdditionalPanelHeaders";
 import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
 import AdditionalPanelClaim from "./AdditionalPanelClaim";
@@ -85,18 +85,26 @@ class ClaimMasterPanelExt extends Component {
     clearLastClaimAt();
   }
 
-  getPolicyStatusLabel(timeDelta) {
-    return timeDelta >= 0 ? ACTIVE_LABEL : INACTIVE_LABEL;
-  }
-
-  getPolicyStatusLabelStyle(timeDelta, classes) {
-    return timeDelta >= 0 ? classes.activeLabel : classes.inactiveLabel;
-  }
-
   goToClaimUuid(uuid) {
     const { modulesManager, history } = this.props;
     historyPush(modulesManager, history, "claim.route.claimEdit", [uuid], true);
   }
+
+  valuatePolicyValidity = (currentPolicy) => {
+    const { classes } = this.props;
+
+    if (!currentPolicy?.length) {
+      return { policyInfoLabel: INACTIVE_LABEL, policyInfoStyle: classes.inactiveLabel };
+    }
+
+    const validityPeriod = getTimeDifferenceInDaysFromToday(currentPolicy[0].expiryDate);
+    const isPolicyActive = currentPolicy[0].status === POLICY_ACTIVE_STATUS;
+
+    return {
+      policyInfoLabel: validityPeriod >= 0 && isPolicyActive ? ACTIVE_LABEL : INACTIVE_LABEL,
+      policyInfoStyle: validityPeriod >= 0 && isPolicyActive ? classes.activeLabel : classes.inactiveLabel,
+    };
+  };
 
   render() {
     const {
@@ -118,15 +126,13 @@ class ClaimMasterPanelExt extends Component {
       dateFrom,
       insuree,
     } = this.props;
-    const timeDelta = getTimeDifferenceInDaysFromToday(currentPolicy ? currentPolicy?.[0]?.expiryDate : null);
-    const policyStatusLabel = currentPolicy ? this.getPolicyStatusLabel(timeDelta) : DEFAULT_LABEL;
-    const policyStatusLabelStyle = currentPolicy ? this.getPolicyStatusLabelStyle(timeDelta, classes) : classes.item;
+    const { policyInfoLabel, policyInfoStyle } = this.valuatePolicyValidity(currentPolicy);
 
     return (
       <Grid container>
         <Grid item xs={6} className={classes.item}>
-          <Typography className={policyStatusLabelStyle}>
-            <FormattedMessage module="claim" id={policyStatusLabel} />
+          <Typography className={policyInfoStyle}>
+            <FormattedMessage module="claim" id={policyInfoLabel} />
           </Typography>
           <Divider />
         </Grid>
