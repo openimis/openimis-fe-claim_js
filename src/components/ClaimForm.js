@@ -32,7 +32,6 @@ import {
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
   RIGHT_ADD,
-  RIGHT_LOAD,
   RIGHT_PRINT,
   CARE_TYPE_STATUS,
   IN_PATIENT_STRING,
@@ -41,6 +40,7 @@ import {
   STORAGE_KEY_ADMIN,
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
+  RIGHT_CLAIMREVIEW,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -438,7 +438,7 @@ class ClaimForm extends Component {
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
-      !rights.filter((r) => r === RIGHT_LOAD).length;
+      !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
 
     var actions = [];
     if (!!claim_uuid) {
