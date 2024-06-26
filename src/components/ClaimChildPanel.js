@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 
-import { Paper, Box, IconButton } from "@material-ui/core";
+import { Paper, Box, IconButton, Typography, Grid } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
 import { ThumbUp, ThumbDown } from "@material-ui/icons";
 
@@ -27,7 +27,6 @@ import { claimedAmount, approvedAmount } from "../helpers/amounts";
 const styles = (theme) => ({
   paper: theme.paper.paper,
 });
-
 
 class ClaimChildPanel extends Component {
   state = {
@@ -133,7 +132,6 @@ class ClaimChildPanel extends Component {
     this._onEditedChanged(data);
   };
 
-
   _onDelete = (idx) => {
     const data = [...this.state.data];
     data.splice(idx, 1);
@@ -195,6 +193,58 @@ class ClaimChildPanel extends Component {
     });
   };
 
+  extendHeader = () => {
+    const { intl, type, edited, forReview } = this.props;
+
+    const totalClaimed = _.round(
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
+      2,
+    );
+    const totalApproved = _.round(
+      this.state.data.reduce((sum, r) => sum + approvedAmount(r), 0),
+      2,
+    );
+
+    return (
+      <>
+        {totalClaimed > 0 && (
+          <Typography>
+            {formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
+              totalClaimed: formatAmount(intl, totalClaimed),
+            })}
+          </Typography>
+        )}
+        {totalClaimed > 0 && (
+          <Typography>
+            {formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
+              totalApproved: formatAmount(intl, totalApproved),
+            })}
+          </Typography>
+        )}
+        {
+          <Grid>
+            {!!forReview && edited.status == 4 && this._checkIfItemsServicesExist(type, edited) && (
+              <>
+                {withTooltip(
+                  <IconButton onClick={this.rejectAllOnClick}>
+                    <ThumbDown />
+                  </IconButton>,
+                  formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll"),
+                )}
+                {withTooltip(
+                  <IconButton onClick={this.approveAllOnClick}>
+                    <ThumbUp />
+                  </IconButton>,
+                  formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll"),
+                )}
+              </>
+            )}
+          </Grid>
+        }
+      </>
+    );
+  };
+
   render() {
     const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false } = this.props;
     if (!edited) return null;
@@ -205,24 +255,6 @@ class ClaimChildPanel extends Component {
         </Paper>
       );
     }
-    const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
-      2,
-    );
-    const totalApproved = _.round(
-      this.state.data.reduce((sum, r) => sum + approvedAmount(r), 0),
-      2,
-    );
-    let preHeaders = [
-      "\u200b",
-      "",
-      totalClaimed > 0
-        ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalClaimed`, {
-          totalClaimed: formatAmount(intl, totalClaimed),
-        })
-        : "",
-      "",
-    ];
     let headers = [
       `edit.${type}s.${type}`,
       `edit.${type}s.quantity`,
@@ -260,6 +292,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
+          error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
           max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
         />
       ),
@@ -290,17 +323,6 @@ class ClaimChildPanel extends Component {
       ),
     ];
     if (!!forReview || edited.status !== 2) {
-      if (!this.fixedPricesAtReview) {
-        preHeaders.push("");
-      }
-      preHeaders.push(
-        totalClaimed > 0
-          ? formatMessageWithValues(intl, "claim", `edit.${type}s.totalApproved`, {
-            totalApproved: formatAmount(intl, totalApproved),
-          })
-          : "",
-      );
-
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
@@ -333,28 +355,7 @@ class ClaimChildPanel extends Component {
       ));
     }
 
-    if (!!forReview && edited.status == 4){
-      if (this._checkIfItemsServicesExist(this.props.type, edited)){
-        preHeaders.push(
-          withTooltip(
-            <IconButton onClick={this.rejectAllOnClick}>
-              <ThumbDown />
-            </IconButton>,
-            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.rejectAll")
-          )
-        )
-        preHeaders.push(
-          withTooltip(
-            <IconButton onClick={this.approveAllOnClick}>
-              <ThumbUp />
-            </IconButton>,
-            formatMessage(this.props.intl, "claim", "ClaimChildPanel.review.approveAll")
-          )
-        )
-      }
-    }
     if (this.showJustificationAtEnter || edited.status !== 2) {
-      preHeaders.push("");
       headers.push(`edit.${type}s.justification`);
       itemFormatters.push((i, idx) => (
         <TextInput
@@ -365,7 +366,6 @@ class ClaimChildPanel extends Component {
       ));
     }
     if (!!forReview || edited.status !== 2) {
-      preHeaders.push("", "");
       headers.push(`edit.${type}s.status`, `edit.${type}s.rejectionReason`);
       itemFormatters.push(
         (i, idx) => (
@@ -390,16 +390,17 @@ class ClaimChildPanel extends Component {
         <Table
           module="claim"
           header={header}
-          preHeaders={preHeaders}
+          extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
-          showOrdinalNumber = {this.showOrdinalNumber}
+          disableDeleteOnEmptyRow
+          showOrdinalNumber={this.showOrdinalNumber}
         />
       </Paper>
     );
-}
+  }
 }
 
 const mapStateToProps = (state, props) => ({

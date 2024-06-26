@@ -6,25 +6,34 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { formatMessageWithValues, withModulesManager, withHistory, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { createClaim, updateClaim } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD } from "../constants";
+import { DEFAULT, RIGHT_ADD, RIGHT_LOAD } from "../constants";
 
 const styles = (theme) => ({
   page: theme.page,
 });
 
 class EditPage extends Component {
+  constructor(props) {
+    super(props);
+    this.autoGenerateClaimCode = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.autoGenerateClaimCode",
+      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+    );
+  }
+
   add = () => {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
-  autoGenerateClaimCode = this.props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
 
-
-  save = (claim) => {
+  save = async (claim) => {
     if (!claim.uuid) {
       this.props.createClaim(
         this.props.modulesManager,
         claim,
-        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", { code: this.autoGenerateClaimCode ? "Auto" : claim.code }),
+        formatMessageWithValues(this.props.intl, "claim", "CreateClaim.mutationLabel", {
+          code: this.autoGenerateClaimCode && !claim?.restore?.uuid ? "Auto" : claim.code,
+        }),
       );
     } else {
       this.props.updateClaim(
@@ -40,8 +49,8 @@ class EditPage extends Component {
     if (!rights.includes(RIGHT_LOAD)) return null;
 
     const isHealthFacilityPage = () => {
-      return path.split("/").includes('healthFacilities');
-    }
+      return path.split("/").includes("healthFacilities");
+    };
 
     return (
       <div className={classes.page}>

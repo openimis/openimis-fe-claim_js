@@ -28,7 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -45,18 +45,16 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
   };
 
-  shouldValidate = (inputValue) => {
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== savedClaimCode;
-    return shouldValidate;
-  };
-
   constructor(props) {
     super(props);
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
-    this.autoGenerateClaimCode = props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
+    this.autoGenerateClaimCode = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.autoGenerateClaimCode",
+      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+    );
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.insureePicker",
@@ -78,6 +76,14 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
   }
+
+  shouldValidate = (inputValue) => {
+    if (this.autoGenerateClaimCode) return false;
+
+    const { savedClaimCode } = this.props;
+    const shouldValidate = inputValue !== savedClaimCode;
+    return shouldValidate;
+  };
 
   componentWillUnmount = () => {
     this.props?.clearClaim();
@@ -250,7 +256,7 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="claim.CareTypePicker"
                 name="careType"
-                withNull={!this.isCareTypeMandatory}
+                withNull={false}
                 value={edited.careType}
                 reset={reset}
                 onChange={(value) => this.updateAttribute("careType", value)}
@@ -326,11 +332,11 @@ class ClaimMasterPanel extends FormPanel {
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
                 value={
-                  !!this.state.data
+                  this.state.data?.code
                     ? this.state.data.code
-                    : this.autoGenerateClaimCode
+                    : this.autoGenerateClaimCode && !isRestored
                     ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
-                    : null
+                    : ""
                 }
                 inputProps={{
                   "maxLength": this.codeMaxLength,

@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
 import { Searcher } from "@openimis/fe-core";
@@ -193,16 +193,24 @@ class ClaimSearcher extends Component {
   };
 
   sorts = () => {
-    var result = [
+    const result = [];
+
+    if (this.showOrdinalNumber) {
+      result.push(null);
+    }
+
+    result.push(
       ["code", true],
       [this.props.modulesManager.getRef("location.HealthFacilityPicker.sort"), true],
       [this.props.modulesManager.getRef("insuree.InsureePicker.sort"), true],
-      ["dateClaimed", false],
+      ["dateClaimed", true],
+      null,
       null,
       null,
       ["claimed", false],
       ["approved", false],
-    ];
+    );
+
     if (this.claimAttachments) {
       result.push(null);
     }
@@ -243,8 +251,9 @@ class ClaimSearcher extends Component {
         (c) =>
           !!c.attachmentsCount && (
             <IconButton onClick={(e) => this.setState({ attachmentsClaim: c })}>
-              {" "}
-              <AttachIcon />
+              <Badge badgeContent={c.attachmentsCount ?? 0} color="primary">
+                <AttachIcon />
+              </Badge>
             </IconButton>
           ),
       );
@@ -347,7 +356,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
-          showOrdinalNumber = {this.showOrdinalNumber}
+          showOrdinalNumber={this.showOrdinalNumber}
         />
       </Fragment>
     );
