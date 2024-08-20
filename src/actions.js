@@ -245,7 +245,8 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
-  `;
+    preauthorization: ${claim.preauthorization}
+ `;
 }
 
 function handleReferHFType(modulesManager, claim){

@@ -338,5 +338,6 @@
   "claim.calculateAge.util.days": "Day(s)",
   "claim.calculateAge.util.weeks": "Week(s)",
   "claim.calculateAge.util.months": "Month(s)",
-  "claim.calculateAge.util.years": "Year(s)"
+  "claim.calculateAge.util.years": "Year(s)",
+  "claim.pre-authorization": "Pre-Authorization"
 }

@@ -12,9 +12,9 @@ import {
   Contributions,
   AmountInput,
   TextInput,
-  ValidatedTextInput,
+  ValidatedTextInput
 } from "@openimis/fe-core";
-import { Grid } from "@material-ui/core";
+import { Grid, Checkbox, FormControlLabel } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
@@ -504,6 +504,17 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
+        <FormControlLabel
+              control={
+                <Checkbox
+                  id="Claim.preauthorization"
+                  color="primary"
+                  checked={edited?.preauthorization}
+                  onChange={(e) => this.updateAttribute("preauthorization", e.target.checked)}
+                />
+              }
+              label={formatMessage(intl, "claim", "pre-authorization")}
+            />
         <Contributions
           claim={edited}
           readOnly={ro}
