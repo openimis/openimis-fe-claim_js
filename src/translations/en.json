@@ -342,5 +342,6 @@
   "claim.pre-authorization": "Pre-Authorization Required",
   "claim.pre-authorization.null" : "Any",
   "claim.pre-authorization.true" : "Yes",
-  "claim.pre-authorization.false" : "No"
+  "claim.pre-authorization.false" : "No",
+  "claim.claimSummaries.pre-authorization" : "Pre-auth."
 }

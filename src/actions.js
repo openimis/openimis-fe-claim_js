@@ -161,6 +161,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
+    "preAuthorization"
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");

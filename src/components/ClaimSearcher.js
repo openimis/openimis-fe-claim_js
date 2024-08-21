@@ -7,6 +7,7 @@ import { withTheme, withStyles } from "@material-ui/core/styles";
 import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
+import CheckIcon from "@material-ui/icons/Check";
 import { Searcher } from "@openimis/fe-core";
 import ClaimFilter from "./ClaimFilter";
 import {
@@ -179,6 +180,7 @@ class ClaimSearcher extends Component {
       "claimSummaries.claimed",
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
+      "claim.claimSummaries.pre-authorization"
     ];
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
@@ -223,7 +225,7 @@ class ClaimSearcher extends Component {
   };
 
   aligns = () => {
-    return [, , , , , , , "right", "right"];
+    return [, , , , , , , "right", "right", ,];
   };
 
   itemFormatters = () => {
@@ -245,6 +247,7 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.claimed),
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
+      (c) => c.preAuthorization ? <CheckIcon /> : ""
     ];
     if (this.claimAttachments) {
       result.push(

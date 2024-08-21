@@ -627,7 +627,7 @@ class Details extends Component {
                 {
                   id: "preAuthorization",
                   value: value,
-                  filter: value === null ? null : `preAuthorization: ${value}`,
+                  filter: value === null || value === "" ? null : `preAuthorization: ${value}`,
                 },
               ])
             }
