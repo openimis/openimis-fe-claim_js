@@ -618,6 +618,22 @@ class Details extends Component {
           />
         </Grid>
         <Grid item xs={1} className={classes.item}>
+        <PublishedComponent
+            pubRef="claim.YesNoPicker"
+            name="preAuthorization"
+            value={filters["preAuthorization"] ? filters["preAuthorization"]["value"] : null}
+            onChange={(value) => 
+              onChangeFilters([
+                {
+                  id: "preAuthorization",
+                  value: value,
+                  filter: value === null ? null : `preAuthorization: ${value}`,
+                },
+              ])
+            }
+          />
+        </Grid>
+        <Grid item xs={1} className={classes.item}>
           <ControlledField
             module="claim"
             field={
@@ -645,6 +661,7 @@ class Details extends Component {
           />
         </Grid>
 
+        
 
         <Contributions
           filters={filters}

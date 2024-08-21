@@ -72,3 +72,5 @@ export const PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS = [
 ];
 export const STORAGE_KEY_CLAIM_HEALTH_FACILITY = 'claimHealthFacility';
 export const STORAGE_KEY_ADMIN = 'admin';
+
+export const YES_NO = ["true", "false"];
