@@ -134,7 +134,7 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
-    claim.preauthorization = false;
+    claim.preAuthorization = false;
     claim.jsonExt = {};
     return claim;
   }

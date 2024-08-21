@@ -245,7 +245,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
-    preauthorization: ${claim.preauthorization}
+    preAuthorization: ${claim.preAuthorization}
  `;
 }
 
@@ -305,6 +305,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
+    "preAuthorization",
     "jsonExt",
   ];
   if (!!forFeedback) {

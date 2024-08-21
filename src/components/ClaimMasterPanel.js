@@ -507,10 +507,10 @@ class ClaimMasterPanel extends FormPanel {
         <FormControlLabel
               control={
                 <Checkbox
-                  id="Claim.preauthorization"
+                  id="Claim.preAuthorization"
                   color="primary"
-                  checked={edited?.preauthorization}
-                  onChange={(e) => this.updateAttribute("preauthorization", e.target.checked)}
+                  checked={edited?.preAuthorization}
+                  onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
                 />
               }
               label={formatMessage(intl, "claim", "pre-authorization")}
