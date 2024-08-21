@@ -44,6 +44,7 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false)
   }
 
   canSelectAll = (selection) =>
@@ -180,8 +181,10 @@ class ClaimSearcher extends Component {
       "claimSummaries.claimed",
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
-      "claim.claimSummaries.pre-authorization"
     ];
+    if (this.showPreAuthorization){
+      result.push("claim.claimSummaries.pre-authorization");
+    }
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
     }
@@ -247,8 +250,13 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.claimed),
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
-      (c) => c.preAuthorization ? <CheckIcon /> : ""
+       
     ];
+    if (this.showPreAuthorization){
+      result.push(
+        (c) => c.preAuthorization ? <CheckIcon /> : ""
+      )
+    }
     if (this.claimAttachments) {
       result.push(
         (c) =>

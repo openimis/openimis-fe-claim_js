@@ -105,20 +105,21 @@ None
 - `claimForm.isCareTypeMandatory`, boolean to set CareType (in/out patient) field to mandatory. It removes "any" option. Default false.
 - `reviews.defaultFilters`, default filters for claim review searcher. The code snippet below sets the default values for 'Claim Status' and 'Claimed Less Than' in the Review page. Specifically, it sets 'Claim Status' to the value of 4 (which means 'Checked') and 'Claimed Less Than' to a value of 1,000,000.
   {
-    "reviews.defaultFilters" : {
-        "claimStatus": {
-            "value": 4,
-            "filter": "status: 4",
-        },
-        "claimedUnder": {
-            "value": 1000000,
-            "filter": "claimed_Lte: \"1000000\""
-        }
-    }
+  "reviews.defaultFilters" : {
+  "claimStatus": {
+  "value": 4,
+  "filter": "status: 4",
+  },
+  "claimedUnder": {
+  "value": 1000000,
+  "filter": "claimed_Lte: \"1000000\""
+  }
+  }
   }
 - `claimForm.showOrdinalNumber`, show "number" column as a first column in claim searcher and item/services table. Default false.
 - `claimForm.isClaimedDateFixed`, set Date Claimed to current date and set field to read only while creating new claim. Default false.
-- `claimForm.quantityMaxValue`, defines the max number of provided quantity. By default: __10.000__.
-- `ClaimMasterPanelExt.isAdditionalPanelEnabled`: Determines whether to display additional panels, including information about the insuree and details about claim related to the same diagnosis. By default: __false__.
-- `explanationRequiredIfQuantityAboveThreshold`: Determines if an explanation field should be mandatory and if an error should be displayed when the provided quantity exceeds the specified threshold. If set to true, an error will be triggered when the provided quantity goes beyond the threshold set in __quantityExplanationThreshold__. By default: __false__.
-- `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if __explanationRequiredIfQuantityAboveThreshold__ is set to true, an error will be triggered indicating that an explanation is required. By default: __1__.
+- `claimForm.quantityMaxValue`, defines the max number of provided quantity. By default: **10.000**.
+- `ClaimMasterPanelExt.isAdditionalPanelEnabled`: Determines whether to display additional panels, including information about the insuree and details about claim related to the same diagnosis. By default: **false**.
+- `explanationRequiredIfQuantityAboveThreshold`: Determines if an explanation field should be mandatory and if an error should be displayed when the provided quantity exceeds the specified threshold. If set to true, an error will be triggered when the provided quantity goes beyond the threshold set in **quantityExplanationThreshold**. By default: **false**.
+- `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if **explanationRequiredIfQuantityAboveThreshold** is set to true, an error will be triggered indicating that an explanation is required. By default: **1**.
+- `showPreAuthorization`, boolean to hide/show Pre-Authorization field. Default is **false**

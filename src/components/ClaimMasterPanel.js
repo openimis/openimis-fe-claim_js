@@ -75,6 +75,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false)
   }
 
   shouldValidate = (inputValue) => {
@@ -504,6 +505,7 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
+        {(this.showPreAuthorization &&
         <FormControlLabel
               control={
                 <Checkbox
@@ -515,6 +517,7 @@ class ClaimMasterPanel extends FormPanel {
               }
               label={formatMessage(intl, "claim", "pre-authorization")}
             />
+            )}
         <Contributions
           claim={edited}
           readOnly={ro}
