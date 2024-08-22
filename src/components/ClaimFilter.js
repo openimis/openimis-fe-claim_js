@@ -273,6 +273,11 @@ const mapDispatchToProps = (dispatch) => {
 const BoundHead = connect(mapStateToProps, mapDispatchToProps)(Head);
 
 class Details extends Component {
+  constructor(props) {
+    super(props);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
+  }
+
   debouncedOnChangeFilter = _debounce(
     this.props.onChangeFilters,
     this.props.modulesManager.getConf("fe-claim", "debounceTime", 200),
@@ -284,7 +289,7 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt, } = this.props;
+    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
     return (
       <Grid container className={classes.form}>
         <Grid item xs={1} className={classes.item}>
@@ -588,24 +593,23 @@ class Details extends Component {
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
-            value={filters["careType"] && filters["careType"]["value"] || null}
-            onChange={(value) =>{
+            value={(filters["careType"] && filters["careType"]["value"]) || null}
+            onChange={(value) => {
               onChangeFilters([
                 {
                   id: "careType",
                   value: value,
                   filter: !!value ? `careType: "${value}"` : null,
                 },
-              ])
-            }
-            }
+              ]);
+            }}
           />
         </Grid>
         <Grid item xs={1} className={classes.item}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
+            value={(filters["attachmentStatus"] && filters["attachmentStatus"]["value"]) || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -617,6 +621,24 @@ class Details extends Component {
             }
           />
         </Grid>
+        {this.showPreAuthorization && (
+          <Grid item xs={1} className={classes.item}>
+            <PublishedComponent
+              pubRef="claim.YesNoPicker"
+              name="preAuthorization"
+              value={filters["preAuthorization"] ? filters["preAuthorization"]["value"] : null}
+              onChange={(value) =>
+                onChangeFilters([
+                  {
+                    id: "preAuthorization",
+                    value: value,
+                    filter: value === null || value === "" ? null : `preAuthorization: ${value}`,
+                  },
+                ])
+              }
+            />
+          </Grid>
+        )}
         <Grid item xs={1} className={classes.item}>
           <ControlledField
             module="claim"
@@ -626,7 +648,7 @@ class Details extends Component {
                   control={
                     <Checkbox
                       color="primary"
-                      checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                      checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
                       onChange={(event) =>
                         onChangeFilters([
                           {
@@ -644,8 +666,6 @@ class Details extends Component {
             }
           />
         </Grid>
-
-
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}

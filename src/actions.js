@@ -161,6 +161,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
+    "preAuthorization"
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
@@ -245,7 +246,8 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
-  `;
+    preAuthorization: ${claim.preAuthorization}
+ `;
 }
 
 function handleReferHFType(modulesManager, claim){
@@ -304,6 +306,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd2" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
+    "preAuthorization",
     "jsonExt",
   ];
   if (!!forFeedback) {
