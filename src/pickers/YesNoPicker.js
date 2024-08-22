@@ -5,7 +5,7 @@ import { YES_NO } from "../constants";
 
 class YesNoPicker extends Component{
     render(){
-        return <ConstantBasedPicker module="claim" label="claim.pre-authorization" constants={YES_NO} {...this.props} />;
+        return <ConstantBasedPicker module="claim" label="claim.preAuthorization" constants={YES_NO} {...this.props} />;
     }
 }
 export default YesNoPicker;

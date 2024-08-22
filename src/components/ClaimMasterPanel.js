@@ -12,7 +12,7 @@ import {
   Contributions,
   AmountInput,
   TextInput,
-  ValidatedTextInput
+  ValidatedTextInput,
 } from "@openimis/fe-core";
 import { Grid, Checkbox, FormControlLabel } from "@material-ui/core";
 import _ from "lodash";
@@ -28,7 +28,12 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import {
+  CLAIM_DETAIL_REJECTED_STATUS,
+  DEFAULT,
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
+  IN_PATIENT_STRING,
+} from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -75,7 +80,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false)
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   shouldValidate = (inputValue) => {
@@ -429,6 +434,7 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
+
         {!forFeedback && (
           <Fragment>
             {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
@@ -505,19 +511,19 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
-        {(this.showPreAuthorization &&
-        <FormControlLabel
-              control={
-                <Checkbox
-                  id="Claim.preAuthorization"
-                  color="primary"
-                  checked={edited?.preAuthorization}
-                  onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
-                />
-              }
-              label={formatMessage(intl, "claim", "pre-authorization")}
-            />
-            )}
+        {this.showPreAuthorization && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="Claim.preAuthorization"
+                color="primary"
+                checked={edited?.preAuthorization}
+                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+              />
+            }
+            label={formatMessage(intl, "claim", "pre-authorization")}
+          />
+        )}
         <Contributions
           claim={edited}
           readOnly={ro}
