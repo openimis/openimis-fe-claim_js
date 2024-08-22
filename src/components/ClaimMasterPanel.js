@@ -511,6 +511,14 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
+        <Grid item xs={2} className={classes.item}>
+          <PublishedComponent
+            pubRef="claim.PatientConditionPicker"
+            name="patientCondition"
+            value={edited.patientCondition}
+            onChange={(v) => this.updateAttribute("patientCondition", v)}
+          />
+        </Grid>
         {this.showPreAuthorization && (
           <FormControlLabel
             control={

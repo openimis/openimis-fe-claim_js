@@ -161,7 +161,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
-    "preAuthorization"
+    "preAuthorization",
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
@@ -212,7 +212,7 @@ export function formatAttachments(mm, attachments) {
 
 export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
   // to simplify GQL and avoid additional coding, claim code is sent, even if shouldAutogenerate is set to true
-  const claimCodePlaceholder="auto"
+  const claimCodePlaceholder = "auto";
   const isAutogenerateEnabled = claim?.restore?.uuid ? false : shouldAutogenerate;
   return `
     ${claim.uuid !== undefined && claim.uuid !== null ? `uuid: "${claim.uuid}"` : ""}
@@ -247,15 +247,18 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         : ""
     }
     preAuthorization: ${claim.preAuthorization}
+    patientCondition: "${formatGQLString(claim.patientCondition)}" 
  `;
 }
 
-function handleReferHFType(modulesManager, claim){
-  return (claim.visitType === modulesManager.getRef("claim.CreateClaim.claimTypeReferSymbol") ? 'referFromId: ' : 'referToId: ')
+function handleReferHFType(modulesManager, claim) {
+  return claim.visitType === modulesManager.getRef("claim.CreateClaim.claimTypeReferSymbol")
+    ? "referFromId: "
+    : "referToId: ";
 }
 
 export function createClaim(mm, claim, clientMutationLabel) {
-  const shouldAutogenerate = mm.getConf("fe-claim", "claimForm.autoGenerateClaimCode", DEFAULT.AUTOGENERATE_CLAIM_CODE)
+  const shouldAutogenerate = mm.getConf("fe-claim", "claimForm.autoGenerateClaimCode", DEFAULT.AUTOGENERATE_CLAIM_CODE);
   const mutation = formatMutation("createClaim", formatClaimGQL(mm, claim, shouldAutogenerate), clientMutationLabel);
   var requestedDateTime = new Date();
   return graphql(mutation.payload, ["CLAIM_MUTATION_REQ", "CLAIM_CREATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"], {
@@ -307,6 +310,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd3" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "preAuthorization",
+    "patientCondition",
     "jsonExt",
   ];
   if (!!forFeedback) {
@@ -339,43 +343,31 @@ export function fetchLastClaimAt(claim) {
     claimFilters.push(`dateFrom_Lt: "${claim.dateFrom}"`);
   }
 
-  const payload = formatPageQuery(
-    "claims",
-    claimFilters,
-    ["code", "dateFrom", "dateTo", "uuid"],
-  );
+  const payload = formatPageQuery("claims", claimFilters, ["code", "dateFrom", "dateTo", "uuid"]);
   return graphql(payload, "CLAIM_LAST_CLAIM_AT");
 }
 
 export function clearLastClaimAt() {
   return function (dispatch) {
     dispatch({
-      type: "CLEAR_CLAIM_LAST_CLAIM_AT"
+      type: "CLEAR_CLAIM_LAST_CLAIM_AT",
     });
   };
 }
 
 export function fetchLastClaimWithSameDiagnosis(icd, chfid) {
-  const claimFilters = [
-    `chfid: "${chfid}"`,
-    `icd: "${icd.code}"`,
-    CLAIMS_WITH_AT_LEAST_ENTERED_STATUS,
-  ];
+  const claimFilters = [`chfid: "${chfid}"`, `icd: "${icd.code}"`, CLAIMS_WITH_AT_LEAST_ENTERED_STATUS];
 
   const projection = ["code", "dateFrom", "dateTo", "uuid", "status"];
 
-  const payload = formatPageQuery(
-    "claimWithSameDiagnosis",
-    claimFilters,
-    projection,
-  );
+  const payload = formatPageQuery("claimWithSameDiagnosis", claimFilters, projection);
   return graphql(payload, "CLAIM_SAME_DIAGNOSIS");
 }
 
 export function clearLastClaimWithSameDiagnosis() {
   return function (dispatch) {
     dispatch({
-      type: "CLEAR_CLAIM_SAME_DIAGNOSIS"
+      type: "CLEAR_CLAIM_SAME_DIAGNOSIS",
     });
   };
 }
@@ -401,7 +393,7 @@ export function fetchClaimOfficers(mm, extraFragment, variables) {
     variables,
     "CLAIM_ENROLMENT_OFFICERS",
     { skip: true },
-  )
+  );
 }
 
 export function submit(claims, clientMutationLabel, clientMutationDetails = null) {
