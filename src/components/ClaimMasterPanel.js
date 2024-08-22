@@ -522,6 +522,18 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Grid>
         )}
+        {(edited.visitType == "R" || edited.patientCondition == "R") && (
+          <Grid item xs={2} className={classes.item}>
+            <TextInput
+              id="claim.referralCode"
+              module="insuree"
+              label="claim.referralCode"
+              value={edited.referralCode}
+              required={edited.visitType == "R" || edited.patientCondition == "R"}
+              onChange={(v) => this.updateAttribute("referralCode", v)}
+            />
+          </Grid>
+        )}
         {this.showPreAuthorization && (
           <FormControlLabel
             control={
