@@ -123,3 +123,8 @@ None
 - `explanationRequiredIfQuantityAboveThreshold`: Determines if an explanation field should be mandatory and if an error should be displayed when the provided quantity exceeds the specified threshold. If set to true, an error will be triggered when the provided quantity goes beyond the threshold set in **quantityExplanationThreshold**. By default: **false**.
 - `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if **explanationRequiredIfQuantityAboveThreshold** is set to true, an error will be triggered indicating that an explanation is required. By default: **1**.
 - `showPreAuthorization`, boolean to hide/show Pre-Authorization field. Default is **false**
+- `guaranteeNo`, controls the behavior of the field Guarantee No in claim form.
+
+  - **M**: Makes the field mandatory
+  - **O**: Makes the field optional
+  - **N**: Hides the field
