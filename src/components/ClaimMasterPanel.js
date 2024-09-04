@@ -81,7 +81,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
-    this.guaranteeNo = props.modulesManager.getConf("fe-claim", "guaranteeNo", "O");
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
 
   shouldValidate = (inputValue) => {
@@ -352,7 +352,7 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        {this.guaranteeNo != "N" && (
+        {this.fields.guaranteeNo !== "N" && (
           <ControlledField
             module="claim"
             id="Claim.guarantee"
@@ -368,7 +368,7 @@ class ClaimMasterPanel extends FormPanel {
                   inputProps={{
                     "maxLength": this.guaranteeIdMaxLength,
                   }}
-                  required={this.guaranteeNo == "M"}
+                  required={this.fields.guaranteeNo === "M"}
                 />
               </Grid>
             }
