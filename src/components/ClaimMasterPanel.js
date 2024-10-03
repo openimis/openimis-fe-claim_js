@@ -81,6 +81,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
 
@@ -514,6 +515,16 @@ class ClaimMasterPanel extends FormPanel {
               />
             )}
           </Fragment>
+        )}
+        {this.showPatientCondition && (
+          <Grid item xs={2} className={classes.item}>
+            <PublishedComponent
+              pubRef="claim.PatientConditionPicker"
+              name="patientCondition"
+              value={edited.patientCondition}
+              onChange={(v) => this.updateAttribute("patientCondition", v)}
+            />
+          </Grid>
         )}
         {this.showPreAuthorization && (
           <FormControlLabel
