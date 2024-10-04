@@ -349,5 +349,6 @@
   "claim.patientCondition.H": "Healed",
   "claim.patientCondition.D": "Deceased",
   "claim.patientCondition.E": "Escaped",
-  "claim.patientCondition.R": "Referral"
+  "claim.patientCondition.R": "Referral",
+  "claim.referralCode": "Referral Code"
 }

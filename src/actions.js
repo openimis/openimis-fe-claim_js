@@ -248,6 +248,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     }
     preAuthorization: ${claim.preAuthorization}
     patientCondition: "${formatGQLString(claim.patientCondition)}" 
+    referralCode: "${formatGQLString(claim.referralCode)}"
  `;
 }
 
@@ -311,6 +312,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "preAuthorization",
     "patientCondition",
+    "referralCode",
     "jsonExt",
   ];
   if (!!forFeedback) {

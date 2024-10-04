@@ -119,7 +119,6 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
-    
   }
 
   _newClaim() {
@@ -336,6 +335,13 @@ class ClaimForm extends Component {
         }
       }
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+    }
+
+    if (
+      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
+      !this.state.claim.referralCode
+    ) {
+      return false;
     }
     return true;
   };
