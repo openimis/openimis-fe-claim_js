@@ -125,3 +125,8 @@ None
 - `showPreAuthorization`, boolean to hide/show Pre-Authorization field. Default is **false**
 - `showPatientCondition`, boolean to hide/show Patient Condition field. Default is **false**
 - `attachmentRequiredForReferral`, boolean to indicate attachment is mandatory for the referral type claim. Default is **false**
+- `fields`, controls the behavior of the fields. For example "fields": {"guaranteeNo": "M"} will make the field **Guarantee No** a mandatory field. Options are M, O and N.
+
+  - **M**: Makes the field mandatory
+  - **O**: Makes the field optional
+  - **N**: Hides the field

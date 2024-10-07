@@ -82,6 +82,7 @@ class ClaimMasterPanel extends FormPanel {
     this.EMPTY_STRING = "";
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
 
   shouldValidate = (inputValue) => {
@@ -352,25 +353,28 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.guarantee"
-          field={
-            <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label="guaranteeId"
-                value={edited.guaranteeId}
-                reset={reset}
-                onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.guaranteeIdMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
+        {this.fields.guaranteeNo !== "N" && (
+          <ControlledField
+            module="claim"
+            id="Claim.guarantee"
+            field={
+              <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+                <TextInput
+                  module="claim"
+                  label="guaranteeId"
+                  value={edited.guaranteeId}
+                  reset={reset}
+                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                  readOnly={ro}
+                  inputProps={{
+                    "maxLength": this.guaranteeIdMaxLength,
+                  }}
+                  required={this.fields.guaranteeNo === "M"}
+                />
+              </Grid>
+            }
+          />
+        )}
         {!!forFeedback && (
           <Fragment>
             <ControlledField
