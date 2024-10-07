@@ -124,6 +124,7 @@ None
 - `quantityExplanationThreshold`: Specifies the threshold for the provided quantity. If the quantity provided exceeds this threshold, and if **explanationRequiredIfQuantityAboveThreshold** is set to true, an error will be triggered indicating that an explanation is required. By default: **1**.
 - `showPreAuthorization`, boolean to hide/show Pre-Authorization field. Default is **false**
 - `showPatientCondition`, boolean to hide/show Patient Condition field. Default is **false**
+- `attachmentRequiredForReferral`, boolean to indicate attachment is mandatory for the referral type claim. Default is **false**
 - `fields`, controls the behavior of the fields. For example "fields": {"guaranteeNo": "M"} will make the field **Guarantee No** a mandatory field. Options are M, O and N.
 
   - **M**: Makes the field mandatory
