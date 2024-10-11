@@ -173,6 +173,8 @@ class AttachmentsDialog extends Component {
       claimAttachments.splice(i, 1);
       claimAttachments.pop();
       this.props.claim.attachments = [...claimAttachments];
+      this.props.claim.attachmentsCount =
+        this.props.claim.attachments.length > 0 ? this.props.claim.attachments.length : 0;
       claimAttachments.push({});
       this.setState((state) => ({ claimAttachments, reset: state.reset + 1 }));
     }
@@ -206,6 +208,7 @@ class AttachmentsDialog extends Component {
       }
       this.props.claim.attachments.push(attachment);
       var claimAttachments = [...this.state.claimAttachments];
+      this.props.claim.attachmentsCount = this.props.claim.attachments.length;
       claimAttachments.push({});
       this.setState({ claimAttachments });
     }
