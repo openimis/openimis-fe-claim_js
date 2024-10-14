@@ -7,6 +7,7 @@ import {
   Autocomplete,
   useGraphqlQuery,
 } from "@openimis/fe-core";
+import { DEFAULT } from "../constants";
 
 
 const ClaimAdminPicker = (props) => {
@@ -34,6 +35,11 @@ const ClaimAdminPicker = (props) => {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
+  const renderLastNameFirst = modulesManager.getConf(
+    "fe-insuree",
+    "renderLastNameFirst",
+    DEFAULT.RENDER_LAST_NAME_FIRST,
+  );
 
   const { isLoading, data, error } = useGraphqlQuery(
     `
@@ -73,6 +79,12 @@ const ClaimAdminPicker = (props) => {
     },
   );
 
+  const formatClaimAdmin = (claimAdmin) => {
+    return renderLastNameFirst
+      ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
+      : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
+  };
+
   return (
     <Autocomplete
       multiple={multiple}
@@ -86,7 +98,7 @@ const ClaimAdminPicker = (props) => {
       options={data?.claimAdmins?.edges.map((edge) => edge.node) ?? []}
       isLoading={isLoading}
       value={value}
-      getOptionLabel={(option) => `${option.code} ${option.lastName} ${option.otherNames}`}
+      getOptionLabel={(option) => formatClaimAdmin(option)}
       onChange={(option) => onChange(option, option ? `${option.code} ${option.lastName} ${option.otherNames}` : null)}
       filterOptions={filterOptions}
       filterSelectedOptions={filterSelectedOptions}

@@ -9,6 +9,7 @@ import {
   PublishedComponent,
   useHistory,
   historyPush,
+  FormattedMessage,
   TextInput,
 } from "@openimis/fe-core";
 
@@ -23,6 +24,9 @@ const AdditionalPanelClaim = ({ sameDiagnosisClaim }) => {
   const { formatMessage } = useTranslations("claim", modulesManager);
 
   const goToClaimUuid = (uuid) => historyPush(modulesManager, history, "claim.route.claimEdit", [uuid], true);
+
+  if (!sameDiagnosisClaim)
+    return <FormattedMessage module="claim" id="ClaimMasterPanelExt.sameDiagnosisClaim.noClaim" />;
 
   return (
     <Grid container>

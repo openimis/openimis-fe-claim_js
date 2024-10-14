@@ -21,7 +21,13 @@ class ReviewPage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
       if (this.state.close) {
-        historyPush(this.props.modulesManager, this.props.history, "claim.route.reviews");
+        const { history, modulesManager  } = prevProps;
+        const { customBackUri, customBackUuid } = prevProps.match?.params
+        if (customBackUri) {
+          historyPush(modulesManager, history, customBackUri, customBackUuid ? [customBackUuid] : null);
+        } else {
+          historyPush(this.props.modulesManager, this.props.history, "claim.route.reviews");
+        }
       }
     }
   }
@@ -49,12 +55,21 @@ class ReviewPage extends Component {
   };
 
   render() {
-    const { classes, history, modulesManager, claim_uuid } = this.props;
+    const { classes, history, modulesManager, claim_uuid,  } = this.props;
+    const { customBackUri, customBackUuid } = this.props.match?.params
     return (
       <div className={classes.page}>
         <ClaimForm
           claim_uuid={claim_uuid}
-          back={(e) => historyPush(modulesManager, history, "claim.route.reviews")}
+          back={(e) => {
+            
+            if (customBackUri) {
+
+              historyPush(modulesManager, history, customBackUri, customBackUuid ? [customBackUuid] : null);
+            } else {
+              historyPush(modulesManager, history, "claim.route.reviews");
+            }
+          }}
           save={this.save}
           deliverReview={this.deliverReview}
           forReview={true}
@@ -63,6 +78,7 @@ class ReviewPage extends Component {
     );
   }
 }
+
 
 const mapStateToProps = (state, props) => ({
   claim_uuid: props.match.params.claim_uuid,

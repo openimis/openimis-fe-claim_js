@@ -14,7 +14,7 @@ import {
   TextInput,
   ValidatedTextInput,
 } from "@openimis/fe-core";
-import { Grid } from "@material-ui/core";
+import { Grid, Checkbox, FormControlLabel } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
@@ -28,7 +28,12 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import {
+  CLAIM_DETAIL_REJECTED_STATUS,
+  DEFAULT,
+  DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER,
+  IN_PATIENT_STRING,
+} from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -45,33 +50,23 @@ class ClaimMasterPanel extends FormPanel {
     claimCodeError: null,
   };
 
-  shouldValidate = (inputValue) => {
-    const { savedClaimCode } = this.props;
-    const shouldValidate = inputValue !== (savedClaimCode);
-    return shouldValidate;
-  };
-
   constructor(props) {
     super(props);
     this.codeMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.codeMaxLength", 8);
     this.guaranteeIdMaxLength = props.modulesManager.getConf("fe-claim", "claimForm.guaranteeIdMaxLength", 50);
     this.showAdjustmentAtEnter = props.modulesManager.getConf("fe-claim", "claimForm.showAdjustmentAtEnter", false);
-    this.autoGenerateClaimCode = props.modulesManager.getConf("fe-claim", "claimForm.autoGenerateClaimCode", false);
+    this.autoGenerateClaimCode = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.autoGenerateClaimCode",
+      DEFAULT.AUTOGENERATE_CLAIM_CODE,
+    );
     this.insureePicker = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
-    this.allowReferHF = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.referHF",
-      true,
-    );
-    this.claimTypeReferSymbol = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.claimTypeReferSymbol",
-      'R',
-    );
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
     this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.numberOfAdditionalDiagnosis",
@@ -82,18 +77,21 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.isExplanationMandatoryForIPD",
       false,
     );
-    this.isCareTypeMandatory = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.isCareTypeMandatory",
-      false,
-    );
-    this.isClaimedDateFixed = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.isClaimedDateFixed",
-      false,
-    );
-    this.EMPTY_STRING = ""
+    this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
+    this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
+    this.EMPTY_STRING = "";
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
+
+  shouldValidate = (inputValue) => {
+    if (this.autoGenerateClaimCode) return false;
+
+    const { savedClaimCode } = this.props;
+    const shouldValidate = inputValue !== savedClaimCode;
+    return shouldValidate;
+  };
 
   componentWillUnmount = () => {
     this.props?.clearClaim();
@@ -108,7 +106,7 @@ class ClaimMasterPanel extends FormPanel {
           parseFloat(currentItem.priceApproved) ||
           parseFloat(currentItem.priceAsked) ||
           0;
-        const priceTimesQty = price * ((parseInt(currentItem?.qtyApproved) || parseInt(currentItem?.qtyProvided)) || 0);
+        const priceTimesQty = price * (parseInt(currentItem?.qtyApproved) || parseInt(currentItem?.qtyProvided) || 0);
         return total + priceTimesQty;
       }, 0);
     };
@@ -135,8 +133,7 @@ class ClaimMasterPanel extends FormPanel {
       restore,
       isRestored,
       isDuplicate,
-    }
-      = this.props;
+    } = this.props;
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
@@ -273,7 +270,7 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="claim.CareTypePicker"
                 name="careType"
-                withNull={!this.isCareTypeMandatory}
+                withNull={false}
                 value={edited.careType}
                 reset={reset}
                 onChange={(value) => this.updateAttribute("careType", value)}
@@ -303,7 +300,7 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        {!!this.allowReferHF && <ControlledField
+        <ControlledField
           module="claim"
           id="Claim.referHealthFacility"
           field={
@@ -311,17 +308,22 @@ class ClaimMasterPanel extends FormPanel {
               <PublishedComponent
                 pubRef="location.HealthFacilityReferPicker"
                 label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
-                value={(edited.visitType === this.claimTypeReferSymbol ? edited.referFrom: edited.referTo) ?? this.EMPTY_STRING}
+                value={
+                  (edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ??
+                  this.EMPTY_STRING
+                }
                 reset={reset}
                 readOnly={ro}
-                required={edited.visitType === this.claimTypeReferSymbol}
-                filterOptions={(options)=>options?.filter((option)=>option.uuid !== userHealthFacilityFullPath?.uuid)}
+                required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                filterOptions={(options) =>
+                  options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
+                }
                 filterSelectedOptions={true}
                 onChange={(d) => this.updateAttribute("referHF", d)}
               />
             </Grid>
           }
-        />}
+        />
         <ControlledField
           module="claim"
           id="Claim.codechfId"
@@ -343,7 +345,13 @@ class ClaimMasterPanel extends FormPanel {
                 setValidAction={claimCodeSetValid}
                 shouldValidate={this.shouldValidate}
                 validationError={codeValidationError}
-                value={!!this.state.data ? this.state.data.code : (this.autoGenerateClaimCode ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate") : null)}
+                value={
+                  this.state.data?.code
+                    ? this.state.data.code
+                    : this.autoGenerateClaimCode && !isRestored
+                    ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
+                    : ""
+                }
                 inputProps={{
                   "maxLength": this.codeMaxLength,
                 }}
@@ -351,28 +359,28 @@ class ClaimMasterPanel extends FormPanel {
             </Grid>
           }
         />
-        <ControlledField
-          module="claim"
-          id="Claim.code"
-          field={
-            <Grid item xs={this.claimPrefix ? 1 : 2} className={classes.item}>
-              <TextInput
-                module="claim"
-                label="code"
-                required
-                value={edited.code}
-                error={this.state.claimCodeError}
-                reset={reset}
-                onChange={this.debounceUpdateCode}
-                readOnly={ro}
-                inputProps={{
-                  "maxLength": this.codeMaxLength,
-                }}
-              />
-            </Grid>
-          }
-        />
-        
+        {this.fields.guaranteeNo !== "N" && (
+          <ControlledField
+            module="claim"
+            id="Claim.guarantee"
+            field={
+              <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+                <TextInput
+                  module="claim"
+                  label="guaranteeId"
+                  value={edited.guaranteeId}
+                  reset={reset}
+                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                  readOnly={ro}
+                  inputProps={{
+                    "maxLength": this.guaranteeIdMaxLength,
+                  }}
+                  required={this.fields.guaranteeNo === "M"}
+                />
+              </Grid>
+            }
+          />
+        )}
         {!!forFeedback && (
           <Fragment>
             <ControlledField
@@ -437,30 +445,28 @@ class ClaimMasterPanel extends FormPanel {
             />
           </Fragment>
         )}
-        {!this.hideSecDiagnos && !forFeedback && (
+
+        {!forFeedback && (
           <Fragment>
-            {Array.from(
-              { length: this.numberOfAdditionalDiagnosis },
-              (_, diagnosisIndex) => (
-                <ControlledField
-                  module="claim"
-                  id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
-                  field={
-                    <Grid item xs={3} className={classes.item}>
-                      <PublishedComponent
-                        pubRef="medical.DiagnosisPicker"
-                        name={`secDiagnosis${diagnosisIndex + 1}`}
-                        label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
-                        value={edited[`icd${diagnosisIndex + 1}`]}
-                        reset={reset}
-                        onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
-                        readOnly={ro}
-                      />
-                    </Grid>
-                  }
-                />
-              )
-            )}
+            {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
+              <ControlledField
+                module="claim"
+                id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                field={
+                  <Grid item xs={3} className={classes.item}>
+                    <PublishedComponent
+                      pubRef="medical.DiagnosisPicker"
+                      name={`secDiagnosis${diagnosisIndex + 1}`}
+                      label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
+                      value={edited[`icd${diagnosisIndex + 1}`]}
+                      reset={reset}
+                      onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
+                      readOnly={ro}
+                    />
+                  </Grid>
+                }
+              />
+            ))}
           </Fragment>
         )}
         <ControlledField
@@ -491,7 +497,7 @@ class ClaimMasterPanel extends FormPanel {
                     reset={reset}
                     onChange={(v) => this.updateAttribute("explanation", v)}
                     readOnly={ro}
-                    required={this.isExplanationMandatoryForIPD && edited.careType===IN_PATIENT_STRING ? true : false}
+                    required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
                   />
                 </Grid>
               }
@@ -515,6 +521,41 @@ class ClaimMasterPanel extends FormPanel {
               />
             )}
           </Fragment>
+        )}
+        {this.showPatientCondition && (
+          <Grid item xs={2} className={classes.item}>
+            <PublishedComponent
+              pubRef="claim.PatientConditionPicker"
+              name="patientCondition"
+              value={edited.patientCondition}
+              onChange={(v) => this.updateAttribute("patientCondition", v)}
+            />
+          </Grid>
+        )}
+        {(edited.visitType == "R" || edited.patientCondition == "R") && (
+          <Grid item xs={2} className={classes.item}>
+            <TextInput
+              id="claim.referralCode"
+              module="insuree"
+              label="claim.referralCode"
+              value={edited.referralCode}
+              required={edited.visitType == "R" || edited.patientCondition == "R"}
+              onChange={(v) => this.updateAttribute("referralCode", v)}
+            />
+          </Grid>
+        )}
+        {this.showPreAuthorization && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="Claim.preAuthorization"
+                color="primary"
+                checked={edited?.preAuthorization}
+                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+              />
+            }
+            label={formatMessage(intl, "claim", "pre-authorization")}
+          />
         )}
         <Contributions
           claim={edited}
@@ -548,10 +589,13 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({
-    claimHealthFacilitySet,
-    clearClaim,
-  }, dispatch);
+  return bindActionCreators(
+    {
+      claimHealthFacilitySet,
+      clearClaim,
+    },
+    dispatch,
+  );
 };
 
 export default withModulesManager(

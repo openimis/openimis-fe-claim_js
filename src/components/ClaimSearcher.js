@@ -4,9 +4,10 @@ import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import _ from "lodash";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import { IconButton, Typography, Tooltip } from "@material-ui/core";
+import { IconButton, Typography, Tooltip, Badge } from "@material-ui/core";
 import AttachIcon from "@material-ui/icons/AttachFile";
 import TabIcon from "@material-ui/icons/Tab";
+import CheckIcon from "@material-ui/icons/Check";
 import { Searcher } from "@openimis/fe-core";
 import ClaimFilter from "./ClaimFilter";
 import {
@@ -43,6 +44,7 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   canSelectAll = (selection) =>
@@ -180,6 +182,9 @@ class ClaimSearcher extends Component {
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
     ];
+    if (this.showPreAuthorization) {
+      result.push("claim.claimSummaries.pre-authorization");
+    }
     if (this.claimAttachments) {
       result.push("claimSummaries.claimAttachments");
     }
@@ -193,16 +198,24 @@ class ClaimSearcher extends Component {
   };
 
   sorts = () => {
-    var result = [
+    const result = [];
+
+    if (this.showOrdinalNumber) {
+      result.push(null);
+    }
+
+    result.push(
       ["code", true],
       [this.props.modulesManager.getRef("location.HealthFacilityPicker.sort"), true],
       [this.props.modulesManager.getRef("insuree.InsureePicker.sort"), true],
-      ["dateClaimed", false],
+      ["dateClaimed", true],
+      null,
       null,
       null,
       ["claimed", false],
       ["approved", false],
-    ];
+    );
+
     if (this.claimAttachments) {
       result.push(null);
     }
@@ -215,7 +228,7 @@ class ClaimSearcher extends Component {
   };
 
   aligns = () => {
-    return [, , , , , , , "right", "right"];
+    return [, , , , , , , "right", "right", ,];
   };
 
   itemFormatters = () => {
@@ -238,13 +251,17 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
+    if (this.showPreAuthorization) {
+      result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
+    }
     if (this.claimAttachments) {
       result.push(
         (c) =>
           !!c.attachmentsCount && (
             <IconButton onClick={(e) => this.setState({ attachmentsClaim: c })}>
-              {" "}
-              <AttachIcon />
+              <Badge badgeContent={c.attachmentsCount ?? 0} color="primary">
+                <AttachIcon />
+              </Badge>
             </IconButton>
           ),
       );
@@ -301,7 +318,7 @@ class ClaimSearcher extends Component {
 
     let count = !!this.state.random && this.state.random.value;
     if (!count) {
-      count = claimsPageInfo?.totalCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") ?? "0";
+      count = (claimsPageInfo?.totalCount || 0).toLocaleString();
     }
 
     return (
@@ -347,7 +364,7 @@ class ClaimSearcher extends Component {
           sorts={this.sorts}
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
-          showOrdinalNumber = {this.showOrdinalNumber}
+          showOrdinalNumber={this.showOrdinalNumber}
         />
       </Fragment>
     );
