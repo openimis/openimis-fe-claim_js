@@ -171,7 +171,6 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 }
 
 export function formatDetail(type, detail) {
-  console.log(detail);
   let subServices = [];
   let subItems = [];
   if (type == 'service') {
@@ -231,9 +230,6 @@ export function formatDetailSubService(type, detail) {
 export function formatDetails(type, details) {
   if (!details) return "";
   let dets = details.filter((d) => !!d[type]);
-  console.log(`${type}s: [
-    ${dets.map((d) => formatDetail(type, d)).join("\n")}
-  ]`);
   return `${type}s: [
       ${dets.map((d) => formatDetail(type, d)).join("\n")}
     ]`;

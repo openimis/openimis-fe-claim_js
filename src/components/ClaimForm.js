@@ -275,10 +275,6 @@ class ClaimForm extends Component {
     return true;
   };
 
-  checkQtySubService = () => {
-
-  }
-
   canSave = (forFeedback, forReview) => {
     if (!this.autoGenerateClaimCode && !this.state.claim.code) return false;
     if (this.state.lockNew) return false;
