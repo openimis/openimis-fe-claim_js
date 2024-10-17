@@ -44,7 +44,7 @@ class ClaimSearcher extends Component {
     this.claimAttachments = props.modulesManager.getConf("fe-claim", "claimAttachments", true);
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", true);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   canSelectAll = (selection) =>
