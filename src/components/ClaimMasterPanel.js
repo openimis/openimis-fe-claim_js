@@ -80,9 +80,9 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
-    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
-    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", true);
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", true);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{guaranteeNo: N}");
   }
 
   shouldValidate = (inputValue) => {
