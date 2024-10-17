@@ -121,7 +121,7 @@ class ClaimForm extends Component {
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
       "attachmentRequiredForReferral",
-      true,
+      false,
     );
   }
 

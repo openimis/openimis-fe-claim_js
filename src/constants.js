@@ -41,7 +41,7 @@ export const RIGHT_RESTORE = 111012;
 
 export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = "status_Gt: 2";
 
-export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 1;
+export const DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER = 4;
 export const POLICY_ACTIVE_STATUS = 2;
 
 export const DEFAULT = {
