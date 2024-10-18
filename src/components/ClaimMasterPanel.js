@@ -218,7 +218,6 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateTo", d)}
                 readOnly={ro}
-                required={true}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
               />
@@ -326,7 +325,7 @@ class ClaimMasterPanel extends FormPanel {
         />
         <ControlledField
           module="claim"
-          id="Claim.codechfId"
+          id="Claim.code"
           field={
             <Grid item xs={2} className={classes.item}>
               <ValidatedTextInput

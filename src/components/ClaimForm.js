@@ -291,7 +291,6 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if (!this.state.claim.dateTo) return false;
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
@@ -319,7 +318,6 @@ class ClaimForm extends Component {
     }
 
     if (!forFeedback) {
-      //this.checkQtySubService();
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
@@ -346,7 +344,6 @@ class ClaimForm extends Component {
           return false;
         }
       }
-
       let services = [];
       if (!!this.state.claim.services) {
         services = [...this.state.claim.services];
@@ -562,7 +559,6 @@ class ClaimForm extends Component {
     ];
 
     const editingProps = {
-
       isDuplicate: this.state.isDuplicate,
       isRestored: this.state.isRestored || this.state.claim?.restore,
       restore: this.state.claim?.restore,
@@ -572,7 +568,6 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-
       save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
       fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
