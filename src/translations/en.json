@@ -258,7 +258,6 @@
   "claim.itemsPricelist.missing": "No items prices list registered for health facility",
   "claim.medicalItem": "Medical Item",
   "claim.medicalService": "Medical Service",
-  "claim.codechfId": "Claim Prefix",
   "claim.ClaimFilter.processedDateFrom": "Processed From",
   "claim.ClaimFilter.processedDateTo": "Processed To",
   "claim.claimSummaries.processedDate": "Processed On",
