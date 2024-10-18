@@ -64,7 +64,6 @@ class ClaimChildPanel extends Component {
   initData = () => {
     let data = [];
     if (!!this.props.edited[`${this.props.type}s`]) {
-
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
@@ -94,7 +93,6 @@ class ClaimChildPanel extends Component {
       this.setState({
         data: this.initData(),
       });
-
     }
   }
 
@@ -174,10 +172,6 @@ class ClaimChildPanel extends Component {
 
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    /*console.log("PriceAsked ");
-    console.log(this.state.data[idx]);
-    console.log(claimedAmount(this.state.data[idx]));
-    */
     this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     let data = [...this.state.data];
     this._onEditedChanged(data);
