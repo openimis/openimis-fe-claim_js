@@ -7,7 +7,6 @@ import { withModulesManager, withHistory, formatMessageWithValues, historyPush, 
 import ClaimForm from "../components/ClaimForm";
 import { saveReview, deliverReview } from "../actions";
 import _ from "lodash";
-import ClaimFormReview from "../components/ClaimFormReview";
 
 const styles = (theme) => ({
   page: theme.page,
