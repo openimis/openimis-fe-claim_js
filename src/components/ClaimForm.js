@@ -3,7 +3,6 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-
 import { Fab, Badge } from "@material-ui/core";
 import { withStyles, withTheme } from "@material-ui/core/styles";
 import CheckIcon from "@material-ui/icons/Check";
@@ -13,7 +12,6 @@ import AttachIcon from "@material-ui/icons/AttachFile";
 import RestorePageIcon from "@material-ui/icons/RestorePage";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import CachedIcon from "@material-ui/icons/Cached";
-
 import {
   Contributions,
   Form,
@@ -28,6 +26,7 @@ import {
   withModulesManager,
   fetchMutation,
   parseData,
+  coreAlert,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -119,7 +118,11 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
-    
+    this.attachmentRequiredForReferral = props.modulesManager.getConf(
+      "fe-claim",
+      "attachmentRequiredForReferral",
+      false,
+    );
   }
 
   _newClaim() {
@@ -337,6 +340,13 @@ class ClaimForm extends Component {
       }
       if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
+
+    if (
+      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
+      !this.state.claim.referralCode
+    ) {
+      return false;
+    }
     return true;
   };
 
@@ -352,6 +362,14 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&& claim.visitType == "R") {
+      this.props.coreAlert(
+        formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
+        formatMessage(this.props.intl, "claim", "claim.attachFile"),
+      );
+      this.setState({ reset: this.state.reset + 1 });
+      return;
+    }
     this.setState({ lockNew: true, isSaved: true }, () => {
       this.props
         .save(claim)
@@ -582,7 +600,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
     dispatch,
   );
 };
