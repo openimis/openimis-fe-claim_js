@@ -121,6 +121,7 @@
   "claim.edit.services.fetchingPricelist": " (fetching prices list…)",
   "claim.edit.services.totalClaimed": "Total Claimed: {totalClaimed}",
   "claim.edit.services.totalApproved": "Total Approved: {totalApproved}",
+  "claim.edit.services.MaxApproved": "Quantity set is more than quantity approved for this element. You will be reimbursed only for {totalApproved} element(s)",
   "claim.edit.services.service": "Service",
   "claim.edit.services.quantity": "Quantity",
   "claim.ClaimChildPanel.quantity.error": "Quantity has to be greater than 0",
