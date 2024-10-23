@@ -247,8 +247,8 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         : ""
     }
     preAuthorization: ${claim.preAuthorization}
-    patientCondition: "${formatGQLString(claim.patientCondition)}" 
-    referralCode: "${formatGQLString(claim.referralCode)}"
+    ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
+    ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
  `;
 }
 
