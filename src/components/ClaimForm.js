@@ -307,13 +307,11 @@ class ClaimForm extends Component {
     if (this.isExplanationMandatoryForIPD) {
       if (this.state.claim.careType === IN_PATIENT_STRING && !this.state.claim.explanation) return false;
     }
-
     if (!forFeedback) {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
       //if there are items or services, they have to be complete
-
       let items = [];
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
@@ -356,7 +354,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
 
     if (
