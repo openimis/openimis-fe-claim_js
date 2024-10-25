@@ -178,8 +178,8 @@ export function formatDetail(type, detail) {
         subItems.push(d);
       })
     };
-    if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
-      detail.claimlinkedItem.forEach(d => {
+    if (detail.items !== null && detail.items != undefined) {
+      detail.items.forEach(d => {
         subItems.push(d);
       })
     };
@@ -188,8 +188,8 @@ export function formatDetail(type, detail) {
         subServices.push(d);
       })
     };
-    if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
-      detail.claimlinkedService.forEach(d => {
+    if (detail.services !== null && detail.services != undefined) {
+      detail.services.forEach(d => {
         subServices.push(d);
       })
     }
@@ -351,8 +351,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     projections.push(
       "services{" +
         "id, product { id, uuid }, service {id code name price maximumAmount packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
-        " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
-        " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
+        " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
+        " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
 
         "}",
       "items{" +
