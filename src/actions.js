@@ -171,11 +171,38 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
 }
 
 export function formatDetail(type, detail) {
+  let subServices = [];
+  let subItems = [];
+  if (type == 'service') {
+    if (detail.service.servicesLinked !== null && detail.service.servicesLinked != undefined) {
+      detail.service.servicesLinked.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.items !== null && detail.items != undefined) {
+      detail.items.forEach(d => {
+        subItems.push(d);
+      })
+    };
+    if (detail.service.serviceserviceSet !== null && detail.service.serviceserviceSet != undefined) {
+      detail.service.serviceserviceSet.forEach(d => {
+        subServices.push(d);
+      })
+    };
+    if (detail.services !== null && detail.services != undefined) {
+      detail.services.forEach(d => {
+        subServices.push(d);
+      })
+    }
+  }
+  
   return `{
     ${detail.id !== undefined && detail.id !== null ? `id: ${detail.id}` : ""}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+    ${type == 'service' && subServices !== null ? `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ? `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
     ${
       detail.explanation !== undefined && detail.explanation !== null
@@ -188,6 +215,16 @@ export function formatDetail(type, detail) {
         : ""
     }
   }`;
+}
+
+export function formatDetailSubService(type, detail) {
+  return `{
+    ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
+    ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
+    ${detail.qtyAsked !== null ? `qtyAsked: "${_.round(detail.qtyAsked, 2).toFixed(2) && _.round(detail.qtyDisplayed, 2).toFixed(2)}"` : ""}
+    ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
+    ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
+  },`;
 }
 
 export function formatDetails(type, details) {
@@ -322,7 +359,10 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, product { id, uuid }, service {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
+        "id, product { id, uuid }, service {id code name price maximumAmount packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
+        " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
+        " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
+
         "}",
       "items{" +
         "id, product { id, uuid }, item {id code name price maximumAmount} qtyProvided, priceAsked, qtyApproved, priceApproved, priceValuated, priceAdjusted, explanation, justification, rejectionReason, status" +
@@ -566,12 +606,30 @@ export function bypassReview(claims, clientMutationLabel, clientMutationDetails 
 }
 
 export function formatReviewDetail(type, detail) {
+
+  let subServices = [];
+  let subItems = [];
+
+  if(detail.items !== null && detail.items != undefined){
+    detail.items.forEach(d =>{
+      subItems.push(d);
+    })
+  }
+
+  if(detail.services !== null && detail.services != undefined){
+    detail.services.forEach(d =>{
+      subServices.push(d);
+    })
+  }
+
   return `{
     id: ${detail.id}
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
+    ${subServices !== null ?  `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subItems !== null ?  `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;
