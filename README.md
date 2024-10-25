@@ -130,3 +130,4 @@ None
   - **M**: Makes the field mandatory
   - **O**: Makes the field optional
   - **N**: Hides the field
+- `claimForm.complexProductWithoutPriceImpact`, boolean to enable or disable complex product calculation or openimis default calculation in claim process. Default true.

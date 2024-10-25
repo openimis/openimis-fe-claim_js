@@ -179,8 +179,8 @@ export function formatDetail(type, detail) {
         subItems.push(d);
       })
     };
-    if (detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined) {
-      detail.claimlinkedItem.forEach(d => {
+    if (detail.items !== null && detail.items != undefined) {
+      detail.items.forEach(d => {
         subItems.push(d);
       })
     };
@@ -189,8 +189,8 @@ export function formatDetail(type, detail) {
         subServices.push(d);
       })
     };
-    if (detail.claimlinkedService !== null && detail.claimlinkedService != undefined) {
-      detail.claimlinkedService.forEach(d => {
+    if (detail.services !== null && detail.services != undefined) {
+      detail.services.forEach(d => {
         subServices.push(d);
       })
     }
@@ -201,8 +201,8 @@ export function formatDetail(type, detail) {
     ${type}Id: ${decodeId(detail[type].id)}
     ${detail.priceAsked !== null ? `priceAsked: "${_.round(detail.priceAsked, 2).toFixed(2)}"` : ""}
     ${detail.qtyProvided !== null ? `qtyProvided: "${_.round(detail.qtyProvided, 2).toFixed(2)}"` : ""}
-    ${type == 'service' && subServices !== null ? `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${type == 'service' && subItems !== null ? `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${type == 'service' && subServices !== null ? `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ? `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: 1
     ${
       detail.explanation !== undefined && detail.explanation !== null
@@ -360,8 +360,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     projections.push(
       "services{" +
         "id, product { id, uuid }, service {id code name price maximumAmount packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
-        " claimlinkedItem{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
-        " claimlinkedService{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
+        " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
+        " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
 
         "}",
       "items{" +
@@ -628,8 +628,8 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${subServices !== null ?  `serviceserviceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ?  `serviceLinked: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${subServices !== null ?  `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${subItems !== null ?  `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;

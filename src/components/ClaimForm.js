@@ -44,7 +44,6 @@ import {
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
-import ClaimChildPanelReview from "./ClaimChildPanelReview";
 
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
@@ -58,21 +57,13 @@ const styles = (theme) => ({
 
 class ClaimServicesPanel extends Component {
   render() {
-    if (!this.props.forReview) {
-      return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
-    } else {
-      return <ClaimChildPanelReview {...this.props} type="service" picker="medical.ServicePicker" />;
-    }
+    return <ClaimChildPanel {...this.props} type="service" picker="medical.ServicePicker" />;
   }
 }
 
 class ClaimItemsPanel extends Component {
   render() {
-    if (!this.props.forReview) {
-      return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
-    } else {
-      return <ClaimChildPanelReview {...this.props} type="item" picker="medical.ItemPicker" />;
-    }
+    return <ClaimChildPanel {...this.props} type="item" picker="medical.ItemPicker" />;
   }
 }
 
@@ -366,11 +357,6 @@ class ClaimForm extends Component {
         }
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
-    }
-    if (forReview) {
-      if (d.qtyProvided < d.qtyApproved) {
-        return false;
-      }
     }
 
     if (

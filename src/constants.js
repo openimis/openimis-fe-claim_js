@@ -19,6 +19,10 @@ export const IN_PATIENT_STRING = "IPD";
 export const OUT_PATIENT_STRING = "OPD";
 export const CARE_TYPE_STATUS = [IN_PATIENT_STRING, OUT_PATIENT_STRING];
 
+export const SERVICE_TYPE_PP_S = "S";
+export const SERVICE_TYPE_PP_P = "P";
+export const SERVICE_TYPE_PP_F = "F";
+
 export const URL_TYPE_STRING = "URL";
 export const FILE_TYPE_STRING = "FILE";
 export const ATTACHMENT_TYPE_STATUS = [URL_TYPE_STRING, FILE_TYPE_STRING];
