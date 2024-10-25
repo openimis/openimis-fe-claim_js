@@ -152,12 +152,8 @@ class ClaimMasterPanel extends FormPanel {
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-    if(edited.code && this.claimPrefix){
-      edited.code = edited.code.replace(edited.insuree?.chfId, '');
-    }
 
     let ro = readOnly || !!forReview || !!forFeedback;
-
     return (
       <Grid container>
         <ControlledField
