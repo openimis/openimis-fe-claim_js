@@ -521,7 +521,7 @@ class ClaimChildPanel extends Component {
     ]
 
     let subServicesItemsFormattersReview = [
-      (i, idx) => (i.claimlinkedService.map((u, udx) => (
+      (i, idx) => (i.services.map((u, udx) => (
         <tr>
           <TableCell>
             <TextInput
@@ -577,7 +577,7 @@ class ClaimChildPanel extends Component {
           </TableCell>
         </tr>
       ))),
-      (i, idx) => (i.claimlinkedItem.map((u, udx) => {
+      (i, idx) => (i.items.map((u, udx) => {
         return (
           <tr>
             <TableCell>
