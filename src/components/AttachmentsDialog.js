@@ -14,7 +14,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import SaveIcon from "@material-ui/icons/SaveAlt";
+import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileIcon from "@material-ui/icons/Add";
 import LinkIcon from "@material-ui/icons/Link";
