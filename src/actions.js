@@ -610,14 +610,14 @@ export function formatReviewDetail(type, detail) {
   let subServices = [];
   let subItems = [];
 
-  if(detail.claimlinkedItem !== null && detail.claimlinkedItem != undefined){
-    detail.claimlinkedItem.forEach(d =>{
+  if(detail.items !== null && detail.items != undefined){
+    detail.items.forEach(d =>{
       subItems.push(d);
     })
   }
 
-  if(detail.claimlinkedService !== null && detail.claimlinkedService != undefined){
-    detail.claimlinkedService.forEach(d =>{
+  if(detail.services !== null && detail.services != undefined){
+    detail.services.forEach(d =>{
       subServices.push(d);
     })
   }
