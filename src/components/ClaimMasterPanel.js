@@ -75,6 +75,11 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
+    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
+      "fe-claim",
+      "claimForm.ComplexProductWithoutPriceImpact",
+      true
+    );
   }
 
   shouldValidate = (inputValue) => {
@@ -134,7 +139,7 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     if (edited.services) {
-      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
+      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
