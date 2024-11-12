@@ -288,7 +288,7 @@ class ClaimSearcher extends Component {
 
   rowHighlightedAlt = (selection, claim) =>
     !!this.highlightAltInsurees &&
-    selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
+    selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length && 
     !selection.includes(claim);
 
   isRestoredClaim = (claim) => claim?.restoreId;
