@@ -222,6 +222,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
+                required={true}
               />
             </Grid>
           }
