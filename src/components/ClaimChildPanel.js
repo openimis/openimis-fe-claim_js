@@ -62,7 +62,7 @@ class ClaimChildPanel extends Component {
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
-      true,
+      false,
     );
   }
 
@@ -312,7 +312,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
       2,
     );
     const totalApproved = _.round(
