@@ -66,7 +66,7 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.insureePicker",
       "insuree.InsureeChfIdPicker",
     );
-    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", true);
     this.claimTypeReferSymbol = props.modulesManager.getConf("fe-claim", "claimForm.claimTypeReferSymbol", "R");
     this.numberOfAdditionalDiagnosis = props.modulesManager.getConf(
       "fe-claim",

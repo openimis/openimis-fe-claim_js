@@ -117,7 +117,7 @@ class ClaimForm extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", true);
     this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", true);
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
