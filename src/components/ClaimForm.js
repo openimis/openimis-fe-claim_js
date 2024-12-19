@@ -118,6 +118,7 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", true);
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
       "attachmentRequiredForReferral",
@@ -282,7 +283,9 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if( !this.state.claim.dateTo) return false;
+    if (this.isVisitDateToMandatory){
+      if( !this.state.claim.dateTo) return false;
+    }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;

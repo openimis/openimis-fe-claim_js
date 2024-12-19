@@ -84,6 +84,7 @@ class ClaimMasterPanel extends FormPanel {
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", true);
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
@@ -222,7 +223,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
-                required={true}
+                required={this.isVisitDateToMandatory}
               />
             </Grid>
           }

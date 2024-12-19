@@ -136,3 +136,5 @@ None
 - `ReferalCode`, represents the patient's reference code 
 
 - `claimForm.complexProductWithoutPriceImpact`, boolean to enable or disable complex product calculation or openimis default calculation in claim process. Default true.
+
+- `claimForm.isVisitDateToMandatory`, boolean to set VisitDateTo field to mandatory.
