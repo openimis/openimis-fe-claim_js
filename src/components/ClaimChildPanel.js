@@ -59,11 +59,6 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.ComplexProductWithoutPriceImpact",
-      true,
-    );
   }
 
   initData = () => {
@@ -182,7 +177,7 @@ class ClaimChildPanel extends Component {
 
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    if (!this.ComplexProductWithoutPriceImpact) {
+    if (!this.state.data[idx].manualPrice) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     let data = [...this.state.data];
@@ -313,7 +308,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
       2,
     );
     const totalApproved = _.round(
@@ -424,7 +419,7 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact) {
+                if (!i.service.manualPrice) {
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -481,7 +476,7 @@ class ClaimChildPanel extends Component {
                 readOnly={!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact) {
+                  if (!i.service.manualPrice) {
                     if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -542,7 +537,7 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact){
+                if (!i.service.manualPrice){
                   if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -599,7 +594,7 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
+                  if (!i.service.manualPrice){
                     if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {

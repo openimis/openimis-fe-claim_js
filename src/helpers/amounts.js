@@ -1,4 +1,4 @@
-export function claimedAmount(r, v) {
+export function claimedAmount(r) {
   let totalPrice = 0;
   if(Object?.keys(r)?.length!=0){
     if ('item' in r){
@@ -10,7 +10,7 @@ export function claimedAmount(r, v) {
           if(currentPackageType=="S"){
             totalPrice += parseFloat(r.service.price);
           }else{
-            if(v){
+            if(r?.service.manualPrice){
               totalPrice += parseFloat(r.service.price);
             }else{
               if(r.service?.serviceserviceSet){
