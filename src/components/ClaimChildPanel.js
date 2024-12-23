@@ -72,10 +72,11 @@ class ClaimChildPanel extends Component {
       data = this.props.edited[`${this.props.type}s`] || [];
       let edited = { ...this.props.edited };
       edited[`${this.props.type}s`] = data;
-    }
-    if(!!this.props.edited[`services`]){
-      data.forEach((d) => !!d.services && (d.subServices = d.services));
-      data.forEach((d) => !!d.items && (d.subItems = d.items));
+
+      if(!!this.props.edited[`services`]){
+        data.forEach((d) => !!d.services && (d.subServices = d.services));
+        data.forEach((d) => !!d.items && (d.subItems = d.items));
+      }
     }
     if (!this.props.forReview && this.props.edited.status == 2 && !_.isEqual(data[data.length - 1], {})) {
       data.push({});
@@ -181,7 +182,7 @@ class ClaimChildPanel extends Component {
 
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    if (!this.ComplexProductWithoutPriceImpact) {
+    if (!this.state.data[idx].manualPrice) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     let data = [...this.state.data];
@@ -312,7 +313,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
       2,
     );
     const totalApproved = _.round(
@@ -423,8 +424,8 @@ class ClaimChildPanel extends Component {
               readOnly={!!forReview || readOnly}
               value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact) {
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                if (!i.service.manualPrice) {
+                  if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -432,7 +433,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                  } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyAsked = u.qtyProvided;
                       u.qtyDisplayed = u.qtyProvided;
@@ -480,8 +481,8 @@ class ClaimChildPanel extends Component {
                 readOnly={!!forReview || readOnly}
                 value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                  if (!i.service.manualPrice) {
+                    if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -489,7 +490,7 @@ class ClaimChildPanel extends Component {
                       }
                       u.qtyDisplayed = v;
                       u.qtyAsked = v;
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                    } else if (i.service.packagetype == "P") {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;
@@ -498,7 +499,7 @@ class ClaimChildPanel extends Component {
                         u.qtyAsked = 0;
                       }
                     }
-                  }else{
+                  } else {
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
                   }
@@ -541,8 +542,8 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact){
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                if (!i.service.manualPrice){
+                  if (i.service.packagetype == "F") {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
@@ -550,7 +551,7 @@ class ClaimChildPanel extends Component {
                     }
                     u.qtyDisplayed = v;
                     u.qtyAsked = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                  } else if (i.service.packagetype == "P") {
                     if (v == u.qtyProvided) {
                       u.qtyDisplayed = u.qtyProvided;
                       u.qtyAsked = u.qtyProvided;
@@ -598,8 +599,8 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                  if (!i.service.manualPrice){
+                    if (i.service.packagetype == "F") {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
@@ -607,7 +608,7 @@ class ClaimChildPanel extends Component {
                       }
                       u.qtyDisplayed = v;
                       u.qtyAsked = v;
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                    } else if (i.service.packagetype == "P") {
                       if (v == u.qtyProvided) {
                         u.qtyAsked = u.qtyProvided;
                         u.qtyDisplayed = u.qtyProvided;

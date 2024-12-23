@@ -7,7 +7,7 @@ import FeedbackPage from "./pages/FeedbackPage";
 import ClaimAdminPicker from "./pickers/ClaimAdminPicker";
 import ClaimOfficerPicker from "./pickers/ClaimOfficerPicker";
 import ClaimStatusPicker from "./pickers/ClaimStatusPicker";
-import CareTypePicker from "./pickers/CareTypePicker";
+import CareTypePicker from "./pickers/CareTypePicker"
 import AttachmentGeneralTypePicker from "./pickers/AttachmentGeneralTypePicker";
 import ReviewStatusPicker from "./pickers/ReviewStatusPicker";
 import ServiceFilterPicker from "./pickers/MedicalServiceFilterPicker";
@@ -26,8 +26,6 @@ import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
 import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperationalIndicators";
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
-import YesNoPicker from "./pickers/YesNoPicker";
-import PatientConditionPicker from "./pickers/PatientConditionPicker";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -44,7 +42,7 @@ const DEFAULT_CONFIG = {
       component: ClaimPercentageReferralsReport,
       isValid: (values) => values.region && values.district && values.dateStart && values.dateEnd,
       getParams: (values) => {
-        const params = {};
+        const params = {}
         params.region_id = decodeId(values.region.id);
         params.district_id = decodeId(values.district.id);
         params.date_start = values.dateStart;
@@ -57,7 +55,7 @@ const DEFAULT_CONFIG = {
       component: ClaimsOverviewReport,
       isValid: (values) => values.dateStart && values.dateEnd,
       getParams: (values) => {
-        const params = {};
+        const params = {}
         if (!!values.region) {
           params.requested_region_id = decodeId(values.region.id);
         }
@@ -83,7 +81,7 @@ const DEFAULT_CONFIG = {
       component: ClaimHistoryReport,
       isValid: (values) => values.dateStart && values.dateEnd && values.insuree,
       getParams: (values) => {
-        const params = {};
+        const params = {}
         if (!!values.region) {
           params.requested_region_id = decodeId(values.region.id);
         }
@@ -112,7 +110,7 @@ const DEFAULT_CONFIG = {
       component: ClaimsPrimaryOperationalIndicators,
       isValid: (values) => values.year && values.region,
       getParams: (values) => {
-        const params = {};
+        const params = {}
         if (!!values.district) {
           params.requested_district_id = decodeId(values.district.id);
         }
@@ -156,8 +154,8 @@ const DEFAULT_CONFIG = {
     { key: "claim.ClaimOfficerPicker.projection", ref: ["id", "uuid", "code", "lastName", "otherNames"] },
     { key: "claim.ClaimStatusPicker", ref: ClaimStatusPicker },
     { key: "claim.ClaimStatusPicker.projection", ref: null },
-    { key: "claim.CareTypePicker", ref: CareTypePicker },
-    { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker },
+    { key: "claim.CareTypePicker", ref: CareTypePicker},
+    { key: "claim.AttachmentGeneralTypePicker", ref: AttachmentGeneralTypePicker},
     { key: "claim.ReviewStatusPicker", ref: ReviewStatusPicker },
     { key: "claim.ReviewStatusPicker.projection", ref: null },
     { key: "claim.AttachmentStatusPicker", ref: AttachmentStatusPicker },
@@ -174,14 +172,12 @@ const DEFAULT_CONFIG = {
     { key: "claim.CreateClaim.claimTypeReferSymbol", ref: "R" },
     { key: "claim.ClaimMasterPanelExt", ref: ClaimMasterPanelExt },
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
-    { key: "claim.YesNoPicker", ref: YesNoPicker },
-    { key: "claim.PatientConditionPicker", ref: PatientConditionPicker },
   ],
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
     { path: ROUTE_CLAIM_EDIT + "/:claim_uuid?", component: EditPage }, // ? = optional (needed to route new claims)
     { path: ROUTE_REVIEWS, component: ReviewsPage },
-    { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid/:customBackUri?/:customBackUuid?", component: ReviewPage },
+    { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid", component: ReviewPage },
     { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage },
   ],
   "core.MainMenu": [ClaimMainMenu],

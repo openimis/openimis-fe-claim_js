@@ -26,7 +26,6 @@ import {
   withModulesManager,
   fetchMutation,
   parseData,
-  coreAlert,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -118,12 +117,7 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
-    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", true);
-    this.attachmentRequiredForReferral = props.modulesManager.getConf(
-      "fe-claim",
-      "attachmentRequiredForReferral",
-      false,
-    );
+    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", false);
   }
 
   _newClaim() {
@@ -139,7 +133,6 @@ class ClaimForm extends Component {
     claim.dateFrom = toISODate(moment().toDate());
     claim.visitType = this.props.modulesManager.getConf("fe-claim", "newClaim.visitType", "O");
     claim.code = "";
-    claim.preAuthorization = false;
     claim.jsonExt = {};
     return claim;
   }
@@ -358,14 +351,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
-    }
-
-    if (
-      (this.state.claim.visitType == "R" || this.state.claim.patientCondition == "R") &&
-      !this.state.claim.referralCode
-    ) {
-      return false;
+      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
     return true;
   };
@@ -382,14 +368,6 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&& claim.visitType == "R") {
-      this.props.coreAlert(
-        formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
-        formatMessage(this.props.intl, "claim", "claim.attachFile"),
-      );
-      this.setState({ reset: this.state.reset + 1 });
-      return;
-    }
     this.setState({ lockNew: true, isSaved: true }, () => {
       this.props
         .save(claim)
@@ -620,7 +598,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation },
     dispatch,
   );
 };

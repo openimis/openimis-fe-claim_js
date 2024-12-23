@@ -339,19 +339,5 @@
   "claim.calculateAge.util.days": "Day(s)",
   "claim.calculateAge.util.weeks": "Week(s)",
   "claim.calculateAge.util.months": "Month(s)",
-  "claim.calculateAge.util.years": "Year(s)",
-  "claim.preAuthorization": "Pre-Authorization Required",
-  "claim.preAuthorization.null": "Any",
-  "claim.preAuthorization.true": "Yes",
-  "claim.preAuthorization.false": "No",
-  "claim.claimSummaries.pre-authorization": "Pre-auth.",
-  "claim.patientCondition": "Patient's condition at discharge",
-  "claim.patientCondition.null": "Select condition",
-  "claim.patientCondition.H": "Healed",
-  "claim.patientCondition.D": "Deceased",
-  "claim.patientCondition.E": "Escaped",
-  "claim.patientCondition.R": "Referral",
-  "claim.referralCode": "Referral Code",
-  "claim.missingAttachment": "Missing Attachment",
-  "claim.attachFile": "A referral claim requires an attachment."
+  "claim.calculateAge.util.years": "Year(s)"
 }
