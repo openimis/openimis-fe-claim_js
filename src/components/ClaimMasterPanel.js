@@ -28,7 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING, REFERRAL } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -75,7 +75,8 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", false);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    console.log(this.fields)
   }
 
   shouldValidate = (inputValue) => {
@@ -209,7 +210,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
-                required={this.isVisitDateToMandatory}
+                required={this.fields.visitDateTo == "M"}
               />
             </Grid>
           }
