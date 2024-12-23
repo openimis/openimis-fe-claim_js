@@ -76,7 +76,6 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
-    console.log(this.fields)
   }
 
   shouldValidate = (inputValue) => {
@@ -136,12 +135,11 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     if (edited.services) {
-      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0);
+      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
-
     let ro = readOnly || !!forReview || !!forFeedback;
     return (
       <Grid container>

@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P } from "../constants";
+import { DEFAULT } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -58,11 +58,6 @@ class ClaimChildPanel extends Component {
       "fe-claim",
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
-    );
-    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.ComplexProductWithoutPriceImpact",
-      true,
     );
   }
 

@@ -282,12 +282,6 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
         ? `attachments: ${formatAttachments(modulesManager, claim.attachments)}`
         : ""
     }
-<<<<<<< HEAD
-    preAuthorization: ${claim.preAuthorization}
-    ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
-    ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
-=======
->>>>>>> 5442eedb3becbb619686c36b84855ef6340f4cc1
  `;
 }
 
