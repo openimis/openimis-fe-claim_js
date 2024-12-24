@@ -28,7 +28,7 @@ import {
 import ClaimStatusPicker from "../pickers/ClaimStatusPicker";
 import FeedbackStatusPicker from "../pickers/FeedbackStatusPicker";
 import ReviewStatusPicker from "../pickers/ReviewStatusPicker";
-import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING } from "../constants";
+import { CLAIM_DETAIL_REJECTED_STATUS, DEFAULT, DEFAULT_ADDITIONAL_DIAGNOSIS_NUMBER, IN_PATIENT_STRING, REFERRAL } from "../constants";
 
 const CLAIM_MASTER_PANEL_CONTRIBUTION_KEY = "claim.MasterPanel";
 
@@ -75,7 +75,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isCareTypeMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isCareTypeMandatory", false);
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
-    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", false);
+    this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
   }
 
   shouldValidate = (inputValue) => {
@@ -208,6 +208,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
+                required={this.fields.visitDateTo == "M"}
               />
             </Grid>
           }
@@ -287,30 +288,33 @@ class ClaimMasterPanel extends FormPanel {
             }
           />
         )}
-        <ControlledField
-          module="claim"
-          id="Claim.referHealthFacility"
-          field={
-            <Grid item xs={3} className={classes.item}>
-              <PublishedComponent
-                pubRef="location.HealthFacilityReferPicker"
-                label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
-                value={
-                  (edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ??
-                  this.EMPTY_STRING
-                }
-                reset={reset}
-                readOnly={ro}
-                required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
-                filterOptions={(options) =>
-                  options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
-                }
-                filterSelectedOptions={true}
-                onChange={(d) => this.updateAttribute("referHF", d)}
-              />
-            </Grid>
-          }
-        />
+        {(!!edited.visitType && edited.visitType == REFERRAL) || (!!edited.patientCondition && edited.patientCondition == REFERRAL) ? (
+             <ControlledField
+             module="claim"
+             id="Claim.referHealthFacility"
+             field={
+               <Grid item xs={3} className={classes.item}>
+                 <PublishedComponent
+                   pubRef="location.HealthFacilityReferPicker"
+                   label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                   value={
+                     (edited.visitType === this.claimTypeReferSymbol ? edited.referFrom : edited.referTo) ??
+                     this.EMPTY_STRING
+                   }
+                   reset={reset}
+                   readOnly={ro}
+                   required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                   filterOptions={(options) =>
+                     options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
+                   }
+                   filterSelectedOptions={true}
+                   onChange={(d) => this.updateAttribute("referHF", d)}
+                 />
+               </Grid>
+             }
+           />
+        ): null}
+       
         <ControlledField
           module="claim"
           id="Claim.code"
