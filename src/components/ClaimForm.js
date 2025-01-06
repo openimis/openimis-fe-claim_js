@@ -267,7 +267,7 @@ class ClaimForm extends Component {
     if (!!this.state.claim.codeError) return false;
     if (!this.state.claim.healthFacility) return false;
     if (
-      !!this.isReferHFMandatory &&
+      this.fields.referalHF == "M" &&
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )

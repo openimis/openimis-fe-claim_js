@@ -303,7 +303,7 @@ class ClaimMasterPanel extends FormPanel {
                    }
                    reset={reset}
                    readOnly={ro}
-                   required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                   required={this.fields.referalHF == "M" && edited.visitType === this.claimTypeReferSymbol}
                    filterOptions={(options) =>
                      options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
                    }
