@@ -184,7 +184,7 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid/:customBackUri?/:customBackUuid?", component: ReviewPage },
     { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage },
   ],
-  "core.MainMenu": [ClaimMainMenu],
+  "core.MainMenu": [{ name: 'ClaimMainMenu', component: ClaimMainMenu }],
   "claim.MasterPanel": [ClaimMasterPanelExt],
   "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
 };
