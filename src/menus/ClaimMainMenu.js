@@ -39,6 +39,7 @@ class ClaimMainMenu extends Component {
         header={formatMessage(this.props.intl, "claim", "mainMenu")}
         icon={<ScreenShare />}
         entries={entries}
+        menuId="ClaimMainMenu"
       />
     );
   }
