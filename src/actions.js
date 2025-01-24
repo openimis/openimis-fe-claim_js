@@ -359,7 +359,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
   } else {
     projections.push(
       "services{" +
-        "id, product { id, uuid }, service {id code name price maximumAmount packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
+        "id, product { id, uuid }, service {id code name price maximumAmount manualPrice packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
         " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
         " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
 
