@@ -277,7 +277,7 @@ class ClaimForm extends Component {
       this.state.claim.visitType === this.claimTypeReferSymbol &&
       !this.state.claim.referHF
     )
-      return false; 
+      return false;
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -285,12 +285,6 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
-    if (
-      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
-      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
-      return false
-    } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
