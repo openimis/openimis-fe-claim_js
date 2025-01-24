@@ -527,7 +527,6 @@ class ClaimMasterPanel extends FormPanel {
               pubRef="claim.PatientConditionPicker"
               name="patientCondition"
               value={edited.patientCondition}
-              required
               onChange={(v) => this.updateAttribute("patientCondition", v)}
             />
           </Grid>
