@@ -13,8 +13,8 @@ export function claimedAmount(r) {
             if(r?.service.manualPrice){
               totalPrice += parseFloat(r.service.price);
             }else{
-              if(r.service?.serviceserviceSet){
-                r.service.serviceserviceSet.forEach(subItem => {
+              if(r.service?.serviceServiceSet){
+                r.service.serviceServiceSet.forEach(subItem => {
                   let qtyAsked = 0;
                   if(currentPackageType=="P"){
                     if(subItem.qtyAsked){
@@ -32,8 +32,8 @@ export function claimedAmount(r) {
                   }
                 });
               }
-              if(r.service.servicesLinked){
-                r.service.servicesLinked.forEach(subItem => {
+              if(r.service.serviceItemSet){
+                r.service.serviceItemSet.forEach(subItem => {
                   let qtyAsked = 0;
                   if(currentPackageType=="P"){
                     if(subItem.qtyAsked){
