@@ -1,6 +1,17 @@
 import _ from "lodash";
 
-export const CLAIM_STATUS = [1, 2, 4, 8, 16];
+export const CLAIM_STATUS_REJECTED = 1;
+export const CLAIM_STATUS_ENTERED = 2;
+export const CLAIM_STATUS_CHECKED = 4;
+export const CLAIM_STATUS_PROCESSED = 8;
+export const CLAIM_STATUS_VALUATED = 16;
+export const CLAIM_STATUS = [
+  CLAIM_STATUS_REJECTED,
+  CLAIM_STATUS_ENTERED,
+  CLAIM_STATUS_CHECKED,
+  CLAIM_STATUS_PROCESSED,
+  CLAIM_STATUS_VALUATED,
+];
 export const REVIEW_STATUS = [1, 2, 4, 8, 16];
 export const FEEDBACK_STATUS = [1, 2, 4, 8, 16];
 export const APPROVAL_STATUS = [1, 2];

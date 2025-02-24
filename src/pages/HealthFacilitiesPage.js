@@ -19,7 +19,14 @@ import {
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import { submit, del, selectHealthFacility, submitAll } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import {
+  RIGHT_ADD,
+  RIGHT_LOAD,
+  RIGHT_SUBMIT,
+  RIGHT_DELETE,
+  MODULE_NAME,
+  CLAIM_STATUS_ENTERED
+} from "../constants";
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
@@ -60,7 +67,12 @@ class HealthFacilitiesPage extends Component {
     selection.filter((s) => s.status === 2 && (!!this.canSubmitClaimWithZero || s.claimed > 0)).length ===
       selection.length;
 
-  canSubmitAll = (selection) => !selection || selection.length == 0;
+  canSubmitAll = (selection) => {
+    const filters = this.props.selectedFilters;
+    const isStatusEnteredSelected = filters?.claimStatus?.value === CLAIM_STATUS_ENTERED;  // only ENTERED claims can be submitted
+    const result = (!selection || selection.length === 0) && isStatusEnteredSelected;
+    return result
+  }
 
   submitSelected = (selection) => {
     if (selection.length === 1) {
