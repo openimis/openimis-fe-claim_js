@@ -416,7 +416,7 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
               onChange={(v) => {
                 if (!i.service.manualPrice) {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -425,20 +425,20 @@ class ClaimChildPanel extends Component {
                         totalApproved: u.qtyProvided,
                       }));
                     }
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
+                      u.qtyApproved = u.qtyProvided;
+                      u.qtyAdjusted = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = 0;
                     }
                   }
                 }else{
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
+                  u.qtyAdjusted = v;
+                  u.qtyApproved = v;
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
               }
@@ -473,7 +473,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={!!forReview || readOnly}
-                value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
                 onChange={(v) => {
                   if (!i.service.manualPrice){
                     if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -482,20 +482,20 @@ class ClaimChildPanel extends Component {
                           totalApproved: u.qtyProvided,
                         }));
                       }
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = v;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = v;
                     } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                       if (v == u.qtyProvided) {
-                        u.qtyAsked = u.qtyProvided;
-                        u.qtyDisplayed = u.qtyProvided;
+                        u.qtyApproved = u.qtyProvided;
+                        u.qtyAdjusted = u.qtyProvided;
                       } else {
-                        u.qtyDisplayed = v;
-                        u.qtyAsked = 0;
+                        u.qtyAdjusted = v;
+                        u.qtyApproved = 0;
                       }
                     }
                   }else{
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
                 }
