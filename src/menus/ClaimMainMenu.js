@@ -16,6 +16,7 @@ class ClaimMainMenu extends Component {
         text: formatMessage(this.props.intl, "claim", "menu.healthFacilityClaims"),
         icon: <Keyboard />,
         route: "/claim/healthFacilities",
+        id: "claim.healthFacilityClaims",
       });
     }
     if (!!rights.filter((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS).length) {
@@ -23,6 +24,7 @@ class ClaimMainMenu extends Component {
         text: formatMessage(this.props.intl, "claim", "menu.reviews"),
         icon: <Assignment />,
         route: "/claim/reviews",
+        id: "claim.reviews",
       });
     }
     entries.push(
@@ -37,6 +39,7 @@ class ClaimMainMenu extends Component {
         header={formatMessage(this.props.intl, "claim", "mainMenu")}
         icon={<ScreenShare />}
         entries={entries}
+        menuId="ClaimMainMenu"
       />
     );
   }

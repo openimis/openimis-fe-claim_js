@@ -288,16 +288,16 @@ class ClaimSearcher extends Component {
 
   rowHighlightedAlt = (selection, claim) =>
     !!this.highlightAltInsurees &&
-    selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length &&
+    selection.filter((c) => _.isEqual(c.insuree, claim.insuree)).length && 
     !selection.includes(claim);
 
-  isRestoredClaim = (claim) => claim?.restore;
+  isRestoredClaim = (claim) => claim?.restoreId;
 
   showRestored = (showRestored) => {
     this.setState({ showRestored });
   };
 
-  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restore;
+  isClaimNotRestored = (_, claim) => this.state.showRestored && !claim?.restoreId;
 
   render() {
     const {
