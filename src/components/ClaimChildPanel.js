@@ -59,11 +59,6 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
-      "fe-claim",
-      "claimForm.ComplexProductWithoutPriceImpact",
-      true,
-    );
   }
 
   initData = () => {
@@ -181,7 +176,7 @@ class ClaimChildPanel extends Component {
 
 
   _onChangeSubItem = (idx, udx, attr, v) => {
-    if (!this.ComplexProductWithoutPriceImpact) {
+    if (!this.state.data[idx].manualPrice) {
       this.state.data[idx].priceAsked = claimedAmount(this.state.data[idx]);
     }
     let data = [...this.state.data];
@@ -312,7 +307,7 @@ class ClaimChildPanel extends Component {
       );
     }
     const totalClaimed = _.round(
-      this.state.data.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0),
+      this.state.data.reduce((sum, r) => sum + claimedAmount(r), 0),
       2,
     );
     const totalApproved = _.round(
@@ -377,7 +372,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={this.state.data[idx].service?.priceAsked}
+          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
@@ -421,29 +416,29 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <NumberInput
               readOnly={!!forReview || readOnly}
-              value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact) {
+                if (!i.service.manualPrice) {
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                         totalApproved: u.qtyProvided,
                       }));
                     }
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                     if (v == u.qtyProvided) {
-                      u.qtyAsked = u.qtyProvided;
-                      u.qtyDisplayed = u.qtyProvided;
+                      u.qtyApproved = u.qtyProvided;
+                      u.qtyAdjusted = u.qtyProvided;
                     } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = 0;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = 0;
                     }
                   }
                 }else{
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
+                  u.qtyAdjusted = v;
+                  u.qtyApproved = v;
                 }
                 this._onChangeSubItem(idx, udx, "servicesQty", v);
               }
@@ -478,29 +473,29 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={!!forReview || readOnly}
-                value={!!u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
+                  if (!i.service.manualPrice){
                     if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
                           totalApproved: u.qtyProvided,
                         }));
                       }
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = v;
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = v;
                     } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
                       if (v == u.qtyProvided) {
-                        u.qtyAsked = u.qtyProvided;
-                        u.qtyDisplayed = u.qtyProvided;
+                        u.qtyApproved = u.qtyProvided;
+                        u.qtyAdjusted = u.qtyProvided;
                       } else {
-                        u.qtyDisplayed = v;
-                        u.qtyAsked = 0;
+                        u.qtyAdjusted = v;
+                        u.qtyApproved = 0;
                       }
                     }
                   }else{
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
                   }
                   this._onChangeSubItem(idx, udx, "servicesQty", v);
                 }
@@ -541,7 +536,7 @@ class ClaimChildPanel extends Component {
               readOnly={readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
-                if (!this.ComplexProductWithoutPriceImpact){
+                if (!i.service.manualPrice){
                   if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                     if (u.qtyProvided < v) {
                       alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -598,7 +593,7 @@ class ClaimChildPanel extends Component {
                 readOnly={readOnly}
                 value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                 onChange={(v) => {
-                  if (!this.ComplexProductWithoutPriceImpact){
+                  if (!i.service.manualPrice){
                     if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                       if (u.qtyProvided < v) {
                         alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
@@ -708,7 +703,7 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={subServicesItemsFormatters}
+          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
           subServicesItemsFormattersReview={subServicesItemsFormattersReview}

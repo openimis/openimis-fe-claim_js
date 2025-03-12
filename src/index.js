@@ -1,3 +1,8 @@
+import React from 'react';
+import {
+  Keyboard, ScreenShare, Assignment
+} from "@material-ui/icons";
+import { FormattedMessage } from "@openimis/fe-core";
 import ClaimMainMenu from "./menus/ClaimMainMenu";
 import HealthFacilitiesPage from "./pages/HealthFacilitiesPage";
 import EditPage from "./pages/EditPage";
@@ -28,6 +33,7 @@ import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperation
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
+import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "./constants";
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -184,9 +190,25 @@ const DEFAULT_CONFIG = {
     { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid/:customBackUri?/:customBackUuid?", component: ReviewPage },
     { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage },
   ],
-  "core.MainMenu": [ClaimMainMenu],
+  "core.MainMenu": [{ name: 'ClaimMainMenu', component: ClaimMainMenu }],
   "claim.MasterPanel": [ClaimMasterPanelExt],
   "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
+  "claim.MainMenu": [
+    {
+      text: <FormattedMessage module="claim" id="menu.healthFacilityClaims" />,
+      icon: <Keyboard />,
+      route: "/claim/healthFacilities",
+      id: "claim.healthFacilityClaims",
+      filter: (rights) => rights.some((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS),
+    },
+    {
+      text: <FormattedMessage module="claim" id="menu.reviews" />,
+      icon: <Assignment />,
+      route: "/claim/reviews",
+      id: "claim.reviews",
+      filter: (rights) => rights.some((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS),
+    },
+],
 };
 
 export const ClaimModule = (cfg) => {

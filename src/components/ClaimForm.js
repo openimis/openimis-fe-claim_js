@@ -119,6 +119,7 @@ class ClaimForm extends Component {
       DEFAULT.QUANTITY_MAX_VALUE,
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
+    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", false);
     this.attachmentRequiredForReferral = props.modulesManager.getConf(
       "fe-claim",
       "attachmentRequiredForReferral",
@@ -285,6 +286,9 @@ class ClaimForm extends Component {
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
+    if (this.isVisitDateToMandatory){
+      if( !this.state.claim.dateTo) return false;
+    }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
@@ -418,6 +422,13 @@ class ClaimForm extends Component {
         });
     });
   };
+
+  _saveReview = (claim) => {
+    this.setState(
+      { lockNew: true, isSaved: true },
+      () => this.props.save(claim),
+    );
+  }
 
   print = (claimUuid) => {
     this.setState({ printParam: claimUuid }, (e) => this.props.print());
@@ -554,8 +565,8 @@ class ClaimForm extends Component {
       back: back,
       forcedDirty: this.state.forcedDirty,
       add: !!add && !this.state.newClaim ? this._add : null,
-      save: !!save && !forReview && this.state.claim.status !== STATUS_REJECTED ? this._save : null,
-      fab: forReview && !readOnly && this.state.claim.reviewStatus < 8 && <CheckIcon />,
+      save: !!save && this.state.claim.status !== STATUS_REJECTED && !readOnly ? forReview ? this._saveReview : this._save : null,
+      fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
       canSave: (e) => this.canSave(forFeedback, forReview),

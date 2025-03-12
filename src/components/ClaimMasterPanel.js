@@ -84,6 +84,7 @@ class ClaimMasterPanel extends FormPanel {
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    this.isVisitDateToMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isVisitDateToMandatory", false);
     this.ComplexProductWithoutPriceImpact = props.modulesManager.getConf(
       "fe-claim",
       "claimForm.ComplexProductWithoutPriceImpact",
@@ -148,7 +149,7 @@ class ClaimMasterPanel extends FormPanel {
       totalApproved += edited.items.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     if (edited.services) {
-      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r,this.ComplexProductWithoutPriceImpact), 0);
+      totalClaimed += edited.services.reduce((sum, r) => sum + claimedAmount(r), 0);
       totalApproved += edited.services.reduce((sum, r) => sum + approvedAmount(r), 0);
     }
     edited.claimed = _.round(totalClaimed, 2);
@@ -222,6 +223,7 @@ class ClaimMasterPanel extends FormPanel {
                 readOnly={ro}
                 minDate={edited.dateFrom}
                 maxDate={edited.dateClaimed}
+                required={this.isVisitDateToMandatory}
               />
             </Grid>
           }
