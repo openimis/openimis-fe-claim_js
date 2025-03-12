@@ -299,7 +299,7 @@ class ClaimForm extends Component {
       return false
     } 
     if (this.state.claim.services !== undefined) {
-      if (this.props.forReview) {
+      if (this.props.forReview || this.state.isRestored) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
           return false;
         }
