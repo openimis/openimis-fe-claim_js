@@ -218,7 +218,6 @@ export function formatDetail(type, detail) {
 }
 
 export function formatDetailSubService(type, detail) {
-  console.log(detail.qtyAdjusted, 'detail.qtyAdjusted');
   return `{
     ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
     ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
