@@ -218,6 +218,7 @@ export function formatDetail(type, detail) {
 }
 
 export function formatDetailSubService(type, detail) {
+  console.log(detail.qtyAdjusted, 'detail.qtyAdjusted');
   return `{
     ${detail?.item?.code !== undefined && detail?.item?.code !== null ? `subItemCode: "${detail?.item?.code}"` : ""}
     ${detail?.service?.code !== undefined && detail?.service?.code !== null ? `subServiceCode: "${detail?.service?.code}"` : ""}
@@ -361,8 +362,8 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     projections.push(
       "services{" +
         "id, product { id, uuid }, service {id code name price maximumAmount manualPrice packagetype} qtyProvided,  priceAsked, qtyApproved, priceApproved, priceValuated,priceAdjusted, explanation, justification, rejectionReason, status," +
-        " items{ item { id code name } qtyDisplayed priceAsked qtyProvided qtyAdjusted }"+
-        " services{ service {id code name} qtyProvided qtyDisplayed priceAsked qtyAdjusted }"+
+        " items{ item { id code name } qtyDisplayed priceAsked qtyProvided }"+
+        " services{ service {id code name} qtyProvided qtyDisplayed priceAsked }"+
 
         "}",
       "items{" +
