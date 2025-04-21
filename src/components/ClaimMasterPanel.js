@@ -509,6 +509,43 @@ class ClaimMasterPanel extends FormPanel {
             )}
           </Fragment>
         )}
+
+        {this.showPatientCondition && (
+          <Grid item xs={2} className={classes.item}>
+            <PublishedComponent
+              pubRef="claim.PatientConditionPicker"
+              name="patientCondition"
+              value={edited.patientCondition}
+              required
+              onChange={(v) => this.updateAttribute("patientCondition", v)}
+            />
+          </Grid>
+        )}
+        {(edited.visitType == "R" || edited.patientCondition == "R") && (
+          <Grid item xs={2} className={classes.item}>
+            <TextInput
+              id="claim.referralCode"
+              module="insuree"
+              label="claim.referralCode"
+              value={edited.referralCode}
+              required={edited.visitType == "R" || edited.patientCondition == "R"}
+              onChange={(v) => this.updateAttribute("referralCode", v)}
+            />
+          </Grid>
+        )}
+        {this.showPreAuthorization && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                id="Claim.preAuthorization"
+                color="primary"
+                checked={edited?.preAuthorization}
+                onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+              />
+            }
+            label={formatMessage(intl, "claim", "pre-authorization")}
+          />
+        )}
         <Contributions
           claim={edited}
           readOnly={ro}

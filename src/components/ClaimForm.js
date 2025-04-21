@@ -39,6 +39,7 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  REFERRAL,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
@@ -118,6 +119,12 @@ class ClaimForm extends Component {
     );
     this.isReferHFMandatory = props.modulesManager.getConf("fe-claim", "claimForm.isReferHFMandatory", false);
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    this.attachmentRequiredForReferral = props.modulesManager.getConf(
+      "fe-claim",
+      "attachmentRequiredForReferral",
+      false,
+    );
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
   }
 
   _newClaim() {
@@ -272,6 +279,7 @@ class ClaimForm extends Component {
       !this.state.claim.referHF
     )
       return false;
+    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
@@ -282,6 +290,12 @@ class ClaimForm extends Component {
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
     if (!this.state.claim.icd) return false;
+    if (
+      (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
+      (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
+    ){
+      return false
+    } 
     if (this.state.claim.services !== undefined) {
       if (this.props.forReview) {
         if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service")).length) {
@@ -368,6 +382,14 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&&(claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
+      this.props.coreAlert(
+        formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
+        formatMessage(this.props.intl, "claim", "claim.attachFile"),
+      );
+      this.setState({ reset: this.state.reset + 1 });
+      return;
+    }
     this.setState({ lockNew: true, isSaved: true }, () => {
       this.props
         .save(claim)
