@@ -133,6 +133,7 @@ class ClaimMasterPanel extends FormPanel {
       isRestored,
       isDuplicate,
     } = this.props;
+    console.log("patient condition config", this.showPatientCondition)
     if (!edited) return null;
     let totalClaimed = 0;
     let totalApproved = 0;
