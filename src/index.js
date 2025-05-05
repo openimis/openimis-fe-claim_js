@@ -16,6 +16,7 @@ import ClaimAttachmentPredefinedTypePicker from "./pickers/ClaimAttachmentPredef
 import ApprovalStatusPicker from "./pickers/ApprovalStatusPicker";
 import RejectionReasonPicker from "./pickers/RejectionReasonPicker";
 import FeedbackStatusPicker from "./pickers/FeedbackStatusPicker";
+import PatientConditionPicker from "./pickers/PatientConditionPicker";
 import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
@@ -164,6 +165,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.ApprovalStatusPicker.projection", ref: null },
     { key: "claim.FeedbackStatusPicker", ref: FeedbackStatusPicker },
     { key: "claim.FeedbackStatusPicker.projection", ref: null },
+    { key: "claim.PatientConditionPicker", ref: PatientConditionPicker },
     { key: "claim.RejectionReasonPicker", ref: RejectionReasonPicker },
     { key: "claim.RejectionReasonPicker.projection", ref: null },
     { key: "medical.ServiceFilterPicker", ref: ServiceFilterPicker },

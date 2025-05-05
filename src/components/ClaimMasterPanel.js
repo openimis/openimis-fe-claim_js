@@ -76,6 +76,7 @@ class ClaimMasterPanel extends FormPanel {
     this.isClaimedDateFixed = props.modulesManager.getConf("fe-claim", "claimForm.isClaimedDateFixed", false);
     this.EMPTY_STRING = "";
     this.fields = props.modulesManager.getConf("fe-claim", "fields", "{}");
+    this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
   }
 
   shouldValidate = (inputValue) => {
