@@ -367,6 +367,15 @@ class ClaimForm extends Component {
       }
       if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
+    if(this.state.claim.attachments && this.state.claim.attachments.length > 0){
+      // Vérification que chaque pièce jointe a un type prédéfini
+      const attachmentsWithoutType = this.state.claim.attachments.filter(
+        attachment => !attachment.predefinedType
+      );
+      if(attachmentsWithoutType.length > 0) {
+        return false;
+      }
+    }
     return true;
   };
 
