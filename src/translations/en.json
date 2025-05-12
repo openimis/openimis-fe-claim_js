@@ -353,5 +353,22 @@
   "claim.patientCondition.R": "Referral",
   "claim.referralCode": "Referral Code",
   "claim.missingAttachment": "Missing Attachment",
-  "claim.attachFile": "A referral claim requires an attachment."
+  "claim.attachFile": "A referral claim requires an attachment.",
+  "claim.gql_query_claims_perms": "Claim | Query Claims",
+  "claim.gql_mutation_create_claims_perms": "Claim | Mutation Create Claims",
+  "claim.gql_mutation_update_claims_perms": "Claim | Mutation Update Claims",
+  "claim.gql_mutation_load_claims_perms": "Claim | Mutation Load Claims",
+  "claim.gql_mutation_submit_claims_perms": "Claim | Mutation Submit Claims",
+  "claim.gql_mutation_select_claim_feedback_perms": "Claim | Mutation Select Claim Feedback",
+  "claim.gql_mutation_bypass_claim_feedback_perms": "Claim | Mutation Bypass Claim Feedback",
+  "claim.gql_mutation_skip_claim_feedback_perms": "Claim | Mutation Skip Claim Feedback",
+  "claim.gql_mutation_deliver_claim_feedback_perms": "Claim | Mutation Deliver Claim Feedback",
+  "claim.gql_mutation_select_claim_review_perms": "Claim | Mutation Select Claim Review",
+  "claim.gql_mutation_bypass_claim_review_perms": "Claim | Mutation Bypass Claim Review",
+  "claim.gql_mutation_skip_claim_review_perms": "Claim | Mutation Skip Claim Review",
+  "claim.gql_mutation_deliver_claim_review_perms": "Claim | Mutation Deliver Claim Review",
+  "claim.gql_mutation_process_claims_perms": "Claim | Mutation Process Claims",
+  "claim.gql_mutation_restore_claims_perms": "Claim | Mutation Restore Claims",
+  "claim.gql_mutation_delete_claims_perms": "Claim | Mutation Delete Claims",
+  "claim.claim_print_perms": "Claim | Claim Print"
 }
