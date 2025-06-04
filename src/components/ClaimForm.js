@@ -26,6 +26,8 @@ import {
   withModulesManager,
   fetchMutation,
   parseData,
+  coreAlert,
+
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -629,7 +631,7 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
-    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation },
+    { fetchClaim, claimHealthFacilitySet, journalize, print, generate, fetchMutation, coreAlert },
     dispatch,
   );
 };
