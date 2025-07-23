@@ -77,3 +77,4 @@ export const HEALED = "H";
 export const DECEASED = "D";
 export const ESCAPED = "E";
 export const PATIENT_CONDITION = [HEALED, DECEASED, ESCAPED, REFERRAL];
+export const YES_NO = ["true", "false"];

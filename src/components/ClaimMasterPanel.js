@@ -14,7 +14,7 @@ import {
   TextInput,
   ValidatedTextInput,
 } from "@openimis/fe-core";
-import { Grid } from "@material-ui/core";
+import { Grid, Checkbox, FormControlLabel } from "@material-ui/core";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
@@ -82,6 +82,7 @@ class ClaimMasterPanel extends FormPanel {
       false,
     );
     this.showPatientCondition = props.modulesManager.getConf("fe-claim", "showPatientCondition", false);
+    this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
   }
 
   shouldValidate = (inputValue) => {

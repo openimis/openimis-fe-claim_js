@@ -161,6 +161,7 @@ export function fetchClaimSummaries(mm, filters, withAttachmentsCount) {
     "restoreId",
     "healthFacility { id uuid name code }",
     "insuree" + mm.getProjection("insuree.InsureePicker.projection"),
+    "preAuthorization"
   ];
   if (withAttachmentsCount) {
     projections.push("attachmentsCount");
@@ -284,6 +285,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     }
     ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
     ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
+    preAuthorization: ${claim.preAuthorization}
  `;
 }
 
@@ -345,6 +347,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "icd4" + mm.getProjection("medical.DiagnosisPicker.projection"),
     "patientCondition",
     "referralCode",
+    "preAuthorization",
     "jsonExt",
   ];
   if (!!forFeedback) {

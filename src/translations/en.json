@@ -348,5 +348,10 @@
   "claim.patientCondition.R": "Referral",
   "claim.referralCode": "Referral Code",
   "claim.missingAttachment": "Missing Attachment",
-  "claim.attachFile": "A referral claim requires an attachment."
+  "claim.attachFile": "A referral claim requires an attachment.",
+  "claim.preAuthorization": "Pre-Authorization Required",
+  "claim.preAuthorization.null" : "Any",
+  "claim.preAuthorization.true" : "Yes",
+  "claim.preAuthorization.false" : "No",
+  "claim.claimSummaries.pre-authorization" : "Pre-auth."
 }
