@@ -122,35 +122,35 @@ class ClaimChildPanel extends Component {
   };
 
   _price = (v) => {
-    let id = decodeId(v.id)
-    return this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][id] || v.price;
-}
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.price);
+  }
 
   _code = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`${this.props.type}sPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.code
-    );
+    const id = decodeId(v.id);
+    const { type, edited, [`${type}sPricelists`]: pricelists } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (pricelists[pricelistId]?.[id] || v.code);
   };
 
   _serviceSet = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.serviceserviceSet
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.serviceserviceSet);
   };
 
   _serviceLinked = (v) => {
-    let id = decodeId(v.id);
-    return (
-      this.props[`servicesPricelists`][this.props.edited.healthFacility[`${this.props.type}sPricelist`].id][
-      id
-      ] || v.servicesLinked
-    );
+    const id = decodeId(v.id);
+    const { servicesPricelists, edited, type } = this.props;
+    const pricelistId = edited.healthFacility[`${type}sPricelist`].id;
+
+    return (servicesPricelists[pricelistId]?.[id] || v.servicesLinked);
   };
 
   _onChangeItem = (idx, attr, v) => {
