@@ -310,8 +310,6 @@ class ClaimForm extends Component {
         }
       }
 
-    } else {
-      return false;
     }
 
 
@@ -368,7 +366,7 @@ class ClaimForm extends Component {
           return false;
         }
       }
-      if (!services.length) return !!this.canSaveClaimWithoutServiceNorItem;
+      if (!items.length && !services.length) return !!this.canSaveClaimWithoutServiceNorItem;
     }
     if(this.state.claim.attachments && this.state.claim.attachments.length > 0){
       // Vérification que chaque pièce jointe a un type prédéfini
