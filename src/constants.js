@@ -79,3 +79,4 @@ export const ESCAPED = "E";
 export const TREATMENT = "T";
 export const PATIENT_CONDITION = [HEALED, DECEASED, ESCAPED, REFERRAL, TREATMENT];
 export const YES_NO = ["true", "false"];
+export const SERVICE_TYPE_PP_S = "S"

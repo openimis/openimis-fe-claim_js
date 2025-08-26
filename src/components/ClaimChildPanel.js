@@ -22,7 +22,7 @@ import {
   TextInput,
   Error,
 } from "@openimis/fe-core";
-import { DEFAULT } from "../constants";
+import { DEFAULT, SERVICE_TYPE_PP_S } from "../constants";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
 const styles = (theme) => ({
@@ -363,7 +363,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly || true}
+          readOnly={!!forReview || readOnly || (type === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
           error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
@@ -373,7 +373,7 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <AmountInput
           readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={!!forReview ? i.priceAsked : this.state.data[idx].service?.priceAsked}
+          value={i[type] === 'service' && i[type]?.packagetype != SERVICE_TYPE_PP_S ? this.state.data[idx].service?.priceAsked : i.priceAsked}
           decimal={true}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
         />
