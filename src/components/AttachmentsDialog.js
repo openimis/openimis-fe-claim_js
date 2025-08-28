@@ -339,6 +339,17 @@ class AttachmentsDialog extends Component {
     state.updatedAttachments.add(i);
     state.reset = state.reset + 1;
     this.setState({ ...state });
+    // repercuter sur props.claim.attachments pour un nouveau claim (uuid null)
+    if (this.props.claim && !this.props.claim.uuid) {
+      if (!Array.isArray(this.props.claim.attachments)) {
+        this.props.claim.attachments = [];
+      }
+      this.props.claim.attachments[i] = state.claimAttachments[i];
+      this.props.claim.attachmentsCount = this.props.claim.attachments.length;
+      if (typeof this.props.onUpdated === "function") {
+        this.props.onUpdated();
+      }
+    }
   };
 
   cannotUpdate = (a, i) => {
