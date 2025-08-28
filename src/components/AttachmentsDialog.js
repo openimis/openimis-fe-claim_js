@@ -195,8 +195,9 @@ class AttachmentsDialog extends Component {
     }
   };
 
-  addAttachment = (document) => {
-    let attachment = { ..._.last(this.state.claimAttachments), document };
+  addAttachment = (document, index) => {
+    let attachment = this.state.claimAttachments[index];
+    attachment.document = document;
     if (!!this.state.claimUuid) {
       const filename = attachment.filename ? `(${attachment.filename})` : "";
       this.props
@@ -221,11 +222,15 @@ class AttachmentsDialog extends Component {
       if (!this.props.claim.attachments) {
         this.props.claim.attachments = [];
       }
-      this.props.claim.attachments.push(attachment);
-      var claimAttachments = [...this.state.claimAttachments];
+      this.props.claim.attachments[index] = attachment;
       this.props.claim.attachmentsCount = this.props.claim.attachments.length;
-      claimAttachments.push({});
-      this.setState({ claimAttachments });
+      // si on est en mode add et que la dernière ligne est remplie, on ajoute une nouvelle ligne
+      const canAdd = !this.props.readOnly && this.props.rights && this.props.rights.includes(RIGHT_ADD);
+      const last = this.state.claimAttachments[this.state.claimAttachments.length - 1];
+      const lastIsEmpty = last && Object.keys(last).length === 0;
+      if (canAdd && !lastIsEmpty) {
+        this.setState({ claimAttachments: [...this.state.claimAttachments, {}] });
+      }
     }
   };
 
@@ -254,7 +259,7 @@ class AttachmentsDialog extends Component {
       this.setState({ claimAttachments }, (e) => {
         var reader = new FileReader();
         reader.onloadend = (loaded) => {
-          this.addAttachment(btoa(loaded.target.result));
+          this.addAttachment(btoa(loaded.target.result), i);
         };
         reader.readAsBinaryString(file);
       });
