@@ -14,7 +14,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
-import SaveIcon from "@material-ui/icons/SaveAlt";
+import SaveIcon from "@material-ui/icons/Save";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FileIcon from "@material-ui/icons/Add";
 import LinkIcon from "@material-ui/icons/Link";
@@ -72,23 +72,64 @@ class AttachmentsDialog extends Component {
     if (!_.isEqual(prevProps.claimAttachments, this.props.claimAttachments)) {
       var claimAttachments = [...(this.props.claimAttachments || [])];
       if (!this.props.readOnly && this.props.rights.includes(RIGHT_ADD)) {
-        claimAttachments.push({ title: "", type: "" });
+        claimAttachments.push({});
       }
       this.setState({ claimAttachments, updatedAttachments: new Set() });
-    } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !!this.props.claim.uuid) {
+    } 
+    else if (
+      !_.isEqual(prevProps.claim, this.props.claim) &&
+      !!this.props.claim &&
+      !!this.props.claim.uuid
+    ) {
       this.setState(
         (state, props) => ({
           open: true,
           claimUuid: props.claim.uuid,
-          claimAttachments: readOnly ? [] : [{}],
+          // ⚠️ Ne pas écraser, on prépare juste une base temporaire
+          claimAttachments: props.claim.attachments || [],
           updatedAttachments: new Set(),
         }),
-        (e) => {
+        async () => {
           if (!!this.props.claim && !!this.props.claim.uuid) {
-            this.props.fetchClaimAttachments(this.props.claim);
+            try {
+              const serverAttachments = await this.props.fetchClaimAttachments(this.props.claim);
+              console.log("serverAttachments", serverAttachments);
+    
+              // 1. Récupération des données serveur
+              const edges = serverAttachments?.payload?.data?.claimAttachments?.edges || [];
+              const serverList = edges.map((e) => e.node);
+    
+              // 2. Récupération des données locales
+              const localList = this.props.claim.attachments || [];
+    
+              // 3. Fusion : on garde tous les éléments uniques (par id si présent, sinon par filename)
+              const merged = [...serverList];
+              localList.forEach((loc) => {
+                const alreadyExists = merged.some(
+                  (srv) => srv.id === loc.id || (srv.filename && srv.filename === loc.filename)
+                );
+                if (!alreadyExists) {
+                  merged.push(loc);
+                }
+              });
+    
+              // 4. Ajout de la ligne vide si en édition
+              if (!readOnly && (merged.length === 0 || !_.isEqual(_.last(merged), {}))) {
+                merged.push({});
+              }
+    
+              // 5. Mise à jour de l'état
+              this.setState({
+                claimAttachments: merged,
+                updatedAttachments: new Set(),
+              });
+            } catch (err) {
+              console.error("Erreur fetchClaimAttachments", err);
+            }
           }
-        },
+        }
       );
+      console.log("claimattachments", this.props.claim.attachments);
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
       if (!readOnly) {
@@ -126,22 +167,24 @@ class AttachmentsDialog extends Component {
     }
   }
 
-  onClose = () => {
-    const { coreAlert, intl } = this.props;
-    var claimAttachments = [...this.state.claimAttachments];
-    if (!!claimAttachments) {
-      for (let i = 0; i < (claimAttachments.length - 1); i++) {
-        if (claimAttachments[i].predefinedType == undefined) {
-          coreAlert(
-            formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
-            formatMessage(intl, "claim", "claim.attachment.defineType"),
-          );
-          return;
-        }
-      }
-    }
-    this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
-  };
+  onClose = () => this.setState({ open: false }, (e) => !!this.props.close && this.props.close());
+
+  // onClose = () => {
+  //   const { coreAlert, intl } = this.props;
+  //   var claimAttachments = [...this.state.claimAttachments];
+  //   if (!!claimAttachments) {
+  //     for (let i = 0; i < (claimAttachments.length - 1); i++) {
+  //       if (claimAttachments[i].predefinedType == undefined) {
+  //         coreAlert(
+  //           formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
+  //           formatMessage(intl, "claim", "claim.attachment.defineType"),
+  //         );
+  //         return;
+  //       }
+  //     }
+  //   }
+  //   this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
+  // };
 
   validateUrl(url, omitValidation = false) {
     let parsedUrl;
@@ -191,6 +234,7 @@ class AttachmentsDialog extends Component {
       this.props.claim.attachmentsCount =
         this.props.claim.attachments.length > 0 ? this.props.claim.attachments.length : 0;
       claimAttachments.push({});
+      this.props.onUpdated();
       this.setState((state) => ({ claimAttachments, reset: state.reset + 1 }));
     }
   };
@@ -198,6 +242,11 @@ class AttachmentsDialog extends Component {
   addAttachment = (document, index) => {
     let attachment = this.state.claimAttachments[index];
     attachment.document = document;
+    if (!this.props.claim.attachments) {
+      this.props.claim.attachments = [];
+    }
+    this.props.claim.attachments[index] = attachment;
+
     if (!!this.state.claimUuid) {
       const filename = attachment.filename ? `(${attachment.filename})` : "";
       this.props
@@ -208,32 +257,18 @@ class AttachmentsDialog extends Component {
             code: `${this.props.claim.code}`,
           }),
         )
-        .then(() => {
-          if (
-            !!this.props.claim &&
-            !!this.props.claim.uuid &&
-            attachment.generalType === URL_TYPE_STRING &&
-            attachment.predefinedType?.isAutogenerated
-          ) {
-            this.props.fetchClaimAttachments(this.props.claim);
-          }
-        });
-    } else {
-      if (!this.props.claim.attachments) {
-        this.props.claim.attachments = [];
-      }
-      this.props.claim.attachments[index] = attachment;
-      this.props.claim.attachmentsCount = this.props.claim.attachments.length;
-      // si on est en mode add et que la dernière ligne est remplie, on ajoute une nouvelle ligne
-      const canAdd = !this.props.readOnly && this.props.rights && this.props.rights.includes(RIGHT_ADD);
-      const last = this.state.claimAttachments[this.state.claimAttachments.length - 1];
-      const lastIsEmpty = last && Object.keys(last).length === 0;
-      if (canAdd && !lastIsEmpty) {
-        this.setState({ claimAttachments: [...this.state.claimAttachments, {}] });
-      }
+    } 
+    // si on est en mode add et que la dernière ligne est remplie, on ajoute une nouvelle ligne
+    const canAdd = !this.props.readOnly && this.props.rights && this.props.rights.includes(RIGHT_ADD);
+    const last = this.state.claimAttachments[this.state.claimAttachments.length - 1];
+    const lastIsEmpty = last && Object.keys(last).length === 0;
+    this.props.claim.attachmentsCount  = this.props.claim.attachments.length;
+    if (canAdd && !lastIsEmpty) {
+      this.setState({ claimAttachments: [...this.state.claimAttachments, {}] });
     }
-  };
-
+    this.props.onUpdated();
+  };  
+  
   update = (i) => {
     let attachment = { claimUuid: this.state.claimUuid, ...this.state.claimAttachments[i] };
     const filename = attachment.filename ? `(${attachment.filename})` : "";
@@ -277,7 +312,8 @@ class AttachmentsDialog extends Component {
     return (
       <IconButton variant="contained" component="label">
         <FileIcon />
-        <input type="file" style={{ display: "none" }} onChange={(f) => this.fileSelected(f, i)} />
+        <input /*disabled={this.disableOtherFields(i)}*/ 
+        type="file" style={{ display: "none" }} onChange={(f) => this.fileSelected(f, i)} />
       </IconButton>
     );
   }
@@ -322,12 +358,14 @@ class AttachmentsDialog extends Component {
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         {!autogeneratedUrl && (
           <TextInput
+            //disabled={this.disableOtherFields(i)}
             reset={reset}
             value={claimAttachments[i].url}
             onChange={(v) => this.updateAttachment(i, "url", v)}
           />
         )}
         <IconButton
+          //disabled={this.disableOtherFields(i)}
           variant="contained"
           component="label"
           onClick={(f) => this.urlSelected(claimAttachments[i].url, i, autogeneratedUrl)}
@@ -344,13 +382,12 @@ class AttachmentsDialog extends Component {
     state.updatedAttachments.add(i);
     state.reset = state.reset + 1;
     this.setState({ ...state });
-    // repercuter sur props.claim.attachments pour un nouveau claim (uuid null)
-    if (this.props.claim && !this.props.claim.uuid) {
+    // repercuter sur props.claim.attachments
+    if (/*this.props.claim && !this.props.claim.uuid*/true) {
       if (!Array.isArray(this.props.claim.attachments)) {
         this.props.claim.attachments = [];
       }
       this.props.claim.attachments[i] = state.claimAttachments[i];
-      this.props.claim.attachmentsCount = this.props.claim.attachments.length;
       if (typeof this.props.onUpdated === "function") {
         this.props.onUpdated();
       }
@@ -358,9 +395,16 @@ class AttachmentsDialog extends Component {
   };
 
   cannotUpdate = (a, i) => {
-    return i < this.state.claimAttachments.length - 1 && !!this.state.claimUuid && !a.id;
+    // condition de verrouillage d'une ligne
+    return false;
   };
 
+  // condition de verrouillage des champs autres que generalType et predefinedType
+  disableOtherFields(index) {
+    return !!this.state.claimUuid &&
+    (!this.state.claimAttachments[index].generalType || !this.state.claimAttachments[index].predefinedType);
+  }
+  
   render() {
     const { classes, claim, readOnly = false, fetchingClaimAttachments, errorClaimAttachments } = this.props;
     const { open, claimAttachments, reset, updatedAttachments } = this.state;
@@ -382,6 +426,7 @@ class AttachmentsDialog extends Component {
           claimAttachments[index].generalType
         ) : (
           <AttachmentGeneralTypePicker
+            required={true}
             readOnly={claimAttachments[index].id}
             reset={reset}
             withNull={false}
