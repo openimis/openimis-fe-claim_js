@@ -129,7 +129,6 @@ class AttachmentsDialog extends Component {
           }
         }
       );
-      console.log("claimattachments", this.props.claim.attachments);
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
       if (!readOnly) {
@@ -167,24 +166,22 @@ class AttachmentsDialog extends Component {
     }
   }
 
-  onClose = () => this.setState({ open: false }, (e) => !!this.props.close && this.props.close());
-
-  // onClose = () => {
-  //   const { coreAlert, intl } = this.props;
-  //   var claimAttachments = [...this.state.claimAttachments];
-  //   if (!!claimAttachments) {
-  //     for (let i = 0; i < (claimAttachments.length - 1); i++) {
-  //       if (claimAttachments[i].predefinedType == undefined) {
-  //         coreAlert(
-  //           formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
-  //           formatMessage(intl, "claim", "claim.attachment.defineType"),
-  //         );
-  //         return;
-  //       }
-  //     }
-  //   }
-  //   this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
-  // };
+  onClose = () => {
+    const { coreAlert, intl } = this.props;
+    var claimAttachments = [...this.state.claimAttachments];
+    if (!!claimAttachments) {
+      for (let i = 0; i < (claimAttachments.length - 1); i++) {
+        if (claimAttachments[i].predefinedType == undefined) {
+          coreAlert(
+            formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
+            formatMessage(intl, "claim", "claim.attachment.defineType"),
+          );
+          return;
+        }
+      }
+    }
+    this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
+  };
 
   validateUrl(url, omitValidation = false) {
     let parsedUrl;
