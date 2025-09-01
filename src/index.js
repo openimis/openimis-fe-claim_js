@@ -194,6 +194,7 @@ const DEFAULT_CONFIG = {
   "claim.MasterPanel": [ClaimMasterPanelExt],
   "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
 };
+console.log("module qui contient attachmentsdialog");
 
 export const ClaimModule = (cfg) => {
   return { ...DEFAULT_CONFIG, ...cfg };
