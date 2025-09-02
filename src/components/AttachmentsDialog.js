@@ -85,7 +85,6 @@ class AttachmentsDialog extends Component {
         (state, props) => ({
           open: true,
           claimUuid: props.claim.uuid,
-          // ⚠️ Do not overwrite, we are just preparing a temporary base
           claimAttachments: props.claim.attachments || [],
           updatedAttachments: new Set(),
         }),
@@ -129,7 +128,6 @@ class AttachmentsDialog extends Component {
           }
         }
       );
-      console.log("claimattachments", this.props.claim.attachments);
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
       if (!readOnly) {
@@ -301,7 +299,7 @@ class AttachmentsDialog extends Component {
   };
 
   fileSelected = (f, i) => {
-    if (!this.state.claimAttachments[i].predefinedType) {
+    if (!this.state.claimAttachments[i].predefinedType && !!this.state.claimUuid) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.attachment.missingPredefinedType"),
         formatMessage(this.props.intl, "claim", "claim.attachment.definePredefinedType"),

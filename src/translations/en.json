@@ -9,8 +9,8 @@
   "claim.ClaimAdminPicker.placeholder": "Search a Claim Administrator",
   "claim.ClaimAdminPicker.label": "Claim Administrator",
   "claim.attachment.missingDocument": "Missing Document",
-  "claim.attachment.defineDocument": "Define Document",
-  "claim.attachment.definePredefinedType": "Define Predefined Type",
+  "claim.attachment.defineDocument": "Define Document or clean the attachment",
+  "claim.attachment.definePredefinedType": "Define Predefined Type or clean the attachment",
   "claim.attachment.predefinedType.null": "Any",
   "claim.ClaimAdminPicker.null": "Any",
   "claim.ClaimOfficerPicker.label": "Enrolment Officer",
@@ -360,5 +360,5 @@
   "claim.preAuthorization.false" : "No",
   "claim.claimSummaries.pre-authorization" : "Pre-auth.",
   "claim.attachment.missingPredefinedType": "Missing predefined Type",
-  "claim.attachment.defineType": "You must define the predefined Type"
+  "claim.attachment.defineType": "You must define the predefined Type or clean the attachment"
 }
