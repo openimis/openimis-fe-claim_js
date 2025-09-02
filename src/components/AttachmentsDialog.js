@@ -130,7 +130,7 @@ class AttachmentsDialog extends Component {
       );
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
-      if (!readOnly && !this.isEmptyAttachment(_.last(claimAttachments))) {
+      if (!readOnly && claimAttachments.length === 0) {
         claimAttachments.push({});
         this.props.onUpdated();
       }
