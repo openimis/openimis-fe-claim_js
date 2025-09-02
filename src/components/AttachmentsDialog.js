@@ -71,7 +71,7 @@ class AttachmentsDialog extends Component {
     const { readOnly = false } = this.props;
     if (!_.isEqual(prevProps.claimAttachments, this.props.claimAttachments)) {
       var claimAttachments = [...(this.props.claimAttachments || [])];
-      if (!this.props.readOnly && this.props.rights.includes(RIGHT_ADD)) {
+      if (!this.props.readOnly && this.props.rights.includes(RIGHT_ADD) && !this.isEmptyAttachment(_.last(claimAttachments))) {
         claimAttachments.push({});
       }
       this.setState({ claimAttachments, updatedAttachments: new Set() });
@@ -113,7 +113,7 @@ class AttachmentsDialog extends Component {
               });
     
               // 4. Add empty line if in edit mode
-              if (!readOnly && (merged.length === 0 || !_.isEqual(_.last(merged), {}))) {
+              if (!readOnly && (merged.length === 0 || !this.isEmptyAttachment(_.last(merged)))) {
                 merged.push({});
               }
     
@@ -130,7 +130,7 @@ class AttachmentsDialog extends Component {
       );
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
-      if (!readOnly) {
+      if (!readOnly && !this.isEmptyAttachment(_.last(claimAttachments))) {
         claimAttachments.push({});
         this.props.onUpdated();
       }
@@ -139,7 +139,7 @@ class AttachmentsDialog extends Component {
       var claimAttachments = [...this.state.claimAttachments];
       if (!!this.state.attachmentToDelete) {
         claimAttachments = claimAttachments.filter((a) => a.id !== this.state.attachmentToDelete.id);
-      } else if (!_.isEqual(_.last(claimAttachments), {})) {
+      } else if (!this.isEmptyAttachment(_.last(claimAttachments))) {
         claimAttachments.push({});
       }
       this.setState((state) => ({
@@ -421,6 +421,12 @@ class AttachmentsDialog extends Component {
     return !!this.state.claimUuid &&
     (!this.state.claimAttachments[index].generalType || !this.state.claimAttachments[index].predefinedType);
   }
+
+  isEmptyAttachment = (att) => {
+    if (!att) return true;
+    return Object.values(att).every(v => v === undefined || v === null || v === "");
+  };
+  
   
   render() {
     const { classes, claim, readOnly = false, fetchingClaimAttachments, errorClaimAttachments } = this.props;
