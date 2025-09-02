@@ -172,8 +172,11 @@ class AttachmentsDialog extends Component {
     const { coreAlert, intl } = this.props;
     var claimAttachments = [...this.state.claimAttachments];
     if (!!claimAttachments) {
-      for (let i = 0; i < (claimAttachments.length - 1); i++) {
-        if (claimAttachments[i].predefinedType == undefined) {
+      for (let i = 0; i <= (claimAttachments.length - 1); i++) {
+        const isEmpty = Object.values(claimAttachments[i]).every(
+          v => v === undefined || v === null || v === ""
+        );
+        if (!isEmpty && claimAttachments[i].predefinedType == undefined) {
           coreAlert(
             formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
             formatMessage(intl, "claim", "claim.attachment.defineType"),
@@ -182,6 +185,19 @@ class AttachmentsDialog extends Component {
         }
       }
     }
+    for (let i = 0; i <= (claimAttachments.length - 1); i++) {
+      const isEmpty = Object.values(claimAttachments[i]).every(
+        v => v === undefined || v === null || v === ""
+      );
+      if (!isEmpty && !claimAttachments[i].filename) {
+        coreAlert(
+          formatMessage(intl, "claim", "claim.attachment.missingDocument"),
+          formatMessage(intl, "claim", "claim.attachment.defineDocument"),
+        );
+        return;
+      }
+    }
+    
     this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
   };
 
@@ -285,6 +301,13 @@ class AttachmentsDialog extends Component {
   };
 
   fileSelected = (f, i) => {
+    if (!this.state.claimAttachments[i].predefinedType) {
+      this.props.coreAlert(
+        formatMessage(this.props.intl, "claim", "claim.attachment.missingPredefinedType"),
+        formatMessage(this.props.intl, "claim", "claim.attachment.definePredefinedType"),
+      );
+      return;
+    }
     if (!!f.target.files) {
       const file = f.target.files[0];
       let claimAttachments = [...this.state.claimAttachments];
@@ -381,14 +404,12 @@ class AttachmentsDialog extends Component {
     state.reset = state.reset + 1;
     this.setState({ ...state });
     // reflect on props.claim.attachments
-    if (/*this.props.claim && !this.props.claim.uuid*/true) {
-      if (!Array.isArray(this.props.claim.attachments)) {
-        this.props.claim.attachments = [];
-      }
-      this.props.claim.attachments[i] = state.claimAttachments[i];
-      if (typeof this.props.onUpdated === "function") {
-        this.props.onUpdated();
-      }
+    if (!Array.isArray(this.props.claim.attachments)) {
+      this.props.claim.attachments = [];
+    }
+    this.props.claim.attachments[i] = state.claimAttachments[i];
+    if (typeof this.props.onUpdated === "function") {
+      this.props.onUpdated();
     }
   };
 
