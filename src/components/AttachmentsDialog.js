@@ -177,7 +177,7 @@ class AttachmentsDialog extends Component {
         if (!isEmpty && claimAttachments[i].predefinedType == undefined) {
           coreAlert(
             formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
-            formatMessage(intl, "claim", "claim.attachment.defineType"),
+            formatMessage(intl, "claim", "claim.attachment.definePredefinedType"),
           );
           return;
         }
