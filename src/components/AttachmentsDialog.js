@@ -71,27 +71,66 @@ class AttachmentsDialog extends Component {
     const { readOnly = false } = this.props;
     if (!_.isEqual(prevProps.claimAttachments, this.props.claimAttachments)) {
       var claimAttachments = [...(this.props.claimAttachments || [])];
-      if (!this.props.readOnly && this.props.rights.includes(RIGHT_ADD)) {
-        claimAttachments.push({ title: "", type: "" });
+      if (!this.props.readOnly && this.props.rights.includes(RIGHT_ADD) && !this.isEmptyAttachment(_.last(claimAttachments))) {
+        claimAttachments.push({});
       }
       this.setState({ claimAttachments, updatedAttachments: new Set() });
-    } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !!this.props.claim.uuid) {
+    } 
+    else if (
+      !_.isEqual(prevProps.claim, this.props.claim) &&
+      !!this.props.claim &&
+      !!this.props.claim.uuid
+    ) {
       this.setState(
         (state, props) => ({
           open: true,
           claimUuid: props.claim.uuid,
-          claimAttachments: readOnly ? [] : [{}],
+          claimAttachments: props.claim.attachments || [],
           updatedAttachments: new Set(),
         }),
-        (e) => {
+        async () => {
           if (!!this.props.claim && !!this.props.claim.uuid) {
-            this.props.fetchClaimAttachments(this.props.claim);
+            try {
+              const serverAttachments = await this.props.fetchClaimAttachments(this.props.claim);
+              console.log("serverAttachments", serverAttachments);
+    
+              // 1. Retrieving server data
+              const edges = serverAttachments?.payload?.data?.claimAttachments?.edges || [];
+              const serverList = edges.map((e) => e.node);
+    
+              // 2. Retrieving local data
+              const localList = this.props.claim.attachments || [];
+    
+              // 3. Merge: we keep all unique elements (by id if present, otherwise by filename)
+              const merged = [...serverList];
+              localList.forEach((loc) => {
+                const alreadyExists = merged.some(
+                  (srv) => srv.id === loc.id || (srv.filename && srv.filename === loc.filename)
+                );
+                if (!alreadyExists) {
+                  merged.push(loc);
+                }
+              });
+    
+              // 4. Add empty line if in edit mode
+              if (!readOnly && (merged.length === 0 || !this.isEmptyAttachment(_.last(merged)))) {
+                merged.push({});
+              }
+    
+              // 5. Updating state
+              this.setState({
+                claimAttachments: merged,
+                updatedAttachments: new Set(),
+              });
+            } catch (err) {
+              console.error("Error fetchClaimAttachments", err);
+            }
           }
-        },
+        }
       );
     } else if (!_.isEqual(prevProps.claim, this.props.claim) && !!this.props.claim && !this.props.claim.uuid) {
       let claimAttachments = [...(this.props.claim.attachments || [])];
-      if (!readOnly) {
+      if (!readOnly && claimAttachments.length === 0) {
         claimAttachments.push({});
         this.props.onUpdated();
       }
@@ -100,7 +139,7 @@ class AttachmentsDialog extends Component {
       var claimAttachments = [...this.state.claimAttachments];
       if (!!this.state.attachmentToDelete) {
         claimAttachments = claimAttachments.filter((a) => a.id !== this.state.attachmentToDelete.id);
-      } else if (!_.isEqual(_.last(claimAttachments), {})) {
+      } else if (!this.isEmptyAttachment(_.last(claimAttachments))) {
         claimAttachments.push({});
       }
       this.setState((state) => ({
@@ -123,10 +162,13 @@ class AttachmentsDialog extends Component {
           code: `${this.props.claim.code}`,
         }),
       );
+      
     }
   }
 
-  onClose = () => this.setState({ open: false }, (e) => !!this.props.close && this.props.close());
+  onClose = () => {
+    this.setState({ open: false }, (e) => !!this.props.close && this.props.close())
+  };
 
   validateUrl(url, omitValidation = false) {
     let parsedUrl;
@@ -176,12 +218,19 @@ class AttachmentsDialog extends Component {
       this.props.claim.attachmentsCount =
         this.props.claim.attachments.length > 0 ? this.props.claim.attachments.length : 0;
       claimAttachments.push({});
+      this.props.onUpdated();
       this.setState((state) => ({ claimAttachments, reset: state.reset + 1 }));
     }
   };
 
-  addAttachment = (document) => {
-    let attachment = { ..._.last(this.state.claimAttachments), document };
+  addAttachment = (document, index) => {
+    let attachment = this.state.claimAttachments[index];
+    attachment.document = document;
+    if (!this.props.claim.attachments) {
+      this.props.claim.attachments = [];
+    }
+    this.props.claim.attachments[index] = attachment;
+
     if (!!this.state.claimUuid) {
       const filename = attachment.filename ? `(${attachment.filename})` : "";
       this.props
@@ -192,28 +241,18 @@ class AttachmentsDialog extends Component {
             code: `${this.props.claim.code}`,
           }),
         )
-        .then(() => {
-          if (
-            !!this.props.claim &&
-            !!this.props.claim.uuid &&
-            attachment.generalType === URL_TYPE_STRING &&
-            attachment.predefinedType?.isAutogenerated
-          ) {
-            this.props.fetchClaimAttachments(this.props.claim);
-          }
-        });
-    } else {
-      if (!this.props.claim.attachments) {
-        this.props.claim.attachments = [];
-      }
-      this.props.claim.attachments.push(attachment);
-      var claimAttachments = [...this.state.claimAttachments];
-      this.props.claim.attachmentsCount = this.props.claim.attachments.length;
-      claimAttachments.push({});
-      this.setState({ claimAttachments });
+    } 
+    // if we are in add mode and the last line is filled, we add a new line
+    const canAdd = !this.props.readOnly && this.props.rights && this.props.rights.includes(RIGHT_ADD);
+    const last = this.state.claimAttachments[this.state.claimAttachments.length - 1];
+    const lastIsEmpty = last && Object.keys(last).length === 0;
+    this.props.claim.attachmentsCount  = this.state.claimAttachments.length;
+    if (canAdd && !lastIsEmpty) {
+      this.setState({ claimAttachments: [...this.state.claimAttachments, {}] });
     }
-  };
-
+    this.props.onUpdated();
+  };  
+  
   update = (i) => {
     let attachment = { claimUuid: this.state.claimUuid, ...this.state.claimAttachments[i] };
     const filename = attachment.filename ? `(${attachment.filename})` : "";
@@ -231,6 +270,13 @@ class AttachmentsDialog extends Component {
   };
 
   fileSelected = (f, i) => {
+    if (!this.state.claimAttachments[i].predefinedType && !!this.state.claimUuid) {
+      this.props.coreAlert(
+        formatMessage(this.props.intl, "claim", "claim.attachment.missingPredefinedType"),
+        formatMessage(this.props.intl, "claim", "claim.attachment.definePredefinedType"),
+      );
+      return;
+    }
     if (!!f.target.files) {
       const file = f.target.files[0];
       let claimAttachments = [...this.state.claimAttachments];
@@ -239,7 +285,7 @@ class AttachmentsDialog extends Component {
       this.setState({ claimAttachments }, (e) => {
         var reader = new FileReader();
         reader.onloadend = (loaded) => {
-          this.addAttachment(btoa(loaded.target.result));
+          this.addAttachment(btoa(loaded.target.result), i);
         };
         reader.readAsBinaryString(file);
       });
@@ -257,7 +303,8 @@ class AttachmentsDialog extends Component {
     return (
       <IconButton variant="contained" component="label">
         <FileIcon />
-        <input type="file" style={{ display: "none" }} onChange={(f) => this.fileSelected(f, i)} />
+        <input /*disabled={this.disableOtherFields(i)}*/ 
+        type="file" style={{ display: "none" }} onChange={(f) => this.fileSelected(f, i)} />
       </IconButton>
     );
   }
@@ -265,7 +312,6 @@ class AttachmentsDialog extends Component {
   urlSelected = (f, i, autogeneratedUrl) => {
     const { coreAlert, intl } = this.props;
     const url = this.validateUrl(f, autogeneratedUrl);
-
     if (!url.isValid) {
       coreAlert(
         formatMessage(intl, "claim", "url.validation.error"),
@@ -281,7 +327,7 @@ class AttachmentsDialog extends Component {
       claimAttachments[i].url = autogeneratedUrl ? "AUTO" : f;
       claimAttachments[i].mime = "text/x-uri";
       this.setState({ claimAttachments }, (e) => {
-        this.addAttachment(f);
+        this.addAttachment(f, i);
       });
     }
   };
@@ -302,12 +348,14 @@ class AttachmentsDialog extends Component {
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         {!autogeneratedUrl && (
           <TextInput
+            //disabled={this.disableOtherFields(i)}
             reset={reset}
             value={claimAttachments[i].url}
             onChange={(v) => this.updateAttachment(i, "url", v)}
           />
         )}
         <IconButton
+          //disabled={this.disableOtherFields(i)}
           variant="contained"
           component="label"
           onClick={(f) => this.urlSelected(claimAttachments[i].url, i, autogeneratedUrl)}
@@ -324,12 +372,32 @@ class AttachmentsDialog extends Component {
     state.updatedAttachments.add(i);
     state.reset = state.reset + 1;
     this.setState({ ...state });
+    // reflect on props.claim.attachments
+    if (!Array.isArray(this.props.claim.attachments)) {
+      this.props.claim.attachments = [];
+    }
+    this.props.claim.attachments[i] = state.claimAttachments[i];
+    if (typeof this.props.onUpdated === "function") {
+      this.props.onUpdated();
+    }
   };
 
   cannotUpdate = (a, i) => {
-    return i < this.state.claimAttachments.length - 1 && !!this.state.claimUuid && !a.id;
+    // condition for locking a line
+    return false;
   };
 
+  // condition for locking fields other than generalType and predefinedType
+  disableOtherFields(index) {
+    return !!this.state.claimUuid &&
+    (!this.state.claimAttachments[index].generalType || !this.state.claimAttachments[index].predefinedType);
+  }
+
+  isEmptyAttachment = (att) => {
+    if (!att) return true;
+    return Object.values(att).every(v => v === undefined || v === null || v === "");
+  };
+  
   render() {
     const { classes, claim, readOnly = false, fetchingClaimAttachments, errorClaimAttachments } = this.props;
     const { open, claimAttachments, reset, updatedAttachments } = this.state;
@@ -351,6 +419,8 @@ class AttachmentsDialog extends Component {
           claimAttachments[index].generalType
         ) : (
           <AttachmentGeneralTypePicker
+            error={!claimAttachments[index].generalType}
+            helperText={"this field is required"}
             readOnly={claimAttachments[index].id}
             reset={reset}
             withNull={false}
@@ -363,6 +433,8 @@ class AttachmentsDialog extends Component {
           claimAttachments[index].predefinedType?.claimAttachmentType ?? ""
         ) : (
           <PublishedComponent
+            error={!claimAttachments[index].predefinedType && !!claimAttachments[index].generalType}
+            helperText={"this field is required"}
             pubRef="claim.ClaimAttachmentPredefinedTypePicker"
             label="ClaimAttachmentPredefinedType"
             value={claimAttachments[index].predefinedType}
