@@ -13,6 +13,7 @@ const ClaimAttachmentPredefinedTypePicker = ({
   withLabel,
   withPlaceholder,
   claimAttachmentType,
+  fieldError,
 }) => {
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations(MODULE_NAME, modulesManager);
@@ -44,9 +45,10 @@ const ClaimAttachmentPredefinedTypePicker = ({
       return option.claimGeneralType === claimGeneralType;
     });
   };
-
+  console.log("predefinedtype props.error", fieldError);
   return (
     <Autocomplete
+      fieldError={fieldError}
       multiple={multiple}
       required={required}
       placeholder={formatMessage("claimAttachmentType.placeholder")}

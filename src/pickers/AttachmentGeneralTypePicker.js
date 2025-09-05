@@ -6,6 +6,7 @@ import { ATTACHMENT_TYPE_STATUS } from "../constants";
 const AttachmentGeneralTypePicker = (props) => {
   return (
     <ConstantBasedPicker
+      error={props.error}
       module="claim"
       label="attachmentGeneralType"
       withLabel={false}

@@ -171,10 +171,7 @@ class AttachmentsDialog extends Component {
     var claimAttachments = [...this.state.claimAttachments];
     if (!!claimAttachments) {
       for (let i = 0; i <= (claimAttachments.length - 1); i++) {
-        const isEmpty = Object.values(claimAttachments[i]).every(
-          v => v === undefined || v === null || v === ""
-        );
-        if (!isEmpty && claimAttachments[i].predefinedType == undefined) {
+        if (!this.isEmptyAttachment(claimAttachments[i]) && claimAttachments[i].predefinedType == undefined) {
           coreAlert(
             formatMessage(intl, "claim", "claim.attachment.missingPredefinedType"),
             formatMessage(intl, "claim", "claim.attachment.definePredefinedType"),
@@ -184,10 +181,7 @@ class AttachmentsDialog extends Component {
       }
     }
     for (let i = 0; i <= (claimAttachments.length - 1); i++) {
-      const isEmpty = Object.values(claimAttachments[i]).every(
-        v => v === undefined || v === null || v === ""
-      );
-      if (!isEmpty && !claimAttachments[i].filename) {
+      if (!this.isEmptyAttachment(claimAttachments[i]) && !claimAttachments[i].filename) {
         coreAlert(
           formatMessage(intl, "claim", "claim.attachment.missingDocument"),
           formatMessage(intl, "claim", "claim.attachment.defineDocument"),
@@ -449,7 +443,8 @@ class AttachmentsDialog extends Component {
           claimAttachments[index].generalType
         ) : (
           <AttachmentGeneralTypePicker
-            required={true}
+            error={!claimAttachments[index].generalType}
+            helperText={"this field is required"}
             readOnly={claimAttachments[index].id}
             reset={reset}
             withNull={false}
@@ -462,6 +457,8 @@ class AttachmentsDialog extends Component {
           claimAttachments[index].predefinedType?.claimAttachmentType ?? ""
         ) : (
           <PublishedComponent
+            fieldError={!claimAttachments[index].predefinedType && !!claimAttachments[index].generalType}
+            helperText={"this field is required"}
             pubRef="claim.ClaimAttachmentPredefinedTypePicker"
             label="ClaimAttachmentPredefinedType"
             value={claimAttachments[index].predefinedType}

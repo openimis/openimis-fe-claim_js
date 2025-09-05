@@ -45,6 +45,7 @@ class ClaimSearcher extends Component {
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
+    this.fields = this.props.modulesManager.getConf("fe-claim", "fields", {});
   }
 
   canSelectAll = (selection) =>
@@ -175,9 +176,9 @@ class ClaimSearcher extends Component {
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.claimedDate",
-      "claimSummaries.processedDate",
-      "claimSummaries.feedbackStatus",
-      "claimSummaries.reviewStatus",
+      this.fields.processedDate !== "H" ? "claimSummaries.processedDate" : null,
+      this.fields.feedbackStatus !== "H" ? "claimSummaries.feedbackStatus" : null,
+      this.fields.reviewStatus !== "H" ? "claimSummaries.reviewStatus" : null,
       "claimSummaries.claimed",
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
