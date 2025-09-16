@@ -4,6 +4,7 @@ import { bindActionCreators } from "redux";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
+import { RIGHT_CLAIMREVIEW } from "../constants";
 
 import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
 import { withTheme, withStyles } from "@material-ui/core/styles";
@@ -252,6 +253,7 @@ class Head extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   userHealthFacilityId: state.core.user.i_user.health_facility_id,
   claimFilter: state.claim.claimFilter,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
@@ -484,44 +486,46 @@ class Details extends Component {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
-          <Grid container>
-            <Grid item xs={6} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={(filters["processedDateFrom"] && filters["processedDateFrom"]["value"]) || null}
-                module="claim"
-                label="ClaimFilter.processedDateFrom"
-                onChange={(d) =>
-                  onChangeFilters([
-                    {
-                      id: "processedDateFrom",
-                      value: d,
-                      filter: !!d ? `dateProcessed_Gte: "${d}"` : null,
-                    },
-                  ])
-                }
-              />
-            </Grid>
-            <Grid item xs={6} className={classes.item}>
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={(filters["processedDateTo"] && filters["processedDateTo"]["value"]) || null}
-                module="claim"
-                label="ClaimFilter.processedDateTo"
-                onChange={(d) =>
-                  onChangeFilters([
-                    {
-                      id: "processedDateTo",
-                      value: d,
-                      filter: !!d ? `dateProcessed_Lte: "${d}"` : null,
-                    },
-                  ])
-                }
-              />
+        {!this.props.rights.includes(RIGHT_CLAIMREVIEW) && (
+          <Grid item xs={3}>
+            <Grid container>
+              <Grid item xs={6} className={classes.item}>
+                <PublishedComponent
+                  pubRef="core.DatePicker"
+                  value={(filters["processedDateFrom"] && filters["processedDateFrom"]["value"]) || null}
+                  module="claim"
+                  label="ClaimFilter.processedDateFrom"
+                  onChange={(d) =>
+                    onChangeFilters([
+                      {
+                        id: "processedDateFrom",
+                        value: d,
+                        filter: !!d ? `dateProcessed_Gte: "${d}"` : null,
+                      },
+                    ])
+                  }
+                />
+              </Grid>
+              <Grid item xs={6} className={classes.item}>
+                <PublishedComponent
+                  pubRef="core.DatePicker"
+                  value={(filters["processedDateTo"] && filters["processedDateTo"]["value"]) || null}
+                  module="claim"
+                  label="ClaimFilter.processedDateTo"
+                  onChange={(d) =>
+                    onChangeFilters([
+                      {
+                        id: "processedDateTo",
+                        value: d,
+                        filter: !!d ? `dateProcessed_Lte: "${d}"` : null,
+                      },
+                    ])
+                  }
+                />
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        )}
         <Grid item xs={3} className={classes.item}>
           <PublishedComponent
             pubRef="medical.ServicePicker"
@@ -696,13 +700,15 @@ class Details extends Component {
   }
 }
 
+const BoundDetails = connect(mapStateToProps, mapDispatchToProps)(Details);
+
 class ClaimFilter extends Component {
   render() {
     const { classes } = this.props;
     return (
       <form className={classes.container} noValidate autoComplete="off">
         <BoundHead {...this.props} />
-        <Details {...this.props} />
+        <BoundDetails {...this.props} />
       </form>
     );
   }

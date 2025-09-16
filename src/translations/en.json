@@ -359,5 +359,5 @@
   "claim.preAuthorization.false" : "No",
   "claim.claimSummaries.pre-authorization" : "Pre-auth.",
   "claim.attachment.missingPredefinedType": "Missing predefined Type",
-  "claim.attachment.definePredefinedType": "You must define the the General Type first and then select the Predefined Type"
+  "claim.attachment.definePredefinedType": "You must define the the General Type first and then select the Predefined Type or clean the attachment"
 }

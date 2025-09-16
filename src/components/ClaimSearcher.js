@@ -10,6 +10,7 @@ import TabIcon from "@material-ui/icons/Tab";
 import CheckIcon from "@material-ui/icons/Check";
 import { Searcher } from "@openimis/fe-core";
 import ClaimFilter from "./ClaimFilter";
+import { RIGHT_CLAIMREVIEW } from "../constants";
 import {
   withModulesManager,
   formatMessageWithValues,
@@ -45,7 +46,7 @@ class ClaimSearcher extends Component {
     this.extFields = props.modulesManager.getConf("fe-claim", "extFields", []);
     this.showOrdinalNumber = props.modulesManager.getConf("fe-claim", "claimForm.showOrdinalNumber", false);
     this.showPreAuthorization = props.modulesManager.getConf("fe-claim", "showPreAuthorization", false);
-    this.fields = this.props.modulesManager.getConf("fe-claim", "fields", {});
+    this.columns = this.props.modulesManager.getConf("fe-claim", "columns", {});
   }
 
   canSelectAll = (selection) =>
@@ -121,6 +122,7 @@ class ClaimSearcher extends Component {
                 claimed: (
                   <b>
                     {formatAmount(
+                      this.props.modulesManager,
                       this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.claimed) {
@@ -143,6 +145,7 @@ class ClaimSearcher extends Component {
                 approved: (
                   <b>
                     {formatAmount(
+                      this.props.modulesManager,
                       this.props.intl,
                       selection.reduce((acc, v) => {
                         if (v.approved) {
@@ -176,9 +179,9 @@ class ClaimSearcher extends Component {
       "claimSummaries.healthFacility",
       "claimSummaries.insuree",
       "claimSummaries.claimedDate",
-      this.fields.processedDate !== "H" ? "claimSummaries.processedDate" : null,
-      this.fields.feedbackStatus !== "H" ? "claimSummaries.feedbackStatus" : null,
-      this.fields.reviewStatus !== "H" ? "claimSummaries.reviewStatus" : null,
+      this.props.rights.includes(RIGHT_CLAIMREVIEW) ? "claimSummaries.processedDate" : null,
+      this.columns.feedbackStatus !== "H" ? "claimSummaries.feedbackStatus" : null,
+      this.columns.reviewStatus !== "H" ? "claimSummaries.reviewStatus" : null,
       "claimSummaries.claimed",
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
@@ -245,11 +248,11 @@ class ClaimSearcher extends Component {
       ),
       (c) => <PublishedComponent readOnly={true} pubRef="insuree.InsureePicker" withLabel={false} value={c.insuree} />,
       (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateClaimed),
-      (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed),
-      (c) => this.feedbackColFormatter(c),
-      (c) => this.reviewColFormatter(c),
-      (c) => formatAmount(this.props.intl, c.claimed),
-      (c) => formatAmount(this.props.intl, c.approved),
+      this.props.rights.includes(RIGHT_CLAIMREVIEW) ? (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.dateProcessed) : null,
+      this.columns.feedbackStatus !== "H" ? (c) => this.feedbackColFormatter(c) : null,
+      this.columns.reviewStatus !== "H" ? (c) => this.reviewColFormatter(c) : null,
+      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.claimed),
+      (c) => formatAmount(this.props.modulesManager, this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
     if (this.showPreAuthorization) {
@@ -302,6 +305,7 @@ class ClaimSearcher extends Component {
 
   render() {
     const {
+      rights,
       intl,
       claims,
       claimsPageInfo,
@@ -321,7 +325,7 @@ class ClaimSearcher extends Component {
     if (!count) {
       count = (claimsPageInfo?.totalCount || 0).toLocaleString();
     }
-
+    console.log(intl);
     return (
       <Fragment>
         <PublishedComponent
@@ -373,6 +377,7 @@ class ClaimSearcher extends Component {
 }
 
 const mapStateToProps = (state) => ({
+  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claims: state.claim.claims,
   claimsPageInfo: state.claim.claimsPageInfo,
   fetchingClaims: state.claim.fetchingClaims,
