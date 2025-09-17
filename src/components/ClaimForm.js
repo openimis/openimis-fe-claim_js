@@ -486,8 +486,8 @@ class ClaimForm extends Component {
       isSaved ||
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
-      (forFeedback && claim.status !== 4) ||
-      !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
+      (forFeedback && claim.status !== 4)// ||
+      //!rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
 
     var actions = [];
     if (!!claim_uuid) {
