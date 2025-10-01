@@ -46,6 +46,7 @@ const styles = (theme) => ({
   sectionHeader: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
+    marginLeft: theme.spacing(1),
     color: theme.palette.primary.main,
     fontWeight: 'bold',
   },
@@ -169,7 +170,7 @@ class ClaimMasterPanel extends FormPanel {
       <Grid container>
         {/* Section 1: Informations de la réclamation */}
         <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
+          <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.claimInfo")}
           </Typography>
         </Grid>
@@ -184,6 +185,20 @@ class ClaimMasterPanel extends FormPanel {
                 reset={reset}
                 readOnly={true}
                 required={true}
+              />
+            </Grid>
+          }
+        />
+        <ControlledField
+          module="claim"
+          id="Claim.admin"
+          field={
+            <Grid item xs={4} className={classes.item}>
+              <ClaimAdminPicker
+                value={edited.admin}
+                onChange={(v, s) => this.updateAttribute("admin", v)}
+                readOnly
+                required
               />
             </Grid>
           }
@@ -246,11 +261,50 @@ class ClaimMasterPanel extends FormPanel {
           />
         )}
 
+        {!forFeedback && (
+          <Fragment>
+            <ControlledField
+              module="claim"
+              id="Claim.explanation"
+              field={
+                <Grid item xs={this.showAdjustmentAtEnter ? 4 : 8} className={classes.item}>
+                  <TextInput
+                    module="claim"
+                    label="explanation"
+                    value={edited.explanation}
+                    reset={reset}
+                    onChange={(v) => this.updateAttribute("explanation", v)}
+                    readOnly={ro}
+                    required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
+                  />
+                </Grid>
+              }
+            />
+            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+              <ControlledField
+                module="claim"
+                id="Claim.adjustment"
+                field={
+                  <Grid item xs={4} className={classes.item}>
+                    <TextInput
+                      module="claim"
+                      label="adjustment"
+                      value={edited.adjustment}
+                      reset={reset}
+                      onChange={(v) => this.updateAttribute("adjustment", v)}
+                      readOnly={readOnly || edited.reviewStatus >= 8}
+                    />
+                  </Grid>
+                }
+              />
+            )}
+          </Fragment>
+        )}
         <Divider className={classes.sectionDivider} />
 
         {/* Section 2: Informations de l'assuré */}
         <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
+          <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.insureeInfo")}
           </Typography>
         </Grid>
@@ -258,7 +312,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.insuree"
           field={
-            <Grid item xs={3} className={classes.item}>
+            <Grid item xs={5} className={classes.item}>
               <PublishedComponent
                 pubRef={this.insureePicker}
                 value={edited.insuree}
@@ -275,7 +329,7 @@ class ClaimMasterPanel extends FormPanel {
 
         {/* Section 3: Détails de la visite */}
         <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
+          <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.visitDetails")}
           </Typography>
         </Grid>
@@ -430,7 +484,7 @@ class ClaimMasterPanel extends FormPanel {
 
         {/* Section 4: Diagnostics */}
         <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
+          <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.diagnosis")}
           </Typography>
         </Grid>
@@ -482,72 +536,9 @@ class ClaimMasterPanel extends FormPanel {
 
         <Divider className={classes.sectionDivider} />
 
-        {/* Section 5: Informations administratives */}
-        <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
-            {formatMessage(intl, "claim", "ClaimMasterPanel.administrativeInfo")}
-          </Typography>
-        </Grid>
-        <ControlledField
-          module="claim"
-          id="Claim.admin"
-          field={
-            <Grid item xs={4} className={classes.item}>
-              <ClaimAdminPicker
-                value={edited.admin}
-                onChange={(v, s) => this.updateAttribute("admin", v)}
-                readOnly
-                required
-              />
-            </Grid>
-          }
-        />
-
-        {!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.explanation"
-              field={
-                <Grid item xs={this.showAdjustmentAtEnter ? 4 : 8} className={classes.item}>
-                  <TextInput
-                    module="claim"
-                    label="explanation"
-                    value={edited.explanation}
-                    reset={reset}
-                    onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro}
-                    required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
-                  />
-                </Grid>
-              }
-            />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
-              <ControlledField
-                module="claim"
-                id="Claim.adjustment"
-                field={
-                  <Grid item xs={4} className={classes.item}>
-                    <TextInput
-                      module="claim"
-                      label="adjustment"
-                      value={edited.adjustment}
-                      reset={reset}
-                      onChange={(v) => this.updateAttribute("adjustment", v)}
-                      readOnly={readOnly || edited.reviewStatus >= 8}
-                    />
-                  </Grid>
-                }
-              />
-            )}
-          </Fragment>
-        )}
-
-        <Divider className={classes.sectionDivider} />
-
         {/* Section 6: Statut et montants */}
         <Grid item xs={12}>
-          <Typography variant="h6" className={classes.sectionHeader}>
+          <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.statusAndAmounts")}
           </Typography>
         </Grid>
