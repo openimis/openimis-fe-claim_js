@@ -370,5 +370,13 @@
   "claim.gql_mutation_process_claims_perms": "Claim | Mutation Process Claims",
   "claim.gql_mutation_restore_claims_perms": "Claim | Mutation Restore Claims",
   "claim.gql_mutation_delete_claims_perms": "Claim | Mutation Delete Claims",
-  "claim.claim_print_perms": "Claim | Claim Print"
+  "claim.claim_print_perms": "Claim | Claim Print",
+  "claim.ClaimMasterPanel.claimInfo": "Claim Information",
+  "claim.ClaimMasterPanel.insureeInfo": "Insuree Information",
+  "claim.ClaimMasterPanel.visitDetails": "Visit Details",
+  "claim.ClaimMasterPanel.diagnosis": "Diagnosis",
+  "claim.ClaimMasterPanel.administrativeInfo": "Administrative Information",
+  "claim.ClaimMasterPanel.statusAndAmounts": "Status and Amounts",
+  "claim.MasterPanel.referHFLabel": "Referred Health Facility",
+  "claim.MasterPanel.autogenerate": "(auto-generated)"
 }
