@@ -483,13 +483,14 @@ class ClaimMasterPanel extends FormPanel {
         <Divider className={classes.sectionDivider} />
 
         {/* Section 4: Diagnostics */}
-        <Grid item xs={12}>
-          <Typography variant="h8" className={classes.sectionHeader}>
-            {formatMessage(intl, "claim", "ClaimMasterPanel.diagnosis")}
-          </Typography>
-        </Grid>
         {!forFeedback && (
-          <ControlledField
+          <>
+            <Grid item xs={12}>
+              <Typography variant="h8" className={classes.sectionHeader}>
+                {formatMessage(intl, "claim", "ClaimMasterPanel.diagnosis")}
+              </Typography>
+            </Grid>
+            <ControlledField
             module="claim"
             id="Claim.mainDiagnosis"
             field={
@@ -507,6 +508,7 @@ class ClaimMasterPanel extends FormPanel {
               </Grid>
             }
           />
+          </>
         )}
 
         {!forFeedback && (
