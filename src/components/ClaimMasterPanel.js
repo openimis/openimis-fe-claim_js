@@ -168,7 +168,7 @@ class ClaimMasterPanel extends FormPanel {
     let ro = readOnly || !!forReview || !!forFeedback;
     return (
       <Grid container>
-        {/* Section 1: Informations de la réclamation */}
+        {/* Section 1: Claim Information */}
         <Grid item xs={12}>
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.claimInfo")}
@@ -302,7 +302,7 @@ class ClaimMasterPanel extends FormPanel {
         )}
         <Divider className={classes.sectionDivider} />
 
-        {/* Section 2: Informations de l'assuré */}
+        {/* Section 2: Insuree Information */}
         <Grid item xs={12}>
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.insureeInfo")}
@@ -327,7 +327,7 @@ class ClaimMasterPanel extends FormPanel {
 
         <Divider className={classes.sectionDivider} />
 
-        {/* Section 3: Détails de la visite */}
+        {/* Section 3: Visit Details */}
         <Grid item xs={12}>
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.visitDetails")}
@@ -482,7 +482,7 @@ class ClaimMasterPanel extends FormPanel {
 
         <Divider className={classes.sectionDivider} />
 
-        {/* Section 4: Diagnostics */}
+        {/* Section 4: Diagnosis */}
         {!forFeedback && (
           <>
             <Grid item xs={12}>
@@ -538,7 +538,7 @@ class ClaimMasterPanel extends FormPanel {
 
         <Divider className={classes.sectionDivider} />
 
-        {/* Section 6: Statut et montants */}
+        {/* Section 6: Status and Amounts */}
         <Grid item xs={12}>
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.statusAndAmounts")}
