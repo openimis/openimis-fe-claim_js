@@ -43,6 +43,9 @@ const styles = (theme) => ({
   paperHeader: theme.paper.header,
   paperHeaderAction: theme.paper.action,
   item: theme.paper.item,
+  section: {
+    padding: theme.spacing(0, 1), // Ajoute un padding de 16px (2 * 8px) tout autour
+  },
   sectionHeader: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
@@ -179,7 +182,7 @@ class ClaimMasterPanel extends FormPanel {
             module="claim"
             id="Claim.insuree"
             field={
-              <Grid item xs={10} className={classes.item}>
+              <Grid item xs={10} classes={{ container: classes.section }} className={classes.item}>
                 <PublishedComponent
                   pubRef={this.insureePicker}
                   value={edited.insuree}
@@ -198,7 +201,7 @@ class ClaimMasterPanel extends FormPanel {
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.visitDetails")}
           </Typography>
-          <Grid container item spacing={2} style={{ display: "flex", flexWrap: "wrap" }}>
+          <Grid container item spacing={2} classes={{ container: classes.section }} style={{ display: "flex", flexWrap: "wrap" }}>
             <ControlledField
               module="claim"
               id="Claim.visitDateFrom"
@@ -349,19 +352,20 @@ class ClaimMasterPanel extends FormPanel {
           </Grid>
           </Grid>
 
-        <Divider className={classes.sectionDivider} />
+        {/* <Divider className={classes.sectionDivider} /> */}
 
+        <Grid container item spacing={2}>
         {/* Section 1: Claim Information */}
-        <Grid item xs={12}>
+        <Grid item xs={6} classes={{ container: classes.section }}>
           <Typography variant="h8" className={classes.sectionHeader}>
             {formatMessage(intl, "claim", "ClaimMasterPanel.claimInfo")}
           </Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} classes={{ container: classes.section }}>
           <ControlledField
             module="claim"
             id="Claim.healthFacility"
             field={
-              <Grid item xs={3} className={classes.item}>
+              <Grid item xs={4} className={classes.item}>
                 <PublishedComponent
                   pubRef="location.HealthFacilityPicker"
                   value={edited.healthFacility}
@@ -390,7 +394,7 @@ class ClaimMasterPanel extends FormPanel {
             module="claim"
             id="Claim.code"
             field={
-              <Grid item xs={2} className={classes.item}>
+              <Grid item xs={4} className={classes.item}>
                 <ValidatedTextInput
                   action={claimCodeValidationCheck}
                   autoFocus={true}
@@ -426,7 +430,7 @@ class ClaimMasterPanel extends FormPanel {
               module="claim"
               id="Claim.guarantee"
               field={
-                <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 1 : 2} className={classes.item}>
+                <Grid item xs={!forReview && edited.status >= 4 && !forFeedback ? 2 : 4} className={classes.item}>
                   <TextInput
                     module="claim"
                     label="guaranteeId"
@@ -445,34 +449,249 @@ class ClaimMasterPanel extends FormPanel {
           )}
         </Grid>
         </Grid>
-        <Divider className={classes.sectionDivider} />
+        {/* <Divider className={classes.sectionDivider} /> */}
         
+        {/* <Divider className={classes.sectionDivider} /> */}
 
+        {/* Section 4: Diagnosis */}
         {!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.explanation"
-              field={
-                <Grid item xs={this.showAdjustmentAtEnter ? 4 : 8} className={classes.item}>
-                  <TextInput
-                    module="claim"
-                    label="explanation"
-                    value={edited.explanation}
-                    reset={reset}
-                    onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro}
-                    required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
-                  />
-                </Grid>
-              }
-            />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+          <Grid item xs={6}>
+            <Typography variant="h8" className={classes.sectionHeader}>
+              {formatMessage(intl, "claim", "ClaimMasterPanel.diagnosis")}
+            </Typography>
+
+            <Grid
+              container
+              item
+              spacing={2}
+              classes={{ container: classes.section }}
+              style={{ display: "flex", flexWrap: "wrap" }}
+            >
+              {/* Main Diagnosis */}
+              <ControlledField
+                module="claim"
+                id="Claim.mainDiagnosis"
+                field={
+                  <Grid item xs={6} className={classes.item}>
+                    <PublishedComponent
+                      pubRef="medical.DiagnosisPicker"
+                      name="mainDiagnosis"
+                      label={formatMessage(intl, "claim", "mainDiagnosis")}
+                      value={edited.icd}
+                      reset={reset}
+                      onChange={(v, s) => this.updateAttribute("icd", v)}
+                      readOnly={ro}
+                      required
+                    />
+                  </Grid>
+                }
+              />
+
+              {/* Additional Diagnoses */}
+              {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
+                <ControlledField
+                  key={`secDiagnosis${diagnosisIndex + 1}`}
+                  module="claim"
+                  id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                  field={
+                    <Grid item xs={6} className={classes.item}>
+                      <PublishedComponent
+                        pubRef="medical.DiagnosisPicker"
+                        name={`secDiagnosis${diagnosisIndex + 1}`}
+                        label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
+                        value={edited[`icd${diagnosisIndex + 1}`]}
+                        reset={reset}
+                        onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
+                        readOnly={ro}
+                      />
+                    </Grid>
+                  }
+                />
+              ))}
+            </Grid>
+          </Grid>
+        )}
+        </Grid>
+
+        {/* <Divider className={classes.sectionDivider} /> */}
+
+
+        {/* Section 6: Status and Amounts */}
+        {(!!forFeedback || !!forReview) && (
+        <Grid item xs={12}>
+          <Typography variant="h8" className={classes.sectionHeader}>
+            {forReview ? formatMessage(intl, "claim", "ClaimMasterPanel.Amounts")
+             : forFeedback ? formatMessage(intl, "claim", "ClaimMasterPanel.Status")
+             : formatMessage(intl, "claim", "ClaimMasterPanel.Amount")}
+          </Typography>
+
+          <Grid
+            container
+            item
+            spacing={2}
+            classes={{ container: classes.section }}
+            style={{ display: "flex", flexWrap: "wrap" }}
+          >
+            {/* Claimed */}
+            {!forFeedback && (
+              <ControlledField
+                module="claim"
+                id="Claim.claimed"
+                field={
+                  <Grid item xs={2} className={classes.item}>
+                    <AmountInput
+                      value={edited.claimed}
+                      module="claim"
+                      label="claimed"
+                      readOnly={true}
+                    />
+                  </Grid>
+                }
+              />
+            )}
+
+            {/* Approved & Valuated */}
+            {(forReview || edited.status >= 4) && !forFeedback && (
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.approved"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <AmountInput
+                        value={edited.approved || null}
+                        module="claim"
+                        label="approved"
+                        readOnly={true}
+                      />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.valuated"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <AmountInput
+                        value={this.computePriceAdjusted()}
+                        module="claim"
+                        label="valuated"
+                        readOnly={true}
+                      />
+                    </Grid>
+                  }
+                />
+              </Fragment>
+            )}
+
+            {/* Feedback Status */}
+            {!!forFeedback && (
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.status"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <ClaimStatusPicker readOnly={true} value={edited.status} />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.feedbackStatus"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
+                    </Grid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.reviewStatus"
+                  field={
+                    <Grid item xs={2} className={classes.item}>
+                      <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
+                    </Grid>
+                  }
+                />
+              </Fragment>
+            )}
+
+            {/* PreAuthorization */}
+            {this.showPreAuthorization && (
+              <Grid item xs={12} className={classes.item}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      id="Claim.preAuthorization"
+                      color="primary"
+                      checked={edited?.preAuthorization}
+                      onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+                    />
+                  }
+                  label={formatMessage(intl, "claim", "pre-authorization")}
+                />
+              </Grid>
+            )}
+          </Grid>
+        </Grid>
+        )}
+
+        {/* <Divider className={classes.sectionDivider} /> */}
+
+        {/* Section: Explanation and Adjustment */}
+        {!forFeedback && (
+          <Grid item xs={12}>
+            <Grid
+              container
+              item
+              spacing={2}
+              alignItems="center"
+              justifyContent="flex-start"
+              classes={{ container: classes.section }}
+              style={{
+                display: "flex",
+                flexWrap: "nowrap",
+              }}
+            >
+              {/* Explanation */}
+              <ControlledField
+                module="claim"
+                id="Claim.explanation"
+                field={
+                  <Grid
+                    item
+                    xs={6}
+                    className={classes.item}
+                    style={{ minWidth: "400px" }}
+                  >
+                    <TextInput
+                      module="claim"
+                      label="explanation"
+                      value={edited.explanation}
+                      reset={reset}
+                      onChange={(v) => this.updateAttribute("explanation", v)}
+                      readOnly={ro}
+                      required={
+                        this.isExplanationMandatoryForIPD &&
+                        edited.careType === IN_PATIENT_STRING
+                      }
+                    />
+                  </Grid>
+                }
+              />
+
+              {/* Adjustment */}
               <ControlledField
                 module="claim"
                 id="Claim.adjustment"
                 field={
-                  <Grid item xs={4} className={classes.item}>
+                  <Grid
+                    item
+                    xs={6}
+                    className={classes.item}
+                    style={{ minWidth: "400px" }}
+                  >
                     <TextInput
                       module="claim"
                       label="adjustment"
@@ -484,157 +703,13 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
-            )}
-          </Fragment>
-        )}
-        <Divider className={classes.sectionDivider} />
-
-        {/* Section 4: Diagnosis */}
-        {!forFeedback && (
-          <>
-            <Grid item xs={12}>
-              <Typography variant="h8" className={classes.sectionHeader}>
-                {formatMessage(intl, "claim", "ClaimMasterPanel.diagnosis")}
-              </Typography>
             </Grid>
-            <ControlledField
-            module="claim"
-            id="Claim.mainDiagnosis"
-            field={
-              <Grid item xs={3} className={classes.item}>
-                <PublishedComponent
-                  pubRef="medical.DiagnosisPicker"
-                  name="mainDiagnosis"
-                  label={formatMessage(intl, "claim", "mainDiagnosis")}
-                  value={edited.icd}
-                  reset={reset}
-                  onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
-                  required
-                />
-              </Grid>
-            }
-          />
-          </>
-        )}
 
-        {!forFeedback && (
-          <Fragment>
-            {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
-              <ControlledField
-                key={`secDiagnosis${diagnosisIndex + 1}`}
-                module="claim"
-                id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
-                field={
-                  <Grid item xs={3} className={classes.item}>
-                    <PublishedComponent
-                      pubRef="medical.DiagnosisPicker"
-                      name={`secDiagnosis${diagnosisIndex + 1}`}
-                      label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
-                      value={edited[`icd${diagnosisIndex + 1}`]}
-                      reset={reset}
-                      onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
-                      readOnly={ro}
-                    />
-                  </Grid>
-                }
-              />
-            ))}
-          </Fragment>
-        )}
-
-        <Divider className={classes.sectionDivider} />
-
-        {/* Section 6: Status and Amounts */}
-        <Grid item xs={12}>
-          <Typography variant="h8" className={classes.sectionHeader}>
-            {formatMessage(intl, "claim", "ClaimMasterPanel.statusAndAmounts")}
-          </Typography>
-        </Grid>
-        {!forFeedback && (
-          <ControlledField
-            module="claim"
-            id="Claim.claimed"
-            field={
-              <Grid item xs={forReview || edited.status >= 4 ? 1 : 2} className={classes.item}>
-                <AmountInput value={edited.claimed} module="claim" label="claimed" readOnly={true} />
-              </Grid>
-            }
-          />
-        )}
-
-        {(forReview || edited.status >= 4) && !forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.approved"
-              field={
-                <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.valuated"
-              field={
-                <Grid item xs={1} className={classes.item}>
-                  <AmountInput value={this.computePriceAdjusted()} module="claim" label="valuated" readOnly={true} />
-                </Grid>
-              }
-            />
-          </Fragment>
-        )}
-
-        {!!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.status"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <ClaimStatusPicker readOnly={true} value={edited.status} />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.feedbackStatus"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
-                </Grid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.reviewStatus"
-              field={
-                <Grid item xs={2} className={classes.item}>
-                  <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
-                </Grid>
-              }
-            />
-          </Fragment>
-        )}
-
-        {this.showPreAuthorization && (
-          <Grid item xs={12} className={classes.item}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="Claim.preAuthorization"
-                  color="primary"
-                  checked={edited?.preAuthorization}
-                  onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
-                />
-              }
-              label={formatMessage(intl, "claim", "pre-authorization")}
-            />
+            <Divider className={classes.sectionDivider} />
           </Grid>
         )}
 
-        <Divider className={classes.sectionDivider} />
+
 
         {/* Section 7: Contributions */}
         <Grid item xs={12}>
