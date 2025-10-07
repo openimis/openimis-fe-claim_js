@@ -682,6 +682,7 @@ class ClaimMasterPanel extends FormPanel {
               />
 
               {/* Adjustment */}
+              {forReview && (
               <ControlledField
                 module="claim"
                 id="Claim.adjustment"
@@ -703,6 +704,7 @@ class ClaimMasterPanel extends FormPanel {
                   </Grid>
                 }
               />
+              )}
             </Grid>
 
             <Divider className={classes.sectionDivider} />
