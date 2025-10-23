@@ -446,7 +446,6 @@ class AttachmentsDialog extends Component {
         "claimAttachment.date",
         "claimAttachment.fileName",
       ];
-      console.log("attachments", this.state.claimAttachments)
 
     const itemFormatters = this.useSimpleAttachments ? [
       (attachment, index) =>
