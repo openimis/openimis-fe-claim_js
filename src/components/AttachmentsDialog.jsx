@@ -64,7 +64,7 @@ class AttachmentsDialog extends Component {
     this.useSimpleAttachments = props.modulesManager.getConf(
       "fe-claim",
       "useSimpleAttachments",
-      false,
+      true,
     );
   }
 
