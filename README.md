@@ -132,7 +132,11 @@ None
   - **M**: Makes the field mandatory
   - **O**: Makes the field optional
   - **N**: Hides the field
+<<<<<<< HEAD
 - `isDefaultFetchClaimActivated`, manage default fetch behavior of claim searcher ; default: true
+=======
+- `useSimpleAttachments`, boolean to enable/disable simple attachments. Default is **false**
+>>>>>>> 05d1898 (corrections)
 
 ## Fields Description 
 - `ReferalHF`, conditional field representing the reference hospital 
