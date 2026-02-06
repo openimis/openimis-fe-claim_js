@@ -293,6 +293,7 @@ export function formatClaimGQL(modulesManager, claim, shouldAutogenerate) {
     preAuthorization: ${claim.preAuthorization}
     ${!!claim.patientCondition ? `patientCondition: "${formatGQLString(claim.patientCondition)}"` : ""}
     ${!!claim.referralCode ? `referralCode: "${formatGQLString(claim.referralCode)}"` : ""}
+    ${!!claim.program ? `program: ${decodeId(claim.program.id)}` : ""}
  `;
 }
 
@@ -358,6 +359,7 @@ export function fetchClaim(mm, claimUuid, forFeedback) {
     "patientCondition",
     "referralCode",
     "jsonExt",
+    "program {id code idProgram nameProgram validityDateFrom}"
   ];
   if (!!forFeedback) {
     projections.push(

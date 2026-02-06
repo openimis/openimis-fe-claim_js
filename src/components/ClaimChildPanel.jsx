@@ -307,7 +307,7 @@ class ClaimChildPanel extends Component {
   };
 
   render() {
-    const { intl, edited, type, picker, forReview, fetchingPricelist, readOnly = false, modulesManager } = this.props;
+    const { intl, classes, edited, type, picker, forReview, fetchingPricelist, readOnly = false, modulesManager } = this.props;
     if (!edited) return null;
     if (!this.props.edited.healthFacility || !this.props.edited.healthFacility[`${this.props.type}sPricelist`]?.id) {
       return (

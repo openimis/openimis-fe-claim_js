@@ -28,6 +28,7 @@ import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperation
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
+import ClaimProgramPicker from "./pickers/ClaimProgramPicker";
 import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, RIGHT_FEEDBACK, RIGHT_SEARCH, RIGHT_HF_SEARCH } from "./constants";
 
 const Keyboard = GetIconComponent("Keyboard")
@@ -181,6 +182,7 @@ const DEFAULT_CONFIG = {
     { key: "claim.AttachmentsDialog", ref: AttachmentsDialog },
     { key: "claim.YesNoPicker", ref: YesNoPicker },
     { key: "claim.PatientConditionPicker", ref: PatientConditionPicker },
+    { key: "claim.ClaimProgramPicker", ref: ClaimProgramPicker},
   ],
   "core.Router": [
     { path: ROUTE_HEALTH_FACILITIES, text: "claim.menu.healthFacilityClaims",id: "claim.healthFacilityClaims", component: HealthFacilitiesPage, rights:[RIGHT_SEARCH, RIGHT_HF_SEARCH], icon: "Keyboard" },

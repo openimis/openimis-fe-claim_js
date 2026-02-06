@@ -91,6 +91,7 @@ class ClaimMasterPanel extends FormPanel {
       "claimForm.ComplexProductWithoutPriceImpact",
       true,
     );
+    this.isProgramAvailable = props.modulesManager.getConf("fe-core", "isProgramAvailable", false);
   }
 
   shouldValidate = (inputValue) => {
@@ -393,6 +394,25 @@ class ClaimMasterPanel extends FormPanel {
             </StyledItemGrid>
           }
         />
+        { this.isProgramAvailable && (
+          <ControlledField
+          module="claim"
+          id="Claim.program"
+          field={
+            <Grid item xs={3} className={classes.item}>
+              <PublishedComponent
+                pubRef="claim.ClaimProgramPicker"
+                name="program"
+                label={formatMessage(intl, "claim", "programPicker.label")}
+                value={edited.program}
+                reset={reset}
+                readOnly={!!edited && edited[`uuid`] ? true : ro}
+                onChange={(v) => this.updateAttribute("program", v)}
+              />
+            </Grid>
+          }
+        />
+        )}
         {this.fields.guaranteeNo !== "N" && (
           <ControlledField
             module="claim"
