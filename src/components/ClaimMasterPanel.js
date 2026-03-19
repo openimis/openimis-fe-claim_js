@@ -108,8 +108,11 @@ class ClaimMasterPanel extends FormPanel {
   shouldValidate = (inputValue) => {
     if (this.autoGenerateClaimCode) return false;
 
-    const { savedClaimCode } = this.props;
+    const { savedClaimCode, edited } = this.props;
+
+    if (edited.restore) return true;
     const shouldValidate = inputValue !== savedClaimCode;
+
     return shouldValidate;
   };
 
@@ -202,6 +205,34 @@ class ClaimMasterPanel extends FormPanel {
             {formatMessage(intl, "claim", "ClaimMasterPanel.visitDetails")}
           </Typography>
           <Grid container item spacing={2} classes={{ container: classes.section }} style={{ display: "flex", flexWrap: "wrap" }}>
+        {(!!edited.visitType && edited.visitType == REFERRAL) || (!!edited.patientCondition && edited.patientCondition == REFERRAL) ? (
+             <ControlledField
+             module="claim"
+             id="Claim.referHealthFacility"
+             field={
+               <Grid item xs={3} className={classes.item}>
+                 <PublishedComponent
+                   pubRef="location.HealthFacilityReferPicker"
+                   label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                   value={
+                     (edited.visitType === this.claimTypeReferSymbol ? !!edited.referFrom ? edited.referFrom : edited.referHF : edited.referTo) ??
+                     this.EMPTY_STRING
+                   }
+                   reset={reset}
+                   readOnly={ro}
+                   required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                   filterOptions={(options) =>
+                     options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
+                   }
+                   filterSelectedOptions={true}
+                   onChange={(d) => this.updateAttribute("referHF", d)}
+                 />
+               </Grid>
+             }
+           />
+        ): null}
+       
+        <Fragment>
             <ControlledField
               module="claim"
               id="Claim.visitDateFrom"
@@ -348,6 +379,7 @@ class ClaimMasterPanel extends FormPanel {
                 }
               />
             ) : null}
+          </Fragment>
           </Grid>
           </Grid>
           </Grid>

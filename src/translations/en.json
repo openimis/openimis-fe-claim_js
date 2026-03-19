@@ -1,5 +1,12 @@
 {
   "claim.mainMenu": "Claims",
+  "ClaimChildPanel.itemOrService.tooltip": "Type if you dont find the item or service in the list",
+  "claimAttachments.buttonText": "Attachs",
+  "claim.print.buttonText": "Print",
+  "claim.restore.buttonText": "Restore",
+  "claim.duplicate.buttonText": "Duplicate",
+  "claim.claimFeedback.buttonText": "Feedback",
+  "claim.claimReview.buttonText": "Review",
   "claim.menu.healthFacilityClaims": "Health Facility Claims",
   "claim.healthFacilityClaims.page.title": "Health Facility Claims",
   "claim.menu.reviews": "Reviews",
@@ -40,6 +47,7 @@
   "claim.feedbackButton.tooltip": "Deliver Feedback",
   "claim.reviewButton.tooltip": "Deliver Review",
   "claim.openNewTabButton.tooltip": "Open in new tab",
+  "claim.openNewTab.buttonText": "Open",
   "claim.ClaimFilter.claimedDateFrom": "Claimed From",
   "claim.ClaimFilter.claimedDateTo": "Claimed To",
   "claim.ClaimFilter.claimedAbove": "Claimed More Than",
@@ -380,5 +388,10 @@
   "claim.ClaimMasterPanel.Amounts": "Amounts",
   "claim.ClaimMasterPanel.Status": "Status",
   "claim.MasterPanel.referHFLabel": "Referred Health Facility",
-  "claim.MasterPanel.autogenerate": "(auto-generated)"
+  "claim.MasterPanel.autogenerate": "(auto-generated)",
+  "claim.deleteHealthFacility.textButton": "Delete",
+  "claim.attachment.missingPredefinedType": "Missing predefined Type",
+  "claim.attachment.definePredefinedType": "You must define the the General Type first and then select the Predefined Type or clean the attachment",
+  "claim.attachment.missingDocument": "Missing Document",
+  "claim.attachment.defineDocument": "Upload a file or clean the attachment"
 }

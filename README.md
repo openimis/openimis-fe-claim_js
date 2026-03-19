@@ -130,6 +130,7 @@ None
   - **M**: Makes the field mandatory
   - **O**: Makes the field optional
   - **N**: Hides the field
+- `isDefaultFetchClaimActivated`, manage default fetch behavior of claim searcher ; default: true
 
 ## Fields Description 
 - `ReferalHF`, conditional field representing the reference hospital 

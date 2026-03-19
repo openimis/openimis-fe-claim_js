@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
-import { Grid, InputAdornment, IconButton, Tooltip } from "@material-ui/core";
+import { Grid, InputAdornment, IconButton, Tooltip, Button } from "@material-ui/core";
 import FilterIcon from "@material-ui/icons/FilterList";
 import FeedbackIcon from "@material-ui/icons/SpeakerNotesOutlined";
 import ReviewIcon from "@material-ui/icons/SupervisorAccount";
@@ -493,9 +493,10 @@ class ReviewsPage extends Component {
       {!!this.props.rights.includes(RIGHT_FEEDBACK) && (
         <Grid item>
           <Tooltip title={formatMessage(this.props.intl, "claim", "feedbackButton.tooltip")}>
-            <IconButton onClick={(e) => this.provideFeedback(c)}>
+            <Button onClick={(e) => this.provideFeedback(c)}>
               <FeedbackIcon />
-            </IconButton>
+              {formatMessage(this.props.intl, "claim", "claimFeedback.buttonText")}
+            </Button>
           </Tooltip>
         </Grid>
       )}
@@ -568,9 +569,10 @@ class ReviewsPage extends Component {
       {!!this.props.rights.includes(RIGHT_CLAIMREVIEW) && (
         <Grid item>
           <Tooltip title={formatMessage(this.props.intl, "claim", "reviewButton.tooltip")}>
-            <IconButton onClick={(e) => this.review(c)}>
+            <Button onClick={(e) => this.review(c)}>
               <ReviewIcon />
-            </IconButton>
+              {formatMessage(this.props.intl, "claim", "claimReview.buttonText")}
+            </Button>
           </Tooltip>
         </Grid>
       )}
