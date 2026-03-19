@@ -721,3 +721,24 @@ export function generate(uuid) {
       .then((e) => dispatch({ type: "CLAIM_PRINT_DONE" }));
   };
 }
+
+export function fetchClaimFacialAudits(claimUuid) {
+  return graphqlWithVariables(
+    `
+    query getFacialAudits($claimUuid: String!) {
+      claimFacialAudits(claimUuid: $claimUuid) {
+        uuid
+        stepName
+        similarityScore
+        thresholdUsed
+        isVerified
+        auditDate
+        deviceId
+        metadata
+      }
+    }
+    `,
+    { claimUuid },
+    "CLAIM_FACIAL_AUDITS"
+  );
+}

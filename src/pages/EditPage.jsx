@@ -12,6 +12,7 @@ const StyledDiv = styled("div")(({ theme }) => ({
   ...theme?.page ?? {},
 }));
 
+console.log("Edit Page");
 class EditPage extends Component {
   constructor(props) {
     super(props);

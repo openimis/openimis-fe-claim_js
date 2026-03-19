@@ -37,6 +37,10 @@ function reducer(
     fetchedClaimCodeCount: false,
     claimCodeCount: null,
     errorClaimCodeCount: null,
+    fetchingFacialAudits: false,
+    fetchedFacialAudits: false,
+    facialAudits: [],
+    errorFacialAudits: null,
     healthFacilities: {
       availableHealthFacilities: [],
       isFetching: false,
@@ -393,6 +397,29 @@ function reducer(
       return {
         ...state,
         generating: false,
+      };
+    case "CLAIM_FACIAL_AUDITS_REQ":
+      return {
+        ...state,
+        fetchingFacialAudits: true,
+        fetchedFacialAudits: false,
+        facialAudits: [],
+        errorFacialAudits: null,
+      };
+    case "CLAIM_FACIAL_AUDITS_RESP":
+      return {
+        ...state,
+        fetchingFacialAudits: false,
+        fetchedFacialAudits: true,
+        facialAudits: action.payload.data.claimFacialAudits || [],
+        errorFacialAudits: formatGraphQLError(action.payload),
+      };
+    case "CLAIM_FACIAL_AUDITS_ERR":
+      return {
+        ...state,
+        fetchingFacialAudits: false,
+        fetchedFacialAudits: false,
+        errorFacialAudits: formatServerError(action.payload),
       };
     default:
       return state;
