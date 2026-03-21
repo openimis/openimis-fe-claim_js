@@ -3,7 +3,7 @@ import {
   Keyboard, ScreenShare, Assignment
 } from "@mui/icons-material";
 import { FormattedMessage } from "@openimis/fe-core";
-import ClaimMainMenu from "./menus/ClaimMainMenu";
+import ClaimMainMenu from "./menus/ClaimMainMenu.jsx";
 import HealthFacilitiesPage from "./pages/HealthFacilitiesPage";
 import EditPage from "./pages/EditPage";
 import ReviewsPage from "./pages/ReviewsPage";
