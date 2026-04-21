@@ -551,6 +551,8 @@ class ClaimForm extends Component {
       },
     ];
 
+    const isModified = this.state.claim != this.props.claim;
+
     const editingProps = {
       isDuplicate: this.state.isDuplicate,
       isRestored: this.state.isRestored || this.state.claim?.restore,
@@ -565,7 +567,7 @@ class ClaimForm extends Component {
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-      canSave: (e) => this.canSave(forFeedback, forReview),
+      canSave: (e) => isModified && this.canSave(forFeedback, forReview),
       reload: (claim_uuid || readOnly) && this.reload,
       actions: actions,
       readOnly: readOnly,
