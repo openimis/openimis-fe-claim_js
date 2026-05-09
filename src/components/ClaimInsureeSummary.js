@@ -51,8 +51,8 @@ const ClaimInsureeSummary = ({ insuree }) => {
     (claim) => formatDateFromISO(claim?.dateProcessed),
     (claim) => formatMessage(`feedbackStatus.${claim?.feedbackStatus}`),
     (claim) => formatMessage(`reviewStatus.${claim?.reviewStatus}`),
-    (claim) => formatAmount(intl, claim?.claimed),
-    (claim) => formatAmount(intl, claim?.approved),
+    (claim) => formatAmount(modulesManager, intl, claim?.claimed),
+    (claim) => formatAmount(modulesManager, intl, claim?.approved),
     (claim) => formatMessage(`claimStatus.${claim?.status}`),
     (claim) => (
       <Tooltip title={formatMessage("ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}>

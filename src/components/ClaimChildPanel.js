@@ -355,6 +355,7 @@ class ClaimChildPanel extends Component {
         >
           <Box minWidth={400}>
             <PublishedComponent
+              required={(!!edited.services && edited.services?.length<2 && !!edited.items && edited?.items?.length<2) || (!edited.services && !edited.items)}
               readOnly={!!forReview || readOnly}
               pubRef={picker}
               filterOptions={this.props.type === 'item' ? filterItemsOptions : filterServicesOptions}

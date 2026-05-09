@@ -188,7 +188,7 @@ class ClaimSearcher extends Component {
                           return acc;
                         }
                       }, 0),
-                    )}
+                    )}                    
                   </b>
                 ),
               }}
