@@ -3,7 +3,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import { Fab, Tooltip } from "@mui/material";
-import { useTheme, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import _ from "lodash";
 import {
   withHistory,
@@ -134,20 +134,23 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.claimAdmin ?? this.props.currentClaimAdmin);
-    this.props.selectHealthFacility(this.props.claimHealthFacility ?? this.props.currentUserHF);
+    this.props.selectClaimAdmin(this.props.user.claim_admin);
+    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  canAdd = () => {
-    if (!this.props.claimAdmin) return false;
-    if (!this.props.claimHealthFacility) return false;
-    return true;
-  };
+  canAdd = () => this.iUIsClaimAdmin();
+
+  iUIsClaimAdmin = () => Boolean(this.props.user?.claim_admin);
 
   componentDidMount = () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
+
+    if(this.iUIsClaimAdmin()) {
+      this.props.selectClaimAdmin(this.props.user?.claim_admin);
+      this.props.selectHealthFacility(this.props.user?.claim_admin?.healthFacility);
+    }
   };
 
   componentWillUnmount = () => {
@@ -222,13 +225,14 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
+  user: state.core.user,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators(
     {
-      selectHealthFacility,
       selectClaimAdmin,
+      selectHealthFacility,
       journalize,
       coreConfirm,
       submit,

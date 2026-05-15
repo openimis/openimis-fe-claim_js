@@ -21,12 +21,6 @@ export function selectClaimAdmin(admin) {
   };
 }
 
-export function setCurrentClaimAdmin(admin) {
-  return (dispatch) => {
-    dispatch({ type: "CLAIM_SET_CURRENT_CLAIM_ADMIN", payload: admin });
-  };
-}
-
 export function selectHealthFacility(hf) {
   return (dispatch) => {
     dispatch({ type: "CLAIM_CLAIM_HEALTH_FACILITY_SELECTED", payload: hf });
