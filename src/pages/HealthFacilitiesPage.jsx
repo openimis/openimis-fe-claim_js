@@ -134,8 +134,8 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.currentClaimAdmin);
-    this.props.selectHealthFacility(this.props.currentUserHF);
+    this.props.selectClaimAdmin(this.props.claimAdmin ?? this.props.currentClaimAdmin);
+    this.props.selectHealthFacility(this.props.claimHealthFacility ?? this.props.currentUserHF);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
