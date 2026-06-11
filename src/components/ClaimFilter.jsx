@@ -23,7 +23,6 @@ import {
   Contributions,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
-import { RIGHT_CLAIMREVIEW } from "../constants";
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 

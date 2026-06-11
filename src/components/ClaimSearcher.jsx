@@ -12,7 +12,6 @@ import {
   withModulesManager,
   GetIconComponent,
 } from "@openimis/fe-core";
-import { RIGHT_CLAIMREVIEW } from "../constants";
 import _ from "lodash";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
