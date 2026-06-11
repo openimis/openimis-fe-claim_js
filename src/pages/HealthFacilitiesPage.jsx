@@ -134,12 +134,14 @@ class HealthFacilitiesPage extends Component {
   };
 
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.claimAdmin ?? this.props.currentClaimAdmin);
-    this.props.selectHealthFacility(this.props.claimHealthFacility ?? this.props.currentUserHF);
+    this.props.selectClaimAdmin(this.props.claimAdmin);
+    this.props.selectHealthFacility(this.props.claimHealthFacility);
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
   canAdd = () => {
+    if (!this.props.claimAdmin) return false;
+    if (!this.props.claimHealthFacility) return false;
     return true;
   };
 
@@ -210,8 +212,6 @@ class HealthFacilitiesPage extends Component {
 
 const mapStateToProps = (state) => ({
   state,
-  currentClaimAdmin: state.claim.currentClaimAdmin,
-  currentUserHF: state.loc?.userHealthFacilityFullPath,
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
