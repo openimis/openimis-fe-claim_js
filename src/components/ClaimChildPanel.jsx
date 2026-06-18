@@ -489,8 +489,10 @@ class ClaimChildPanel extends Component {
               <TableCell>
                 <NumberInput
                   readOnly={!!forReview || readOnly}
-                  value={u.qtyAdjusted !== null ? (u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted) : u.qtyDisplayed}
+                  value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                   onChange={(v) => {
+                    u.qtyDisplayed = v;
+                    u.qtyAsked = v;
                     if (!i.service.manualPrice) {
                       if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                         if (u.qtyProvided < v) {
@@ -500,20 +502,13 @@ class ClaimChildPanel extends Component {
                             }),
                           );
                         }
-                        u.qtyAdjusted = v;
-                        u.qtyApproved = v;
                       } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                        if (v == u.qtyProvided) {
-                          u.qtyApproved = u.qtyProvided;
-                          u.qtyAdjusted = u.qtyProvided;
-                        } else {
-                          u.qtyAdjusted = v;
-                          u.qtyApproved = 0;
+                        if (u.qtyProvided != v) {
+                            alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                            totalApproved: u.qtyProvided,
+                          }));
                         }
                       }
-                    } else {
-                      u.qtyAdjusted = v;
-                      u.qtyApproved = v;
                     }
                     this._onChangeSubItem(idx, udx, "servicesQty", v);
                   }}
