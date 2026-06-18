@@ -547,6 +547,33 @@ class ClaimChildPanel extends Component {
           </TableCell>
           <TableCell>
             <NumberInput
+              readOnly={!!forReview || readOnly}
+              value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+              onChange={(v) => {
+                u.qtyDisplayed = v;
+                u.qtyAsked = v;
+                if (!i.service.manualPrice) {
+                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                    if (u.qtyProvided < v) {
+                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                        totalApproved: u.qtyProvided,
+                      }));
+                    }
+                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                    if (u.qtyProvided != v) {
+                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                        totalApproved: u.qtyProvided,
+                      }));
+                    }
+                  }
+                }
+                this._onChangeSubItem(idx, udx, "servicesQty", v);
+              }
+              }
+            />
+          </TableCell>
+          <TableCell>
+            <NumberInput
               readOnly={readOnly}
               value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
               onChange={(v) => {
@@ -595,6 +622,34 @@ class ClaimChildPanel extends Component {
               <Box minWidth={400}>
                 <TextInput readOnly={!!forReview || readOnly || true} value={u.service.name} />
               </Box>
+            </TableCell>
+            <TableCell>
+              <NumberInput
+                readOnly={!!forReview || readOnly}
+                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
+                onChange={(v) => {
+                  u.qtyDisplayed = v;
+                  u.qtyAsked = v;
+                  if (!i.service.manualPrice) {
+                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                      if (u.qtyProvided < v) {
+                        alert(
+                          formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                            totalApproved: u.qtyProvided,
+                          }),
+                        );
+                      }
+                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                      if (u.qtyProvided != v) {
+                          alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                          totalApproved: u.qtyProvided,
+                        }));
+                      }
+                    }
+                  }
+                  this._onChangeSubItem(idx, udx, "servicesQty", v);
+                }}
+              />
             </TableCell>
             <TableCell>
               <NumberInput
@@ -724,6 +779,13 @@ class ClaimChildPanel extends Component {
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
       ));
+
+      const newSubServiceHeaders = [
+        ...subServiceHeaders.slice(0, 3),
+        `edit.${type}s.qtyAdjusted`,
+        ...subServiceHeaders.slice(3)
+      ];
+      subServiceHeaders = newSubServiceHeaders;
     }
 
     if (this.showJustificationAtEnter || edited.status !== 2) {

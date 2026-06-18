@@ -83,8 +83,7 @@ class ClaimForm extends Component {
     forcedDirty: false,
     isDuplicate: false,
     isRestored: false,
-    isSaved: false,
-    historyOpen: false
+    isSaved: false
   };
 
   constructor(props) {
@@ -303,7 +302,7 @@ class ClaimForm extends Component {
     ){
       return false
     } 
-    if (this.state.claim.services !== undefined) {
+    if (!forReview && this.state.claim.services !== undefined) {
       if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length - 1) {
         return false;
       }
