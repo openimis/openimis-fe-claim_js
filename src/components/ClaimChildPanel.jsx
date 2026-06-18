@@ -476,47 +476,6 @@ class ClaimChildPanel extends Component {
         </tr>
       ))),
       (i, idx) => (i.subItems.map((u, udx) => {
-        return (
-          <tr>
-            <TableCell>
-              <TextInput readOnly={true} value={u.service.code} />
-            </TableCell>
-            <TableCell>
-              <Box minWidth={400}>
-                <TextInput readOnly={!!forReview || readOnly || true} value={u.service.name} />
-              </Box>
-            </TableCell>
-            <TableCell>
-              <NumberInput
-                readOnly={!!forReview || readOnly}
-                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
-                onChange={(v) => {
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                    if (u.qtyProvided != v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                  }
-                  this._onChangeSubItem(idx, udx, "servicesQty", v);
-                }}
-              />
-            </TableCell>
-            <TableCell>
-              <AmountInput readOnly={true} value={u.priceAsked} />
-            </TableCell>
-          </tr>
-        ),
-      (i, idx) =>
-        i.subItems.map((u, udx) => {
           return (
             <tr>
               <TableCell>
@@ -566,7 +525,7 @@ class ClaimChildPanel extends Component {
             </tr>
           );
         })
-      }))
+      )
     ];
 
     let subServicesItemsFormattersReview = [
