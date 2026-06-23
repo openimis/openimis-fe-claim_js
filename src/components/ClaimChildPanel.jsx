@@ -616,11 +616,11 @@ class ClaimChildPanel extends Component {
         return (
           <tr>
             <TableCell>
-              <TextInput readOnly={true} value={u.service.code} />
+              <TextInput readOnly={true} value={u.item.code} />
             </TableCell>
             <TableCell>
               <Box minWidth={400}>
-                <TextInput readOnly={!!forReview || readOnly || true} value={u.service.name} />
+                <TextInput readOnly={!!forReview || readOnly || true} value={u.item.name} />
               </Box>
             </TableCell>
             <TableCell>
@@ -694,58 +694,7 @@ class ClaimChildPanel extends Component {
               <AmountInput readOnly={true} value={u.priceAsked} />
             </TableCell>
           </tr>
-      )})),
-      (i, idx) =>
-        i.items.map((u, udx) => {
-          return (
-            <tr>
-              <TableCell>
-                <TextInput readOnly={true} value={u.item.code} />
-              </TableCell>
-              <TableCell>
-                <Box minWidth={400}>
-                  <TextInput readOnly={!!forReview || readOnly || true} value={u.item.name} />
-                </Box>
-              </TableCell>
-              <TableCell>
-                <NumberInput
-                  readOnly={readOnly}
-                  value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
-                  onChange={(v) => {
-                    if (!i.service.manualPrice) {
-                      if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                        if (u.qtyProvided < v) {
-                          alert(
-                            formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                              totalApproved: u.qtyProvided,
-                            }),
-                          );
-                        }
-                        u.qtyDisplayed = v;
-                        u.qtyAsked = v;
-                      } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                        if (v == u.qtyProvided) {
-                          u.qtyAsked = u.qtyProvided;
-                          u.qtyDisplayed = u.qtyProvided;
-                        } else {
-                          u.qtyDisplayed = v;
-                          u.qtyAsked = 0;
-                        }
-                      }
-                    } else {
-                      u.qtyDisplayed = v;
-                      u.qtyAsked = v;
-                    }
-                    this._onChangeSubItem(idx, udx, "servicesQty", v);
-                  }}
-                />
-              </TableCell>
-              <TableCell>
-                <AmountInput readOnly={true} value={u.priceAsked} />
-              </TableCell>
-            </tr>
-          );
-        }),
+      )}))
     ];
 
     if (!!forReview || edited.status !== 2) {
