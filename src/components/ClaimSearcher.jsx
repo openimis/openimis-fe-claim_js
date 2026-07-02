@@ -51,6 +51,7 @@ class ClaimSearcher extends Component {
       "isDefaultFetchClaimActivated",
       true,
     );
+    this.columns = this.props.modulesManager.getConf("fe-claim", "columns", {});
   }
 
   canFetchClaimDetails = () => {

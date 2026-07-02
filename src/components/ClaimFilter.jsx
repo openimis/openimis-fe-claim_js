@@ -607,7 +607,7 @@ class Details extends Component {
             pubRef="claim.CareTypePicker"
             name="careType"
             value={filters["careType"] && filters["careType"]["value"] || null}
-            onChange={(value) =>{
+            onChange={(value) => {
               onChangeFilters([
                 {
                   id: "careType",
@@ -658,7 +658,7 @@ class Details extends Component {
             control={
               <Checkbox
                 color="primary"
-                checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
+                checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
                 onChange={(event) =>
                   onChangeFilters([
                     {
