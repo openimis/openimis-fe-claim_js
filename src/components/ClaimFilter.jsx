@@ -241,7 +241,7 @@ class Head extends Component {
           id="ClaimFilter.batchRun"
           field={
             <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
-              {!userHealthFacilityId && (
+              {!!userHealthFacilityId && (
                 <PublishedComponent
                   pubRef="claim_batch.BatchRunPicker"
                   value={!!filters["batchRun"] ? filters["batchRun"]["value"] : null}
