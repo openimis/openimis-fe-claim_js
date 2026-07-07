@@ -485,6 +485,7 @@ class ClaimMasterPanel extends FormPanel {
           <Fragment>
             {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
               <ControlledField
+                key={`Claim.secDiagnosis${diagnosisIndex + 1}`}
                 module="claim"
                 id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
                 field={

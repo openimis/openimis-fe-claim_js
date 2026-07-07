@@ -83,8 +83,7 @@ class ClaimForm extends Component {
     forcedDirty: false,
     isDuplicate: false,
     isRestored: false,
-    isSaved: false,
-    historyOpen: false
+    isSaved: false
   };
 
   constructor(props) {
@@ -302,8 +301,8 @@ class ClaimForm extends Component {
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
     ) {
       return false
-    }
-    if (this.state.claim.services !== undefined) {
+    } 
+    if (!forReview && this.state.claim.services !== undefined) {
       if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length - 1) {
         return false;
       }
@@ -500,21 +499,28 @@ class ClaimForm extends Component {
     if (!!claim_uuid && rights.includes(RIGHT_PRINT)) {
       actions.push({
         doIt: (e) => this.print(claim_uuid),
-        icon: <Button startIcon={<PrintIcon />}>
-          {formatMessage(this.props.intl, "claim", "claim.print.buttonText")}
-        </Button>,
+        button: (
+          <Button startIcon={<PrintIcon />} onClick={(e) => this.print(claim_uuid)}>
+            {formatMessage(this.props.intl, "claim", "claim.print.buttonText")}
+          </Button>
+        ),
         onlyIfNotDirty: true,
       });
     }
     if (!!this.claimAttachments && (!readOnly || claim.attachmentsCount > 0)) {
       actions.push({
         doIt: (e) => this.setState({ attachmentsClaim: claim }),
-        icon: (
+        button: (
           <Button
-            startIcon={<Badge badgeContent={this.state.claim?.attachmentsCount ?? 0} color="primary">
-              <AttachIcon />
-            </Badge>}>
-            {formatMessage(this.props.intl, "claim", "claimAttachments.buttonText")}          </Button>
+            startIcon={
+              <Badge badgeContent={this.state.claim?.attachmentsCount ?? 0} color="primary">
+                <AttachIcon />
+              </Badge>
+            }
+            onClick={(e) => this.setState({ attachmentsClaim: claim })}
+          >
+            {formatMessage(this.props.intl, "claim", "claimAttachments.buttonText")}
+          </Button>
         ),
       });
     }
