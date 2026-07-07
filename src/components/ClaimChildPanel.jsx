@@ -397,7 +397,6 @@ class ClaimChildPanel extends Component {
               ? this.state.data[idx].service?.priceAsked
               : i.priceAsked
           }
-          decimal={true}
           allowDecimals={this.isDecimalPrice}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
           inputProps={{ "data-cy": `claim-${this.props.type}-${idx}-price` }}
@@ -424,8 +423,8 @@ class ClaimChildPanel extends Component {
     ];
 
     let subServicesItemsFormatters = [
-      (i, idx) => (i.subServices.map((u, udx) => (
-        <tr>
+      (i, idx) => (i.subServices?.map((u, udx) => (
+        <tr key={`sub-service-${idx}-${udx}`}>
           <TableCell>
             <TextInput
               readOnly={true}
@@ -474,10 +473,10 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
         </tr>
-      ))),
-      (i, idx) => (i.subItems.map((u, udx) => {
-          return (
-            <tr>
+      )) ?? []),
+      (i, idx) =>
+        i.subItems?.map((u, udx) => (
+            <tr key={`sub-linked-service-${idx}-${udx}`}>
               <TableCell>
                 <TextInput readOnly={true} value={u.item.code} />
               </TableCell>
@@ -523,9 +522,7 @@ class ClaimChildPanel extends Component {
                 <AmountInput readOnly={true} value={u.priceAsked} />
               </TableCell>
             </tr>
-          );
-        })
-      )
+        )) ?? [],
     ];
 
     let subServicesItemsFormattersReview = [
@@ -713,7 +710,6 @@ class ClaimChildPanel extends Component {
           <AmountInput
             readOnly={!forReview && readOnly}
             value={i.priceApproved}
-            decimal={true}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
@@ -723,7 +719,6 @@ class ClaimChildPanel extends Component {
       itemFormatters.push((i, idx) => (
         <AmountInput
           readOnly={true}
-          decimal={true}
           value={i.priceValuated}
           onChange={(v) => this._onChange(idx, "priceValuated", v)}
         />
