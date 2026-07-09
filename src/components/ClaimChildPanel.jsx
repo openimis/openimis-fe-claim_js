@@ -471,7 +471,7 @@ class ClaimChildPanel extends Component {
             <TableCell>
               <NumberInput
                 readOnly={readOnly}
-                value={!!u.qtyAdjusted ? u.qtyAdjusted : u.qtyDisplayed}
+                value={u.qtyAdjusted != null ? u.qtyAdjusted : u.qtyDisplayed}
                 onChange={(v) => {
                   if (!i.service.manualPrice) {
                     if (i.service.packagetype == SERVICE_TYPE_PP_F) {
@@ -552,7 +552,7 @@ class ClaimChildPanel extends Component {
                 <TableCell>
                   <NumberInput
                     readOnly={readOnly}
-                    value={!!u.qtyAdjusted ? u.qtyAdjusted : u.qtyDisplayed}
+                    value={u.qtyAdjusted != null ? u.qtyAdjusted : u.qtyDisplayed}
                     onChange={(v) => {
                       if (!i.service.manualPrice) {
                         if (i.service.packagetype == SERVICE_TYPE_PP_F) {
