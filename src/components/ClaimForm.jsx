@@ -480,6 +480,10 @@ class ClaimForm extends Component {
       return;
     };
 
+    const claimPanels = [];
+    if (!forReview || claim?.services?.length > 0) claimPanels.push(ClaimServicesPanel);
+    if (!forReview || claim?.items?.length > 0) claimPanels.push(ClaimItemsPanel);  
+
     let readOnly =
       lockNew ||
       isSaved ||
@@ -611,7 +615,7 @@ class ClaimForm extends Component {
               title="edit.title"
               titleParams={{ code: this.state.claim.code }}
               HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : claimPanels }
               openDirty={save || forReview}
               additionalTooltips={tooltips}
               {...editingProps}
