@@ -433,7 +433,7 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
           <TableCell>
-            <Box minWidth={!!forReview ? 400 : 600 }>
+            <Box minWidth={forReview ? 400 : 600 }>
               <TextInput
                 readOnly={!!forReview || readOnly || true}
                 value={u.service.name}
