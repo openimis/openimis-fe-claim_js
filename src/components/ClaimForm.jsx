@@ -285,13 +285,13 @@ class ClaimForm extends Component {
       !this.state.claim.referHF
     )
       return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
+    if (!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if (this.isVisitDateToMandatory){
-      if( !this.state.claim.dateTo) return false;
+    if (this.isVisitDateToMandatory) {
+      if (!this.state.claim.dateTo) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
@@ -299,7 +299,7 @@ class ClaimForm extends Component {
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
+    ) {
       return false
     } 
     if (!forReview && this.state.claim.services !== undefined) {
@@ -308,7 +308,7 @@ class ClaimForm extends Component {
       }
     }
 
-    if (this.isCareTypeMandatory){
+    if (this.isCareTypeMandatory) {
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
     if (this.isExplanationMandatoryForIPD) {
@@ -378,7 +378,7 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&&(claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined) && (claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
         formatMessage(this.props.intl, "claim", "claim.attachFile"),
@@ -536,7 +536,7 @@ class ClaimForm extends Component {
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
               <RestorePageIcon />
-              
+
             </Fab>
           </span>
         ),
@@ -590,42 +590,42 @@ class ClaimForm extends Component {
     };
     return (
       <div>
-      <StyledDiv className={readOnly ? "lockedPage" : null}>
-        <Helmet
-          title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
-            code: this.state.claim?.code,
-          })}
-        />
-        <ProgressOrError progress={fetchingClaim} error={errorClaim} />
-        {(!!fetchedClaim || !claim_uuid) && (
-          <Fragment>
-            <PublishedComponent
-              pubRef="claim.AttachmentsDialog"
-              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
-              claim={this.state.attachmentsClaim}
-              close={(e) => this.setState({ attachmentsClaim: null })}
-              onUpdated={() => this.setState({ forcedDirty: true })}
-            />
-            <Form
-              module="claim"
-              title="edit.title"
-              titleParams={{ code: this.state.claim.code }}
-              HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              openDirty={save || forReview}
-              additionalTooltips={tooltips}
-              {...editingProps}
-            />
-          </Fragment>
-        )}
-      </StyledDiv>
-      <StyledDiv>
-        <ClaimHistoryPanel
-          claim={this.state.claim}
-          claimUuid={claim_uuid}
-          onViewVersion={handleViewVersion}
-        />
-      </StyledDiv>
+        <StyledDiv className={readOnly ? "lockedPage" : null}>
+          <Helmet
+            title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
+              code: this.state.claim?.code,
+            })}
+          />
+          <ProgressOrError progress={fetchingClaim} error={errorClaim} />
+          {(!!fetchedClaim || !claim_uuid) && (
+            <Fragment>
+              <PublishedComponent
+                pubRef="claim.AttachmentsDialog"
+                readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+                claim={this.state.attachmentsClaim}
+                close={(e) => this.setState({ attachmentsClaim: null })}
+                onUpdated={() => this.setState({ forcedDirty: true })}
+              />
+              <Form
+                module="claim"
+                title="edit.title"
+                titleParams={{ code: this.state.claim.code }}
+                HeadPanel={ClaimMasterPanel}
+                Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
+                openDirty={save || forReview}
+                additionalTooltips={tooltips}
+                {...editingProps}
+              />
+            </Fragment>
+          )}
+        </StyledDiv>
+        <StyledDiv>
+          <ClaimHistoryPanel
+            claim={this.state.claim}
+            claimUuid={claim_uuid}
+            onViewVersion={handleViewVersion}
+          />
+        </StyledDiv>
       </div>
     );
   }
