@@ -136,9 +136,9 @@ class ClaimForm extends Component {
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(getLocalStorage(STORAGE_KEY_ADMIN));
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? getLocalStorage(STORAGE_KEY_ADMIN);
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());

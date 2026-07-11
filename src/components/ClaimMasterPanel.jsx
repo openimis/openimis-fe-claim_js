@@ -180,7 +180,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.insuree"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
               <PublishedComponent
                 pubRef={this.insureePicker}
                 value={edited.insuree}
@@ -197,7 +197,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.visitDateFrom"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={edited.dateFrom}
@@ -221,7 +221,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.visitDateTo"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={edited.dateTo}
@@ -246,7 +246,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.claimedDate"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={edited.dateClaimed ?? new Date()}
@@ -270,7 +270,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.visitType"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
               <PublishedComponent
                 pubRef="medical.VisitTypePicker"
                 name="visitType"
@@ -289,7 +289,7 @@ class ClaimMasterPanel extends FormPanel {
           module="claim"
           id="Claim.careType"
           field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
               <PublishedComponent
                 pubRef="claim.CareTypePicker"
                 name="careType"
