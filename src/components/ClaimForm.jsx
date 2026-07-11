@@ -136,9 +136,9 @@ class ClaimForm extends Component {
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(getLocalStorage(STORAGE_KEY_ADMIN));
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? getLocalStorage(STORAGE_KEY_ADMIN);
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -285,13 +285,13 @@ class ClaimForm extends Component {
       !this.state.claim.referHF
     )
       return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
+    if (!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if (this.isVisitDateToMandatory){
-      if( !this.state.claim.dateTo) return false;
+    if (this.isVisitDateToMandatory) {
+      if (!this.state.claim.dateTo) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
@@ -299,7 +299,7 @@ class ClaimForm extends Component {
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
+    ) {
       return false
     } 
     if (!forReview && this.state.claim.services !== undefined) {
@@ -308,7 +308,7 @@ class ClaimForm extends Component {
       }
     }
 
-    if (this.isCareTypeMandatory){
+    if (this.isCareTypeMandatory) {
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
     if (this.isExplanationMandatoryForIPD) {
@@ -378,7 +378,7 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&&(claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined) && (claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
         formatMessage(this.props.intl, "claim", "claim.attachFile"),
@@ -540,7 +540,7 @@ class ClaimForm extends Component {
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
               <RestorePageIcon />
-              
+
             </Fab>
           </span>
         ),

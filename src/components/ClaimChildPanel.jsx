@@ -362,7 +362,7 @@ class ClaimChildPanel extends Component {
           disableFocusListener={!!forReview || !!readOnly}
           sx={{ fontSize: "3rem" }}
         >
-          <Box minWidth={400}>
+          <Box minWidth={forReview ? 300 : 400}>
             <PublishedComponent
               required={(!!edited.services && edited.services?.length<2 && !!edited.items && edited?.items?.length<2) || (!edited.services && !edited.items)}
               readOnly={!!forReview || readOnly}
@@ -429,10 +429,11 @@ class ClaimChildPanel extends Component {
             <TextInput
               readOnly={true}
               value={u.service.code}
+              inputProps={{ style: { width: 200 } }}
             />
           </TableCell>
           <TableCell>
-            <Box minWidth={400}>
+            <Box minWidth={forReview ? 400 : 600 }>
               <TextInput
                 readOnly={!!forReview || readOnly || true}
                 value={u.service.name}
@@ -466,6 +467,40 @@ class ClaimChildPanel extends Component {
               }
             />
           </TableCell>
+          {forReview && (
+            <TableCell>
+              <NumberInput
+                readOnly={readOnly}
+                value={u.qtyAdjusted != null ? u.qtyAdjusted : u.qtyDisplayed}
+                onChange={(v) => {
+                  if (!i.service.manualPrice) {
+                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                      if (u.qtyProvided < v) {
+                        alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                          totalApproved: u.qtyProvided,
+                        }));
+                      }
+                      u.qtyAdjusted = v;
+                      u.qtyApproved = v;
+                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                      if (v == u.qtyProvided) {
+                        u.qtyApproved = u.qtyProvided;
+                        u.qtyAdjusted = u.qtyProvided;
+                      } else {
+                        u.qtyAdjusted = v;
+                        u.qtyApproved = 0;
+                      }
+                    }
+                  } else {
+                    u.qtyAdjusted = v;
+                    u.qtyApproved = v;
+                  }
+                  this._onChangeSubItem(idx, udx, "servicesQty", v);
+                }
+                }
+              />
+            </TableCell>
+          )}
           <TableCell>
             <AmountInput
               readOnly={true}
@@ -488,8 +523,10 @@ class ClaimChildPanel extends Component {
               <TableCell>
                 <NumberInput
                   readOnly={!!forReview || readOnly}
-                  value={u.qtyAdjusted !== null ? (u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted) : u.qtyDisplayed}
+                  value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                   onChange={(v) => {
+                    u.qtyDisplayed = v;
+                    u.qtyAsked = v;
                     if (!i.service.manualPrice) {
                       if (i.service.packagetype == SERVICE_TYPE_PP_F) {
                         if (u.qtyProvided < v) {
@@ -499,199 +536,64 @@ class ClaimChildPanel extends Component {
                             }),
                           );
                         }
-                        u.qtyAdjusted = v;
-                        u.qtyApproved = v;
                       } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                        if (v == u.qtyProvided) {
-                          u.qtyApproved = u.qtyProvided;
-                          u.qtyAdjusted = u.qtyProvided;
-                        } else {
-                          u.qtyAdjusted = v;
-                          u.qtyApproved = 0;
+                        if (u.qtyProvided != v) {
+                            alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                            totalApproved: u.qtyProvided,
+                          }));
                         }
                       }
-                    } else {
-                      u.qtyAdjusted = v;
-                      u.qtyApproved = v;
                     }
                     this._onChangeSubItem(idx, udx, "servicesQty", v);
                   }}
                 />
               </TableCell>
+              {forReview && (
+                <TableCell>
+                  <NumberInput
+                    readOnly={readOnly}
+                    value={u.qtyAdjusted != null ? u.qtyAdjusted : u.qtyDisplayed}
+                    onChange={(v) => {
+                      if (!i.service.manualPrice) {
+                        if (i.service.packagetype == SERVICE_TYPE_PP_F) {
+                          if (u.qtyProvided < v) {
+                            alert(
+                              formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
+                                totalApproved: u.qtyProvided,
+                              }),
+                            );
+                          }
+                          u.qtyAdjusted = v;
+                          u.qtyApproved = v;
+                        } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
+                          if (v == u.qtyProvided) {
+                            // TODO(vite-migration): this needs review
+                            u.qtyDisplayed = u.qtyProvided;
+                            u.qtyAsked = u.qtyProvided;
+                            u.qtyApproved = u.qtyProvided;
+                            u.qtyAdjusted = u.qtyProvided;
+                          } else {
+                            u.qtyAdjusted = v;
+                            u.qtyApproved = 0;
+                          }
+                        }
+                      } else {
+                        // TODO(vite-migration): this needs review
+                        u.qtyDisplayed = v;
+                        u.qtyAsked = v;
+                        u.qtyAdjusted = v;
+                        u.qtyApproved = v;
+                      }
+                      this._onChangeSubItem(idx, udx, "servicesQty", v);
+                    }}
+                  />
+                </TableCell>
+              )}
               <TableCell>
                 <AmountInput readOnly={true} value={u.priceAsked} />
               </TableCell>
             </tr>
         )) ?? [],
-    ];
-
-    let subServicesItemsFormattersReview = [
-      (i, idx) => (i.services.map((u, udx) => (
-        <tr>
-          <TableCell>
-            <TextInput
-              readOnly={true}
-              value={u.service.code}
-            />
-          </TableCell>
-          <TableCell>
-            <Box minWidth={400}>
-              <TextInput
-                readOnly={!!forReview || readOnly || true}
-                value={u.service.name}
-              />
-            </Box>
-          </TableCell>
-          <TableCell>
-            <NumberInput
-              readOnly={!!forReview || readOnly}
-              value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
-              onChange={(v) => {
-                u.qtyDisplayed = v;
-                u.qtyAsked = v;
-                if (!i.service.manualPrice) {
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                    if (u.qtyProvided != v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                  }
-                }
-                this._onChangeSubItem(idx, udx, "servicesQty", v);
-              }
-              }
-            />
-          </TableCell>
-          <TableCell>
-            <NumberInput
-              readOnly={readOnly}
-              value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
-              onChange={(v) => {
-                if (!i.service.manualPrice) {
-                  if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                    if (u.qtyProvided < v) {
-                      alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                        totalApproved: u.qtyProvided,
-                      }));
-                    }
-                    u.qtyAdjusted = v;
-                    u.qtyApproved = v;
-                  } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                    if (v == u.qtyProvided) {
-                      u.qtyApproved = u.qtyProvided;
-                      u.qtyAdjusted = u.qtyProvided;
-                    } else {
-                      u.qtyAdjusted = v;
-                      u.qtyApproved = 0;
-                    }
-                  }
-                } else {
-                  u.qtyAdjusted = v;
-                  u.qtyApproved = v;
-                }
-                this._onChangeSubItem(idx, udx, "servicesQty", v);
-              }
-              }
-            />
-          </TableCell>
-          <TableCell>
-            <AmountInput
-              readOnly={true}
-              value={u.priceAsked}
-            />
-          </TableCell>
-        </tr>
-      ))),
-      (i, idx) => (i.items.map((u, udx) => {
-        return (
-          <tr>
-            <TableCell>
-              <TextInput readOnly={true} value={u.item.code} />
-            </TableCell>
-            <TableCell>
-              <Box minWidth={400}>
-                <TextInput readOnly={!!forReview || readOnly || true} value={u.item.name} />
-              </Box>
-            </TableCell>
-            <TableCell>
-              <NumberInput
-                readOnly={!!forReview || readOnly}
-                value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
-                onChange={(v) => {
-                  u.qtyDisplayed = v;
-                  u.qtyAsked = v;
-                  if (!i.service.manualPrice) {
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                      if (u.qtyProvided < v) {
-                        alert(
-                          formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                            totalApproved: u.qtyProvided,
-                          }),
-                        );
-                      }
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                      if (u.qtyProvided != v) {
-                          alert(formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                          totalApproved: u.qtyProvided,
-                        }));
-                      }
-                    }
-                  }
-                  this._onChangeSubItem(idx, udx, "servicesQty", v);
-                }}
-              />
-            </TableCell>
-            <TableCell>
-              <NumberInput
-                readOnly={readOnly}
-                value={u.qtyAdjusted !== null ? u.qtyAdjusted === 0 ? "0" : u.qtyAdjusted : u.qtyDisplayed}
-                onChange={(v) => {
-                  if (!i.service.manualPrice) {
-                    if (i.service.packagetype == SERVICE_TYPE_PP_F) {
-                      if (u.qtyProvided < v) {
-                        alert(
-                          formatMessageWithValues(intl, "claim", "edit.services.MaxApproved", {
-                            totalApproved: u.qtyProvided,
-                          }),
-                        );
-                      }
-                      u.qtyAdjusted = v;
-                      u.qtyApproved = v;
-                    } else if (i.service.packagetype == SERVICE_TYPE_PP_P) {
-                      if (v == u.qtyProvided) {
-                        // TODO(vite-migration): this needs review
-                        u.qtyDisplayed = u.qtyProvided;
-                        u.qtyAsked = u.qtyProvided;
-                        u.qtyApproved = u.qtyProvided;
-                        u.qtyAdjusted = u.qtyProvided;
-                      } else {
-                        u.qtyAdjusted = v;
-                        u.qtyApproved = 0;
-                      }
-                    }
-                  } else {
-                    // TODO(vite-migration): this needs review
-                    u.qtyDisplayed = v;
-                    u.qtyAsked = v;
-                    u.qtyAdjusted = v;
-                    u.qtyApproved = v;
-                  }
-                  this._onChangeSubItem(idx, udx, "servicesQty", v);
-                }}
-              />
-            </TableCell>
-            <TableCell>
-              <AmountInput readOnly={true} value={u.priceAsked} />
-            </TableCell>
-          </tr>
-      )}))
     ];
 
     if (!!forReview || edited.status !== 2) {
@@ -770,10 +672,9 @@ class ClaimChildPanel extends Component {
           extendHeader={this.extendHeader}
           headers={headers}
           itemFormatters={itemFormatters}
-          subServicesItemsFormatters={!!forReview ? subServicesItemsFormattersReview : subServicesItemsFormatters}
+          subServicesItemsFormatters={subServicesItemsFormatters}
           items={!fetchingPricelist ? this.state.data : []}
           onDelete={!forReview && !readOnly && this._onDelete}
-          subServicesItemsFormattersReview={subServicesItemsFormattersReview}
           subServiceHeaders={subServiceHeaders}
           disableDeleteOnEmptyRow
           showOrdinalNumber={this.showOrdinalNumber}
