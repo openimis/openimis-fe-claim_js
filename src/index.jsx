@@ -1,9 +1,5 @@
 import React from 'react';
-import { decodeId, GetIconComponent } from "@openimis/fe-core";
-const Keyboard = GetIconComponent("Keyboard")
-const ScreenShare = GetIconComponent("ScreenShare")
-const Assignment= GetIconComponent("Assignment")
-import { FormattedMessage } from "@openimis/fe-core";
+import { decodeId, GetIconComponent, FormattedMessage } from "@openimis/fe-core";
 import HealthFacilitiesPage from "./pages/HealthFacilitiesPage";
 import EditPage from "./pages/EditPage";
 import ReviewsPage from "./pages/ReviewsPage";
@@ -33,6 +29,10 @@ import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
 import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, RIGHT_FEEDBACK, RIGHT_SEARCH, RIGHT_HF_SEARCH } from "./constants";
+
+const Keyboard = GetIconComponent("Keyboard")
+const ScreenShare = GetIconComponent("ScreenShare")
+const Assignment = GetIconComponent("Assignment")
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
