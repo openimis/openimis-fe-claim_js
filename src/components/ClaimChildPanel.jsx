@@ -384,7 +384,7 @@ class ClaimChildPanel extends Component {
           readOnly={!!forReview || readOnly || (type === "service" && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
-          error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
+          error={(!i.qtyProvided || i.qtyProvided <= 0) ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
           max={parseInt(i?.item?.maximumAmount) || this.quantityMaxValue}
           inputProps={{ "data-cy": `claim-${this.props.type}-${idx}-quantity` }}
         />
