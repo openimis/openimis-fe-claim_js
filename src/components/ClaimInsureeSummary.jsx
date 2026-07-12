@@ -8,7 +8,7 @@ import { GetIconComponent, useModulesManager, useTranslations, Table, useHistory
 import { fetchClaimSummaries } from "../actions";
 import { MODULE_NAME } from "../constants";
 
-const VisibilityIcon = GetIconComponent("Visibility")
+const VisibilityIcon = GetIconComponent("Visibility");
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   ...(theme?.paper?.paper ?? {}),
