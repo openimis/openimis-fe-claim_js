@@ -480,6 +480,10 @@ class ClaimForm extends Component {
       return;
     };
 
+    const claimPanels = [];
+    if (!forReview || claim?.services?.length > 0) claimPanels.push(ClaimServicesPanel);
+    if (!forReview || claim?.items?.length > 0) claimPanels.push(ClaimItemsPanel);  
+
     let readOnly =
       lockNew ||
       isSaved ||
@@ -590,42 +594,42 @@ class ClaimForm extends Component {
     };
     return (
       <div>
-        <StyledDiv className={readOnly ? "lockedPage" : null}>
-          <Helmet
-            title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
-              code: this.state.claim?.code,
-            })}
-          />
-          <ProgressOrError progress={fetchingClaim} error={errorClaim} />
-          {(!!fetchedClaim || !claim_uuid) && (
-            <Fragment>
-              <PublishedComponent
-                pubRef="claim.AttachmentsDialog"
-                readOnly={!rights.includes(RIGHT_ADD) || readOnly}
-                claim={this.state.attachmentsClaim}
-                close={(e) => this.setState({ attachmentsClaim: null })}
-                onUpdated={() => this.setState({ forcedDirty: true })}
-              />
-              <Form
-                module="claim"
-                title="edit.title"
-                titleParams={{ code: this.state.claim.code }}
-                HeadPanel={ClaimMasterPanel}
-                Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-                openDirty={save || forReview}
-                additionalTooltips={tooltips}
-                {...editingProps}
-              />
-            </Fragment>
-          )}
-        </StyledDiv>
-        <StyledDiv>
-          <ClaimHistoryPanel
-            claim={this.state.claim}
-            claimUuid={claim_uuid}
-            onViewVersion={handleViewVersion}
-          />
-        </StyledDiv>
+      <StyledDiv className={readOnly ? "lockedPage" : null}>
+        <Helmet
+          title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
+            code: this.state.claim?.code,
+          })}
+        />
+        <ProgressOrError progress={fetchingClaim} error={errorClaim} />
+        {(!!fetchedClaim || !claim_uuid) && (
+          <Fragment>
+            <PublishedComponent
+              pubRef="claim.AttachmentsDialog"
+              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+              claim={this.state.attachmentsClaim}
+              close={(e) => this.setState({ attachmentsClaim: null })}
+              onUpdated={() => this.setState({ forcedDirty: true })}
+            />
+            <Form
+              module="claim"
+              title="edit.title"
+              titleParams={{ code: this.state.claim.code }}
+              HeadPanel={ClaimMasterPanel}
+              Panels={!!forFeedback ? [ClaimFeedbackPanel] : claimPanels }
+              openDirty={save || forReview}
+              additionalTooltips={tooltips}
+              {...editingProps}
+            />
+          </Fragment>
+        )}
+      </StyledDiv>
+      <StyledDiv>
+        <ClaimHistoryPanel
+          claim={this.state.claim}
+          claimUuid={claim_uuid}
+          onViewVersion={handleViewVersion}
+        />
+      </StyledDiv>
       </div>
     );
   }
