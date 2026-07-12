@@ -239,9 +239,8 @@ class Head extends Component {
         <ControlledField
           module="claim"
           id="ClaimFilter.batchRun"
-          field={
+          field={!userHealthFacilityId && (
             <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
-              {!userHealthFacilityId && (
                 <PublishedComponent
                   pubRef="claim_batch.BatchRunPicker"
                   value={!!filters["batchRun"] ? filters["batchRun"]["value"] : null}
@@ -251,9 +250,8 @@ class Head extends Component {
                   reset={this.state.reset}
                   onChange={(v, s) => onChangeFilters([this._claimBatchRunFilter(v)])}
                 />
-              )}
             </StyledItemGrid>
-          }
+          )}
         />
       </Fragment>
     );

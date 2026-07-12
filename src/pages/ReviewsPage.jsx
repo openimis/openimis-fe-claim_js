@@ -321,13 +321,14 @@ class ReviewsPage extends Component {
   }
 
   _labelMutation = (selection, labelOne, labelMultiple, action) => {
-    if (selection.length === 1) {
-      action(selection, formatMessageWithValues(this.props.intl, "claim", labelOne, { code: selection[0].code }));
+    const safeSelection = selection.map((item) => ({ ...item }));
+    if (safeSelection.length === 1) {
+      action(safeSelection, formatMessageWithValues(this.props.intl, "claim", labelOne, { code: safeSelection[0].code }));
     } else {
       action(
-        selection,
-        formatMessageWithValues(this.props.intl, "claim", labelMultiple, { count: selection.length }),
-        selection.map((c) => c.code),
+        safeSelection,
+        formatMessageWithValues(this.props.intl, "claim", labelMultiple, { count: safeSelection.length }),
+        safeSelection.map((c) => c.code),
       );
     }
   };
@@ -474,7 +475,7 @@ class ReviewsPage extends Component {
   provideFeedback = (c) => historyPush(this.props.modulesManager, this.props.history, "claim.route.feedback", [c.uuid]);
 
   feedbackColFormatter = (c) => (
-    <Grid container justifyContent="flex-end" alignItems="center">
+    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
       <Grid>
         <PublishedComponent
           pubRef="claim.FeedbackStatusPicker"
@@ -550,7 +551,7 @@ class ReviewsPage extends Component {
     }
   };
   reviewColFormatter = (c) => (
-    <Grid container justifyContent="flex-end" alignItems="center">
+    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
       <Grid>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"

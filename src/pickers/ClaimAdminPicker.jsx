@@ -10,6 +10,12 @@ import {
 import { DEFAULT } from "../constants";
 import { setCurrentClaimAdmin } from "../actions";
 
+export const formatClaimAdminLabel = (claimAdmin, renderLastNameFirst) => {
+  if (!claimAdmin) return "";
+  return renderLastNameFirst
+    ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
+    : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
+};
 
 const ClaimAdminPicker = (props) => {
   const {
@@ -82,22 +88,22 @@ const ClaimAdminPicker = (props) => {
       region_uuid: region?.uuid,
       district_uuid: district?.uuid
     },
+    { skip: readOnly },
   );
 
   const dispatch = useDispatch();
-  const formatClaimAdmin = (claimAdmin) => {
-    return renderLastNameFirst
-      ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
-      : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
-  };
-  const claimAdmins = data?.claimAdmins?.edges.map((edge) => edge.node) || [];
+  const formatClaimAdmin = (claimAdmin) => formatClaimAdminLabel(claimAdmin, renderLastNameFirst);
+  const claimAdmins = readOnly
+    ? (value ? [value] : [])
+    : (data?.claimAdmins?.edges.map((edge) => edge.node) || []);
 
   useEffect(() => {
+    if (readOnly) return;
     const currentAdmin = claimAdmins.find((admin) => admin.code === i_user);
     if (currentAdmin) {
       dispatch(setCurrentClaimAdmin(currentAdmin));
     }
-  }, [claimAdmins, i_user]);
+  }, [claimAdmins, i_user, readOnly, dispatch]);
 
   return (
     <Autocomplete
@@ -116,7 +122,7 @@ const ClaimAdminPicker = (props) => {
       onChange={(option) => onChange(option, option ? `${option.code} ${option.lastName} ${option.otherNames}` : null)}
       filterOptions={filterOptions}
       filterSelectedOptions={filterSelectedOptions}
-      onInputChange={setSearchString}
+      onInputChange={readOnly ? undefined : setSearchString}
       dataCy={dataCy}
     />
   );
