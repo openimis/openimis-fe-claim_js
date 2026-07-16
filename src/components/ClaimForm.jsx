@@ -55,7 +55,8 @@ const CachedIcon = GetIconComponent("Cached")
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
 const StyledDiv = styled("div")(({ theme }) => ({
-  ...theme?.page?.locked ?? {},
+  ...theme?.page ?? {},
+  "lockedPage": theme?.page?.locked ?? {}
 }));
 
 class ClaimServicesPanel extends Component {
@@ -458,7 +459,6 @@ class ClaimForm extends Component {
       isDuplicate: false,
       isRestored: false,
       isSaved: false,
-      historyOpen: false,
     }));
 
   render() {
