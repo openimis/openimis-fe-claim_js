@@ -611,7 +611,7 @@ class ClaimChildPanel extends Component {
         itemFormatters.push((i, idx) => (
           <AmountInput
             readOnly={!forReview && readOnly}
-            value={i.priceApproved}
+            value={i.priceApproved || i.priceAdjusted}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
           />
         ));
