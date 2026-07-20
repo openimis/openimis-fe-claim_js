@@ -7,7 +7,6 @@ on:
 jobs:
   build:
     uses: mngoe/openimis-fe_js/.github/workflows/module-ci-build.yml@feature-37406  # Adjust the path and branch as needed
-    secrets: 
-      inherit
+    secrets: inherit
     with:
       branchName: ${{ github.head_ref || github.ref_name }}
