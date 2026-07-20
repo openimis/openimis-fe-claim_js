@@ -448,23 +448,23 @@ class ReviewsPage extends Component {
   };
 
   onChangeFeedbackStatus = (c, v) => {
-    c.feedbackStatus = v;
+    const claim = { ...c, feedbackStatus: v };
     switch (v) {
       case 2:
         this.props.skipFeedback(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "SkipClaimFeedback.mutationLabel", { code: c.code }),
         );
         break;
       case 4:
         this.props.selectForFeedback(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "SelectClaimForFeedback.mutationLabel", { code: c.code }),
         );
         break;
       case 16:
         this.props.bypassFeedback(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "BypassClaimFeedback.mutationLabel", { code: c.code }),
         );
         break;
