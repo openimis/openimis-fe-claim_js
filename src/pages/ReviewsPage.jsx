@@ -502,29 +502,29 @@ class ReviewsPage extends Component {
   );
 
   onChangeReviewStatus = (c, v) => {
-    c.reviewStatus = v;
+    const claim = {...c, reviewStatus: v };
     switch (v) {
       case 2:
         this.props.skipReview(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "SkipClaimReview.mutationLabel", { code: c.code }),
         );
         break;
       case 4:
         this.props.selectForReview(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "SelectClaimForReview.mutationLabel", { code: c.code }),
         );
         break;
       case 8:
         this.props.deliverReview(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "DeliverClaimReview.mutationLabel", { code: c.code }),
         );
         break;
       case 16:
         this.props.bypassReview(
-          [c],
+          [claim],
           formatMessageWithValues(this.props.intl, "claim", "BypassClaimReview.mutationLabel", { code: c.code }),
         );
         break;
