@@ -97,6 +97,8 @@
   "claim.claimSummaries.selection.claimed": "Σ {claimed}",
   "claim.claimSummaries.selection.approved": "Σ {approved}",
   "claim.claimSummaries.code": "Claim No.",
+  "claim.claimSummaries.validFrom": "Valid From",
+  "claim.claimSummaries.validTo": "Valid To",
   "claim.claimSummaries.healthFacility": "Health Facility",
   "claim.claimSummaries.insuree": "Insuree",
   "claim.claimSummaries.claimedDate": "Claimed Date",
