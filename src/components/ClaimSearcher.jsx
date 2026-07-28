@@ -11,6 +11,7 @@ import {
   Searcher,
   withModulesManager,
   GetIconComponent,
+  withHistory
 } from "@openimis/fe-core";
 import _ from "lodash";
 import { injectIntl } from "react-intl";
@@ -139,6 +140,7 @@ class ClaimSearcher extends Component {
       : formatMessage(this.props.intl, "claim", `reviewStatus.${c.reviewStatus}`);
 
   preHeaders = (selection) => {
+    const { filters } = this.state;
     var result = selection.length
       ? [
           "",
@@ -188,26 +190,33 @@ class ClaimSearcher extends Component {
                           return acc;
                         }
                       }, 0),
-                    )}                    
+                    )}
                   </b>
                 ),
               }}
             />
           </Typography>,
           "",
-          "",
         ]
-      : ["\u200b", "", "", "", "", "", "", "", "", "", ""]; //fixing pre headers row height!
+      : ["\u200b", "", "", "", "", "", "", "", "", ""];
+
+    if (filters?.showHistory?.value) {
+      result.push("", "");
+    }
+    if (this.showPreAuthorization) {
+      result.push("");
+    }
     if (this.claimAttachments) {
       result.push("");
     }
     this.extFields.forEach((f) => {
       result.push("");
     });
+    result.push(""); // for openNewTab
     return result;
   };
 
-  headers = () => {
+  headers = (filters) => {
     var result = [
       "claimSummaries.code",
       "claimSummaries.healthFacility",
@@ -220,6 +229,9 @@ class ClaimSearcher extends Component {
       "claimSummaries.approved",
       "claimSummaries.claimStatus",
     ];
+    if (filters?.showHistory?.value) {
+        result.push("claimSummaries.validFrom", "claimSummaries.validTo");
+    }
     if (this.showPreAuthorization) {
       result.push("claim.claimSummaries.pre-authorization");
     }
@@ -235,7 +247,7 @@ class ClaimSearcher extends Component {
     return result;
   };
 
-  sorts = () => {
+  sorts = (filters) => {
     const result = [];
 
     if (this.showOrdinalNumber) {
@@ -252,7 +264,16 @@ class ClaimSearcher extends Component {
       null,
       ["claimed", false],
       ["approved", false],
+      null,
     );
+
+    if (filters?.showHistory?.value) {
+        result.push(["validityFrom", false], ["validityTo", false]);
+    }
+
+    if (this.showPreAuthorization) {
+      result.push(null);
+    }
 
     if (this.claimAttachments) {
       result.push(null);
@@ -262,14 +283,30 @@ class ClaimSearcher extends Component {
         result.push(null);
       });
     }
+    result.push(null); // openNewTab
     return result;
   };
 
   aligns = () => {
-    return [, , , , , , , "right", "right", ,];
+    var result = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, "right", "right", undefined];
+    const { filters } = this.state;
+    if (filters?.showHistory?.value) {
+        result.push(undefined, undefined);
+    }
+    if (this.showPreAuthorization) {
+        result.push("center");
+    }
+    if (this.claimAttachments) {
+        result.push("center");
+    }
+    this.extFields.forEach((f) => {
+        result.push(undefined);
+    });
+    result.push("center");
+    return result;
   };
 
-  itemFormatters = () => {
+  itemFormatters = (filters) => {
     var result = [
       (c) => c.code,
       (c) => c.healthFacility.code,
@@ -282,6 +319,12 @@ class ClaimSearcher extends Component {
       (c) => formatAmount(this.props.modulesManager, this.props.intl, c.approved),
       (c) => formatMessage(this.props.intl, "claim", `claimStatus.${c.status}`),
     ];
+    if (filters?.showHistory?.value) {
+        result.push(
+            (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.validityFrom),
+            (c) => formatDateFromISO(this.props.modulesManager, this.props.intl, c.validityTo)
+        );
+    }
     if (this.showPreAuthorization) {
       result.push((c) => (c.preAuthorization ? <CheckIcon /> : ""));
     }
@@ -413,7 +456,8 @@ class ClaimSearcher extends Component {
           onDoubleClick={onDoubleClick}
           actionsContributionKey={actionsContributionKey}
           showOrdinalNumber={this.showOrdinalNumber}
-          onChangeFilters={this.onFiltersApplied}
+          onFiltersApplied={this.onFiltersApplied}
+          withHistory
         />
       </Fragment>
     );
