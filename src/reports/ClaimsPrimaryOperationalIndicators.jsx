@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { PublishedComponent, useModulesManager, useTranslations, ConstantBasedPicker } from "@openimis/fe-core";
 import React from "react";
 import {PRIMARY_OPERATIONAL_INDICATORS_REPORT_QUARTERS} from "../constants";
@@ -10,7 +10,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
 
   return (
     <Grid container direction="column" spacing={1}>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.YearPicker"
           onChange={(year) =>
@@ -26,7 +26,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           label={formatMessage("ClaimsPrimaryOperationalIndicators.year")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(region) =>
@@ -42,7 +42,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           label={formatMessage("ClaimsPrimaryOperationalIndicators.region")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(district) =>
@@ -57,7 +57,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           label={formatMessage("ClaimsPrimaryOperationalIndicators.district")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.HealthFacilityPicker"
           onChange={(hf) => setValues({ ...values, hf, })}
@@ -67,7 +67,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           label={formatMessage("ClaimsPrimaryOperationalIndicators.hf")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="product.ProductPicker"
           value={values.product}
@@ -75,7 +75,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           onChange={(product) => setValues({ ...values, product })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.MonthPicker"
           onChange={(month) =>
@@ -87,7 +87,7 @@ const ClaimsPrimaryOperationalIndicators = (props) => {
           value={values.month}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <ConstantBasedPicker
           module="claim"
           value={values.quarter}

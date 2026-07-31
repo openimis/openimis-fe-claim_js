@@ -42,6 +42,11 @@ export const RIGHT_FEEDBACK = 111009;
 export const RIGHT_UPDATE = 111010;
 export const RIGHT_PROCESS = 111011;
 export const RIGHT_RESTORE = 111012;
+// CA rights (experimental)
+export const RIGHT_HF_SUBMIT = 111013
+export const RIGHT_HF_ADD = 111014
+export const RIGHT_HF_SEARCH = 111015
+export const RIGHT_HF_UPDATE= 111016
 
 export const CLAIMS_WITH_AT_LEAST_ENTERED_STATUS = "status_Gt: 2";
 

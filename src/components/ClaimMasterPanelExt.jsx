@@ -3,8 +3,8 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 
-import { Grid, Typography, Divider, Button } from "@material-ui/core";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { Grid, Typography, Divider, Button } from "@mui/material";
+import { useTheme, styled } from "@mui/material/styles";
 
 import {
   PublishedComponent,
@@ -16,6 +16,8 @@ import {
   withModulesManager,
   getTimeDifferenceInDaysFromToday,
   formatMessage,
+  GRID_RESPONSIVE_HALF,
+  GRID_RESPONSIVE_STANDARD,
 } from "@openimis/fe-core";
 import {
   clearLastClaimAt,
@@ -28,12 +30,20 @@ import AdditionalPanelHeaders from "./AdditionalPanelHeaders";
 import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
 import AdditionalPanelClaim from "./AdditionalPanelClaim";
 
-const styles = (theme) => ({
-  tableHeader: theme.table.header,
-  item: theme.paper.item,
-  inactiveLabel: {
-    color: "#e20606",
-  },
+const StyledItemGrid = styled(Grid)(({ theme }) => ({
+  ...theme?.paper?.item ?? {},
+}));
+
+const StyledTableTitle = styled(Typography)(({ theme }) => ({
+  ...theme?.table?.header ?? {},
+}));
+
+const StyledInactiveLabel = styled(Typography)({
+  color: "#e20606",
+});
+
+const StyledActiveLabel = styled(Typography)({
+  color: "#4caf50",
 });
 
 const ACTIVE_LABEL = "ClaimMasterPanelExt.InsureePolicyEligibilitySummaryActive.header";
@@ -91,10 +101,8 @@ class ClaimMasterPanelExt extends Component {
   }
 
   valuatePolicyValidity = (currentPolicy) => {
-    const { classes } = this.props;
-
     if (!currentPolicy?.length) {
-      return { policyInfoLabel: INACTIVE_LABEL, policyInfoStyle: classes.inactiveLabel };
+      return { policyInfoLabel: INACTIVE_LABEL, PolicyInfoComponent: StyledInactiveLabel };
     }
 
     const validityPeriod = getTimeDifferenceInDaysFromToday(currentPolicy[0].expiryDate);
@@ -102,13 +110,12 @@ class ClaimMasterPanelExt extends Component {
 
     return {
       policyInfoLabel: validityPeriod >= 0 && isPolicyActive ? ACTIVE_LABEL : INACTIVE_LABEL,
-      policyInfoStyle: validityPeriod >= 0 && isPolicyActive ? classes.activeLabel : classes.inactiveLabel,
+      PolicyInfoComponent: validityPeriod >= 0 && isPolicyActive ? StyledActiveLabel : StyledInactiveLabel,
     };
   };
 
   render() {
     const {
-      classes,
       claim,
       fetchingLastClaimAt,
       errorLastClaimAt,
@@ -126,30 +133,30 @@ class ClaimMasterPanelExt extends Component {
       dateFrom,
       insuree,
     } = this.props;
-    const { policyInfoLabel, policyInfoStyle } = this.valuatePolicyValidity(currentPolicy);
+    const { policyInfoLabel, PolicyInfoComponent } = this.valuatePolicyValidity(currentPolicy);
 
     return (
-      <Grid container>
-        <Grid item xs={6} className={classes.item}>
-          <Typography className={policyInfoStyle}>
+      <Grid container spacing={2}>
+        <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+          <PolicyInfoComponent>
             <FormattedMessage module="claim" id={policyInfoLabel} />
-          </Typography>
+          </PolicyInfoComponent>
           <Divider />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
-          <Typography className={classes.tableTitle}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+          <StyledTableTitle>
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.header" />
-          </Typography>
+          </StyledTableTitle>
           <Divider />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
           <PublishedComponent
             pubRef="policy.InsureePolicyEligibilitySummary"
             insuree={!!claim ? claim.insuree : null}
             targetDate={!!claim ? claim.dateFrom ?? claim.dateTo : null}
           />
-        </Grid>
-        <Grid item xs={6} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
           <ProgressOrError progress={fetchingLastClaimAt} error={errorLastClaimAt} />
           {!!fetchedLastClaimAt && !lastClaimAt && (
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.noOtheClaim" />
@@ -158,8 +165,8 @@ class ClaimMasterPanelExt extends Component {
             <FormattedMessage module="claim" id="ClaimMasterPanelExt.InsureeLastVisit.thisClaimIsFirstVisit" />
           )}
           {!!fetchedLastClaimAt && !!lastClaimAt && lastClaimAt?.uuid !== claim.uuid && (
-            <Grid container>
-              <Grid xs={4} item className={classes.item}>
+            <Grid container spacing={2}>
+              <Grid size={GRID_RESPONSIVE_STANDARD} className="item">
                 <TextInput
                   module="claim"
                   label="ClaimMasterPanelExt.InsureeLastVisit.claimCode"
@@ -167,7 +174,7 @@ class ClaimMasterPanelExt extends Component {
                   value={lastClaimAt.code}
                 />
               </Grid>
-              <Grid xs={4} item className={classes.item}>
+              <Grid size={GRID_RESPONSIVE_STANDARD} className="item">
                 <PublishedComponent
                   pubRef="core.DatePicker"
                   value={lastClaimAt.dateFrom}
@@ -176,7 +183,7 @@ class ClaimMasterPanelExt extends Component {
                   readOnly={true}
                 />
               </Grid>
-              <Grid xs={4} item className={classes.item}>
+              <Grid size={GRID_RESPONSIVE_STANDARD} className="item">
                 <PublishedComponent
                   pubRef="core.DatePicker"
                   value={lastClaimAt.dateTo}
@@ -190,7 +197,7 @@ class ClaimMasterPanelExt extends Component {
               </Button>
             </Grid>
           )}
-        </Grid>
+        </StyledItemGrid>
         {this.isAdditionalPanelEnabled && <AdditionalPanelHeaders />}
         {this.isAdditionalPanelEnabled && (
           <AdditionalPanelInsuree
@@ -202,7 +209,7 @@ class ClaimMasterPanelExt extends Component {
           />
         )}
         {this.isAdditionalPanelEnabled && (
-          <Grid item xs={6} className={classes.item}>
+          <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
             <ProgressOrError progress={fetchingSameDiagnosisClaim} error={errorSameDiagnosisClaim} />
             {!!fetchedSameDiagnosisClaim && !sameDiagnosisClaim && (
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.sameDiagnosisClaim.noClaim" />
@@ -213,17 +220,17 @@ class ClaimMasterPanelExt extends Component {
             {!!fetchedSameDiagnosisClaim && !!sameDiagnosisClaim && sameDiagnosisClaim?.uuid !== claim.uuid && (
               <AdditionalPanelClaim sameDiagnosisClaim={sameDiagnosisClaim} />
             )}
-          </Grid>
+          </StyledItemGrid>
         )}
         {isRestored && restore?.uuid && (
-          <Grid item xs={6} className={classes.item}>
+          <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
             <Typography>
               <FormattedMessage module="claim" id="ClaimMasterPanelExt.restore" />
             </Typography>
             <Button variant="contained" color="primary" onClick={() => this.goToClaimUuid(restore.uuid)}>
               {restore?.code}
             </Button>
-          </Grid>
+          </StyledItemGrid>
         )}
       </Grid>
     );
@@ -249,8 +256,10 @@ const mapDispatchToProps = (dispatch) => {
   );
 };
 
+export { StyledItemGrid };
+export { ClaimMasterPanelExt };
 export default withHistory(
   withModulesManager(
-    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimMasterPanelExt)))),
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(ClaimMasterPanelExt)),
   ),
 );

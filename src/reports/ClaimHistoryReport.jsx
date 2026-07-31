@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { PublishedComponent, useModulesManager, useTranslations } from "@openimis/fe-core";
 import React from "react";
 
@@ -9,7 +9,7 @@ const ClaimHistoryReport = (props) => {
 
   return (
     <Grid container direction="column" spacing={1}>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateStart}
@@ -19,7 +19,7 @@ const ClaimHistoryReport = (props) => {
           onChange={(dateStart) => setValues({ ...values, dateStart })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateEnd}
@@ -29,7 +29,7 @@ const ClaimHistoryReport = (props) => {
           onChange={(dateEnd) => setValues({ ...values, dateEnd })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="insuree.InsureePicker"
           value={values.insuree}
@@ -39,7 +39,7 @@ const ClaimHistoryReport = (props) => {
           onChange={(insuree) => setValues({ ...values, insuree })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(region) =>
@@ -54,7 +54,7 @@ const ClaimHistoryReport = (props) => {
           label={formatMessage("ClaimHistoryReport.region")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(district) =>
@@ -69,7 +69,7 @@ const ClaimHistoryReport = (props) => {
           label={formatMessage("ClaimHistoryReport.district")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.HealthFacilityPicker"
           onChange={(hf) => setValues({ ...values, hf, })}
@@ -79,7 +79,7 @@ const ClaimHistoryReport = (props) => {
           label={formatMessage("ClaimHistoryReport.hf")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="product.ProductPicker"
           value={values.product}
@@ -87,7 +87,7 @@ const ClaimHistoryReport = (props) => {
           onChange={(product) => setValues({ ...values, product })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="claim.ClaimStatusPicker"
           value={values.status}

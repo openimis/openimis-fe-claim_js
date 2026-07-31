@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { PublishedComponent, useModulesManager, useTranslations } from "@openimis/fe-core";
 import React from "react";
 
@@ -9,7 +9,7 @@ const ClaimsOverviewReport = (props) => {
 
   return (
     <Grid container direction="column" spacing={1}>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateStart}
@@ -19,7 +19,7 @@ const ClaimsOverviewReport = (props) => {
           onChange={(dateStart) => setValues({ ...values, dateStart })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateEnd}
@@ -29,7 +29,7 @@ const ClaimsOverviewReport = (props) => {
           onChange={(dateEnd) => setValues({ ...values, dateEnd })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(region) =>
@@ -44,7 +44,7 @@ const ClaimsOverviewReport = (props) => {
           label={formatMessage("ClaimsOverviewReport.region")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.LocationPicker"
           onChange={(district) =>
@@ -59,7 +59,7 @@ const ClaimsOverviewReport = (props) => {
           label={formatMessage("ClaimsOverviewReport.district")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.HealthFacilityPicker"
           onChange={(hf) => setValues({ ...values, hf, })}
@@ -69,7 +69,7 @@ const ClaimsOverviewReport = (props) => {
           label={formatMessage("ClaimsOverviewReport.hf")}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="product.ProductPicker"
           value={values.product}
@@ -77,7 +77,7 @@ const ClaimsOverviewReport = (props) => {
           onChange={(product) => setValues({ ...values, product })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="claim.ClaimStatusPicker"
           value={values.status}

@@ -2,20 +2,18 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useIntl } from "react-intl";
 
-import { Typography, Grid, Paper, IconButton, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
-import VisibilityIcon from "@material-ui/icons/Visibility";
-
-import { useModulesManager, useTranslations, Table, useHistory, historyPush, formatAmount } from "@openimis/fe-core";
+import { Typography, Grid, Paper, IconButton, Tooltip } from "@mui/material";
+import { useTheme, styled } from "@mui/material/styles";
+import { GetIconComponent, useModulesManager, useTranslations, Table, useHistory, historyPush, formatAmount } from "@openimis/fe-core";
 import { fetchClaimSummaries } from "../actions";
 import { MODULE_NAME } from "../constants";
 
-const useStyles = makeStyles((theme) => ({
-  page: theme.page,
-  paper: theme.paper.paper,
-  item: theme.paper.item,
-  paperHeader: theme.paper.header,
-  tableTitle: theme.table.title,
+const VisibilityIcon = GetIconComponent("Visibility");
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  ...(theme?.paper?.paper ?? {}),
+  "& .paperHeader": theme?.paper?.header ?? {},
+  "& .tableTitle": theme?.table?.title ?? {},
 }));
 
 const CLAIMS_HEADERS = [
@@ -34,7 +32,7 @@ const CLAIMS_HEADERS = [
 const ClaimInsureeSummary = ({ insuree }) => {
   const dispatch = useDispatch();
   const modulesManager = useModulesManager();
-  const classes = useStyles();
+  const theme = useTheme();
   const history = useHistory();
   const intl = useIntl();
   const { formatMessage, formatMessageWithValues, formatDateFromISO } = useTranslations(MODULE_NAME, modulesManager);
@@ -56,10 +54,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
     (claim) => formatMessage(`claimStatus.${claim?.status}`),
     (claim) => (
       <Tooltip title={formatMessage("ClaimMasterPanelExt.InsureeInfo.goToClaim.Button")}>
-        <IconButton
-          disabled={claim?.healthFacility?.id !== healthFacilityId}
-          onClick={() => goToClaim(claim)}
-        >
+        <IconButton disabled={claim?.healthFacility?.id !== healthFacilityId} onClick={() => goToClaim(claim)}>
           <VisibilityIcon />
         </IconButton>
       </Tooltip>
@@ -74,10 +69,10 @@ const ClaimInsureeSummary = ({ insuree }) => {
   }, [insuree]);
 
   return (
-    <Paper className={classes.paper}>
-      <Grid container alignItems="center" direction="row" className={classes.paperHeader}>
-        <Grid item xs={8}>
-          <Typography className={classes.tableTitle}>
+    <StyledPaper>
+      <Grid container alignItems="center" direction="row" className="paperHeader">
+        <Grid size={8}>
+          <Typography className="tableTitle">
             {formatMessageWithValues("claimSummaries", { count: claimsPageInfo?.totalCount })}
           </Typography>
         </Grid>
@@ -91,7 +86,7 @@ const ClaimInsureeSummary = ({ insuree }) => {
         items={claims}
         withPagination={false}
       />
-    </Paper>
+    </StyledPaper>
   );
 };
 

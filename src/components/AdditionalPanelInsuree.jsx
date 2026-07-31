@@ -1,19 +1,18 @@
 import React from "react";
 
-import { Grid } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Grid } from "@mui/material";
+import { useTheme, styled } from "@mui/material/styles";
 
 import { useModulesManager, useTranslations, TextInput, PublishedComponent, useGraphqlQuery } from "@openimis/fe-core";
 import { calculateAge, calculateDuration } from "../utils/utils";
 
-export const useStyles = makeStyles((theme) => ({
-  tableHeader: theme.table.header,
-  item: theme.paper.item,
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  ...theme?.paper?.item ?? {},
 }));
 
 const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdited }) => {
+  const theme = useTheme();
   const modulesManager = useModulesManager();
-  const classes = useStyles();
   const { formatMessage } = useTranslations("claim", modulesManager);
 
   const visitDuration = calculateDuration(dateTo, dateFrom, formatMessage);
@@ -31,9 +30,9 @@ const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdit
   );
 
   return (
-    <Grid item xs={6} className={classes.item}>
+    <StyledGrid  size={6} className="item">
       <Grid container>
-        <Grid className={classes.item} xs={4}>
+        <StyledGrid size={4} className="item">
           <TextInput
             module="claim"
             label="ClaimMasterPanelExt.InsureeInfo.insureeAge"
@@ -42,8 +41,8 @@ const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdit
             withNull={true}
             value={insureeAge}
           />
-        </Grid>
-        <Grid className={classes.item} xs={4}>
+        </StyledGrid>
+        <StyledGrid size={4} className="item">
           <TextInput
             module="claim"
             label="ClaimMasterPanelExt.InsureeInfo.visitDuration"
@@ -52,8 +51,8 @@ const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdit
             readOnly={true}
             value={visitDuration}
           />
-        </Grid>
-        <Grid className={classes.item} xs={4}>
+        </StyledGrid>
+        <StyledGrid size={4} className="item">
           <PublishedComponent
             module="claim"
             pubRef="location.HealthFacilityPicker"
@@ -62,9 +61,9 @@ const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdit
             district={null}
             readOnly={true}
           />
-        </Grid>
+        </StyledGrid>
       </Grid>
-    </Grid>
+    </StyledGrid>
   );
 };
 

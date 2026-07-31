@@ -4,7 +4,7 @@ import { injectIntl } from "react-intl";
 import { formatMessage } from "@openimis/fe-core";
 
 import { REJECTION_REASONS } from "../constants";
-import { Tooltip, Typography } from "@material-ui/core";
+import { Tooltip, Typography } from "@mui/material";
 
 class RejectionReasonPicker extends Component {
   _onChange = (v) =>
@@ -47,4 +47,5 @@ class RejectionReasonPicker extends Component {
   }
 }
 
+export { RejectionReasonPicker };
 export default injectIntl(RejectionReasonPicker);

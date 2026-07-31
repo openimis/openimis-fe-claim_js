@@ -2,15 +2,15 @@ import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { useTheme, styled } from "@mui/material/styles";
 import { formatMessageWithValues, withModulesManager, withHistory, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { createClaim, updateClaim } from "../actions";
 import { DEFAULT, RIGHT_ADD, RIGHT_LOAD } from "../constants";
 
-const styles = (theme) => ({
-  page: theme.page,
-});
+const StyledDiv = styled("div")(({ theme }) => ({
+  ...theme?.page ?? {},
+}));
 
 class EditPage extends Component {
   constructor(props) {
@@ -45,7 +45,7 @@ class EditPage extends Component {
   };
 
   render() {
-    const { classes, modulesManager, history, rights, claim_uuid, path } = this.props;
+    const { modulesManager, history, rights, claim_uuid, path } = this.props;
     if (!rights.includes(RIGHT_LOAD)) return null;
 
     const isHealthFacilityPage = () => {
@@ -53,7 +53,7 @@ class EditPage extends Component {
     };
 
     return (
-      <div className={classes.page}>
+      <StyledDiv className="page">
         <ClaimForm
           claim_uuid={claim_uuid}
           back={(e) => historyPush(modulesManager, history, "claim.route.healthFacilities")}
@@ -61,7 +61,7 @@ class EditPage extends Component {
           save={rights.includes(RIGHT_LOAD) ? this.save : null}
           isHealthFacilityPage={isHealthFacilityPage()}
         />
-      </div>
+      </StyledDiv>
     );
   }
 }
@@ -76,6 +76,8 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ createClaim, updateClaim }, dispatch);
 };
 
+export { StyledDiv };
+export { EditPage };
 export default withHistory(
-  withModulesManager(connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(EditPage))))),
+  withModulesManager(connect(mapStateToProps, mapDispatchToProps)(injectIntl(EditPage))),
 );

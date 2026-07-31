@@ -4,11 +4,16 @@ import { bindActionCreators } from "redux";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
 import { injectIntl } from "react-intl";
+import { RIGHT_CLAIMREVIEW } from "../constants";
 
-import { Grid, Divider, Checkbox, FormControlLabel } from "@material-ui/core";
-import { withTheme, withStyles } from "@material-ui/core/styles";
-
+import { Grid, Divider, Checkbox, FormControlLabel } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import {
+  GRID_RESPONSIVE_STANDARD,
+  GRID_RESPONSIVE_SMALL,
+  GRID_RESPONSIVE_LARGE,
+  GRID_RESPONSIVE_FULL,
+  GRID_RESPONSIVE_HALF,
   formatMessage,
   withModulesManager,
   ControlledField,
@@ -21,17 +26,25 @@ import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } 
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
-const styles = (theme) => ({
-  dialogTitle: theme.dialog.title,
-  dialogContent: theme.dialog.content,
-  form: {
-    padding: 0,
+const StyledForm = styled("form")(({ theme }) => ({
+  padding: 0,
+}));
+
+const StyledFormGrid = styled(Grid)(({ theme }) => ({
+  padding: 0,
+  "&.form": {
+    margin: 0,
+    width: "100%",
   },
-  item: {
-    padding: theme.spacing(1),
-  },
-  paperDivider: theme.paper.divider,
-});
+}));
+
+const StyledItemGrid = styled(Grid)(({ theme }) => ({
+  padding: theme?.spacing?.(1) ?? 8,
+}));
+
+const StyledDividerGrid = styled(Grid)(({ theme }) => ({
+  ...(theme?.paper?.divider ?? {}),
+}));
 
 class Head extends Component {
   state = {
@@ -140,7 +153,7 @@ class Head extends Component {
       this._claimBatchRunFilter(null),
     ]);
     this.setState((state) => ({
-      reset: this.state.reset + 1,
+      reset: state.reset + 1,
     }));
     this.props.selectHealthFacility(v);
   };
@@ -153,66 +166,61 @@ class Head extends Component {
       this._claimAdminFilter(v),
     ]);
     this.setState((state) => ({
-      reset: this.state.reset + 1,
+      reset: state.reset + 1,
     }));
     this.props.selectClaimAdmin(v);
   };
 
   render() {
-    const { classes, filters, onChangeFilters, userHealthFacilityId } = this.props;
+    const { filters, onChangeFilters, userHealthFacilityId } = this.props;
     return (
-      <Grid container className={classes.form}>
+      <Fragment>
         <ControlledField
           module="claim"
           id="ClaimFilter.region"
           field={
-            <Grid item xs={2} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
               <PublishedComponent
                 pubRef="location.RegionPicker"
                 value={this._filterValue("region")}
-                withNull={true}
                 onChange={this._onChangeRegion}
               />
-            </Grid>
+            </StyledItemGrid>
           }
         />
         <ControlledField
           module="claim"
           id="ClaimFilter.district"
           field={
-            <Grid item xs={2} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
               <PublishedComponent
                 pubRef="location.DistrictPicker"
                 value={this._filterValue("district")}
                 region={this._filterValue("region")}
-                withNull={true}
-                reset={this.state.reset}
                 onChange={this._onChangeDistrict}
               />
-            </Grid>
+            </StyledItemGrid>
           }
         />
         <ControlledField
           module="claim"
           id="ClaimFilter.healthFacility"
           field={
-            <Grid item xs={3} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
               <PublishedComponent
                 pubRef="location.HealthFacilityPicker"
                 value={this._filterValue("healthFacility")}
-                region={this._filterValue("region")}
                 district={this._filterValue("district")}
-                reset={this.state.reset}
                 onChange={this._onChangeHealthFacility}
               />
-            </Grid>
+            </StyledItemGrid>
           }
         />
         <ControlledField
           module="claim"
           id="ClaimFilter.claimAdmin"
           field={
-            <Grid item xs={2} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
               <PublishedComponent
                 pubRef="claim.ClaimAdminPicker"
                 value={this._filterValue("admin")}
@@ -223,16 +231,16 @@ class Head extends Component {
                 region={this._filterValue("region")}
                 district={this._filterValue("district")}
                 required={true}
+                dataCy="claim-admin-filter"
               />
-            </Grid>
+            </StyledItemGrid>
           }
         />
         <ControlledField
           module="claim"
           id="ClaimFilter.batchRun"
-          field={
-            <Grid item xs={3} className={classes.item}>
-              {!userHealthFacilityId && (
+          field={!userHealthFacilityId && (
+            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
                 <PublishedComponent
                   pubRef="claim_batch.BatchRunPicker"
                   value={!!filters["batchRun"] ? filters["batchRun"]["value"] : null}
@@ -242,16 +250,16 @@ class Head extends Component {
                   reset={this.state.reset}
                   onChange={(v, s) => onChangeFilters([this._claimBatchRunFilter(v)])}
                 />
-              )}
-            </Grid>
-          }
+            </StyledItemGrid>
+          )}
         />
-      </Grid>
+      </Fragment>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
+  rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
   userHealthFacilityId: state.core.user.i_user.health_facility_id,
   claimFilter: state.claim.claimFilter,
   servicesPricelists: !!state.medical_pricelist ? state.medical_pricelist.servicesPricelists : {},
@@ -289,10 +297,10 @@ class Details extends Component {
   };
 
   render() {
-    const { intl, classes, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
+    const { intl, filters, onChangeFilters, filterPaneContributionsKey = null, FilterExt } = this.props;
     return (
-      <Grid container className={classes.form}>
-        <Grid item xs={1} className={classes.item}>
+      <Fragment>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="claim.ClaimStatusPicker"
             name="claimStatus"
@@ -307,8 +315,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={1} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="claim.FeedbackStatusPicker"
             name="feedbackStatus"
@@ -323,8 +331,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={1} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="claim.ReviewStatusPicker"
             name="reviewStatus"
@@ -339,8 +347,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={2} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <TextInput
             module="claim"
             label="ClaimFilter.claimNo"
@@ -355,9 +363,10 @@ class Details extends Component {
                 },
               ])
             }
+            inputProps={{ "data-cy": "claim-code-filter" }}
           />
-        </Grid>
-        <Grid item xs={3} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <TextInput
             module="claim"
             label="ClaimFilter.insureeCHFID"
@@ -373,8 +382,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={2} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <AmountInput
             module="claim"
             label="ClaimFilter.claimedAbove"
@@ -390,8 +399,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={2} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <AmountInput
             module="claim"
             label="ClaimFilter.claimedUnder"
@@ -407,10 +416,10 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={3}>
+        </StyledItemGrid>
+        <Grid size={GRID_RESPONSIVE_STANDARD}>
           <Grid container>
-            <Grid item xs={6} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["visitDateFrom"] && filters["visitDateFrom"]["value"]) || null}
@@ -426,8 +435,8 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
-            <Grid item xs={6} className={classes.item}>
+            </StyledItemGrid>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["visitDateTo"] && filters["visitDateTo"]["value"]) || null}
@@ -443,12 +452,12 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
+            </StyledItemGrid>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+        <Grid size={GRID_RESPONSIVE_STANDARD}>
           <Grid container>
-            <Grid item xs={6} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["claimDateFrom"] && filters["claimDateFrom"]["value"]) || null}
@@ -464,8 +473,8 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
-            <Grid item xs={6} className={classes.item}>
+            </StyledItemGrid>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["claimDateTo"] && filters["claimDateTo"]["value"]) || null}
@@ -481,12 +490,13 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
+            </StyledItemGrid>
           </Grid>
         </Grid>
-        <Grid item xs={3}>
+    {!this.props.rights.includes(RIGHT_CLAIMREVIEW) && (
+        <Grid size={GRID_RESPONSIVE_STANDARD}>
           <Grid container>
-            <Grid item xs={6} className={classes.item}>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["processedDateFrom"] && filters["processedDateFrom"]["value"]) || null}
@@ -502,8 +512,8 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
-            <Grid item xs={6} className={classes.item}>
+            </StyledItemGrid>
+            <StyledItemGrid size={GRID_RESPONSIVE_HALF}>
               <PublishedComponent
                 pubRef="core.DatePicker"
                 value={(filters["processedDateTo"] && filters["processedDateTo"]["value"]) || null}
@@ -519,10 +529,11 @@ class Details extends Component {
                   ])
                 }
               />
-            </Grid>
+            </StyledItemGrid>
           </Grid>
         </Grid>
-        <Grid item xs={3} className={classes.item}>
+    )}
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="medical.ServicePicker"
             value={(filters["medicalService"] && filters["medicalService"]["value"]) || null}
@@ -538,8 +549,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={3} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="medical.ItemPicker"
             value={(filters["medicalItem"] && filters["medicalItem"]["value"]) || null}
@@ -555,8 +566,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={3} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="medical.DiagnosisPicker"
             name="mainDiagnosis"
@@ -572,8 +583,8 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={3} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="medical.VisitTypePicker"
             name="visitType"
@@ -588,12 +599,12 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
-        <Grid item xs={1} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="claim.CareTypePicker"
             name="careType"
-            value={(filters["careType"] && filters["careType"]["value"]) || null}
+            value={filters["careType"] && filters["careType"]["value"] || null}
             onChange={(value) => {
               onChangeFilters([
                 {
@@ -601,15 +612,16 @@ class Details extends Component {
                   value: value,
                   filter: !!value ? `careType: "${value}"` : null,
                 },
-              ]);
-            }}
+              ])
+            }
+            }
           />
-        </Grid>
-        <Grid item xs={1} className={classes.item}>
+        </StyledItemGrid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
           <PublishedComponent
             pubRef="claim.AttachmentStatusPicker"
             name="attachmentStatus"
-            value={(filters["attachmentStatus"] && filters["attachmentStatus"]["value"]) || null}
+            value={filters["attachmentStatus"] && filters["attachmentStatus"]["value"] || null}
             onChange={(value) =>
               onChangeFilters([
                 {
@@ -620,9 +632,9 @@ class Details extends Component {
               ])
             }
           />
-        </Grid>
+        </StyledItemGrid>
         {this.showPreAuthorization && (
-          <Grid item xs={1} className={classes.item}>
+          <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
             <PublishedComponent
               pubRef="claim.YesNoPicker"
               name="preAuthorization"
@@ -637,35 +649,28 @@ class Details extends Component {
                 ])
               }
             />
-          </Grid>
+          </StyledItemGrid>
         )}
-        <Grid item xs={1} className={classes.item}>
-          <ControlledField
-            module="claim"
-            field={
-              <Grid item xs={2} className={classes.item}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="primary"
-                      checked={(filters["showRestored"] && filters["showRestored"]["value"]) || false}
-                      onChange={(event) =>
-                        onChangeFilters([
-                          {
-                            id: "showRestored",
-                            value: event.target.checked,
-                            filter: !!event.target.checked ? `showRestored: ${event.target.checked}` : null,
-                          },
-                        ])
-                      }
-                    />
-                  }
-                  label={formatMessage(intl, "claim", "showRestored")}
-                />
-              </Grid>
+        <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                color="primary"
+                checked={filters["showRestored"] && filters["showRestored"]["value"] || false}
+                onChange={(event) =>
+                  onChangeFilters([
+                    {
+                      id: "showRestored",
+                      value: event.target.checked,
+                      filter: !!event.target.checked ? `showRestored: ${event.target.checked}` : null,
+                    },
+                  ])
+                }
+              />
             }
+            label={formatMessage(intl, "claim", "showRestored")}
           />
-        </Grid>
+        </StyledItemGrid>
         <Contributions
           filters={filters}
           onChangeFilters={onChangeFilters}
@@ -680,29 +685,34 @@ class Details extends Component {
         )}
         {!!FilterExt && (
           <Fragment>
-            <Grid item xs={12} className={classes.paperDivider}>
+            <StyledDividerGrid size={GRID_RESPONSIVE_FULL} className="paperDivider">
               <Divider />
-            </Grid>
-            <Grid item xs={12}>
+            </StyledDividerGrid>
+            <Grid size={GRID_RESPONSIVE_FULL}>
               <FilterExt onChangeFilters={onChangeFilters} filters={filters} />
             </Grid>
           </Fragment>
         )}
-      </Grid>
+      </Fragment>
     );
   }
 }
+
+const BoundDetails = connect(mapStateToProps, mapDispatchToProps)(Details);
 
 class ClaimFilter extends Component {
   render() {
-    const { classes } = this.props;
     return (
-      <form className={classes.container} noValidate autoComplete="off">
-        <BoundHead {...this.props} />
-        <Details {...this.props} />
-      </form>
+      <StyledForm className="container" noValidate autoComplete="off">
+        <StyledFormGrid container className="form">
+          <BoundHead {...this.props} />
+          <BoundDetails {...this.props} />
+        </StyledFormGrid>
+      </StyledForm>
     );
   }
 }
 
-export default withModulesManager(injectIntl(withTheme(withStyles(styles)(ClaimFilter))));
+export { CLAIM_FILTER_CONTRIBUTION_KEY };
+export { Head };
+export default withModulesManager(injectIntl(ClaimFilter));

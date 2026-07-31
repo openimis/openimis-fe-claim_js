@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import {
   useModulesManager,
@@ -8,7 +8,14 @@ import {
   useGraphqlQuery,
 } from "@openimis/fe-core";
 import { DEFAULT } from "../constants";
+import { setCurrentClaimAdmin } from "../actions";
 
+export const formatClaimAdminLabel = (claimAdmin, renderLastNameFirst) => {
+  if (!claimAdmin) return "";
+  return renderLastNameFirst
+    ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
+    : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
+};
 
 const ClaimAdminPicker = (props) => {
   const {
@@ -27,9 +34,13 @@ const ClaimAdminPicker = (props) => {
     hfFilter,
     region,
     district,
+    dataCy = "claim-admin-picker"
   } = props;
   const userHealthFacilityId = useSelector((state) =>
     state?.loc?.userHealthFacilityFullPath?.uuid
+  );
+  const i_user = useSelector((state) =>
+    state?.core?.user?.username
   );
 
   const modulesManager = useModulesManager();
@@ -77,13 +88,22 @@ const ClaimAdminPicker = (props) => {
       region_uuid: region?.uuid,
       district_uuid: district?.uuid
     },
+    { skip: readOnly },
   );
 
-  const formatClaimAdmin = (claimAdmin) => {
-    return renderLastNameFirst
-      ? `${claimAdmin.code} ${claimAdmin.lastName} ${claimAdmin.otherNames}`
-      : `${claimAdmin.code} ${claimAdmin.otherNames} ${claimAdmin.lastName}`;
-  };
+  const dispatch = useDispatch();
+  const formatClaimAdmin = (claimAdmin) => formatClaimAdminLabel(claimAdmin, renderLastNameFirst);
+  const claimAdmins = readOnly
+    ? (value ? [value] : [])
+    : (data?.claimAdmins?.edges.map((edge) => edge.node) || []);
+
+  useEffect(() => {
+    if (readOnly) return;
+    const currentAdmin = claimAdmins.find((admin) => admin.code === i_user);
+    if (currentAdmin) {
+      dispatch(setCurrentClaimAdmin(currentAdmin));
+    }
+  }, [claimAdmins, i_user, readOnly, dispatch]);
 
   return (
     <Autocomplete
@@ -95,14 +115,15 @@ const ClaimAdminPicker = (props) => {
       withLabel={withLabel}
       withPlaceholder={withPlaceholder}
       readOnly={readOnly}
-      options={data?.claimAdmins?.edges.map((edge) => edge.node) ?? []}
+      options={claimAdmins}
       isLoading={isLoading}
       value={value}
       getOptionLabel={(option) => formatClaimAdmin(option)}
       onChange={(option) => onChange(option, option ? `${option.code} ${option.lastName} ${option.otherNames}` : null)}
       filterOptions={filterOptions}
       filterSelectedOptions={filterSelectedOptions}
-      onInputChange={setSearchString}
+      onInputChange={readOnly ? undefined : setSearchString}
+      dataCy={dataCy}
     />
   );
 };

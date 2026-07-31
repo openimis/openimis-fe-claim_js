@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { useTheme, styled } from "@mui/material/styles";
 import { withModulesManager, withHistory, formatMessageWithValues, journalize, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { deliverFeedback } from "../actions";
 
-const styles = (theme) => ({
-  page: theme.page,
-});
+const StyledDiv = styled("div")(({ theme }) => ({
+  ...theme?.page ?? {},
+}));
 
 class FeedbackPage extends Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -21,24 +21,25 @@ class FeedbackPage extends Component {
 
   save = (claim) => {
     if (!!claim && !!claim.feedback) {
-      this.props.deliverFeedback(
+      return this.props.deliverFeedback(
         claim,
         formatMessageWithValues(this.props.intl, "claim", "DeliverClaimFeedback.mutationLabel", { code: claim.code }),
       );
     }
+    return Promise.resolve();
   };
 
   render() {
-    const { classes, history, modulesManager, claim_uuid } = this.props;
+    const { history, modulesManager, claim_uuid } = this.props;
     return (
-      <div className={classes.page}>
+      <StyledDiv className="page">
         <ClaimForm
           claim_uuid={claim_uuid}
           back={(e) => historyPush(modulesManager, history, "claim.route.reviews")}
           save={this.save}
           forFeedback={true}
         />
-      </div>
+      </StyledDiv>
     );
   }
 }
@@ -53,8 +54,10 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ deliverFeedback, journalize }, dispatch);
 };
 
+export { StyledDiv };
+export { FeedbackPage };
 export default withHistory(
   withModulesManager(
-    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(FeedbackPage)))),
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(FeedbackPage)),
   ),
 );

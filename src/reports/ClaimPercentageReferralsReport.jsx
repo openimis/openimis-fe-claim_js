@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { PublishedComponent, useModulesManager, useTranslations } from "@openimis/fe-core";
 import React from "react";
 
@@ -9,7 +9,7 @@ const ClaimPercentageReferralsReport = (props) => {
 
   return (
     <Grid container direction="column" spacing={1}>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.RegionPicker"
           label={formatMessage("ClaimPercentageReferralsReport.region")}
@@ -23,7 +23,7 @@ const ClaimPercentageReferralsReport = (props) => {
           value={values.region}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="location.DistrictPicker"
           label={formatMessage("ClaimPercentageReferralsReport.district")}
@@ -37,7 +37,7 @@ const ClaimPercentageReferralsReport = (props) => {
           value={values.district}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateStart}
@@ -47,7 +47,7 @@ const ClaimPercentageReferralsReport = (props) => {
           onChange={(dateStart) => setValues({ ...values, dateStart })}
         />
       </Grid>
-      <Grid item>
+      <Grid>
         <PublishedComponent
           pubRef="core.DatePicker"
           value={values.dateEnd}

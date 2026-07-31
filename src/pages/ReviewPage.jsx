@@ -2,15 +2,15 @@ import React, { Component } from "react";
 import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { withTheme, withStyles } from "@material-ui/core/styles";
+import { useTheme, styled } from "@mui/material/styles";
 import { withModulesManager, withHistory, formatMessageWithValues, historyPush, journalize } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { saveReview, deliverReview } from "../actions";
 import _ from "lodash";
 
-const styles = (theme) => ({
-  page: theme.page,
-});
+const StyledDiv = styled("div")(({ theme }) => ({
+  ...theme?.page ?? {},
+}));
 
 class ReviewPage extends Component {
   state = {
@@ -54,10 +54,10 @@ class ReviewPage extends Component {
   };
 
   render() {
-    const { classes, history, modulesManager, claim_uuid,  } = this.props;
+    const { history, modulesManager, claim_uuid,  } = this.props;
     const { customBackUri, customBackUuid } = this.props.match?.params
     return (
-      <div className={classes.page}>
+      <StyledDiv className="page">
         <ClaimForm
           claim_uuid={claim_uuid}
           back={(e) => {
@@ -73,7 +73,7 @@ class ReviewPage extends Component {
           deliverReview={this.deliverReview}
           forReview={true}
         />
-      </div>
+      </StyledDiv>
     );
   }
 }
@@ -89,8 +89,10 @@ const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({ deliverReview, saveReview, journalize }, dispatch);
 };
 
+export { StyledDiv };
+export { ReviewPage };
 export default withHistory(
   withModulesManager(
-    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ReviewPage)))),
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(ReviewPage)),
   ),
 );

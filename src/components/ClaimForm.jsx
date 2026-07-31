@@ -1,17 +1,12 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { injectIntl } from "react-intl";
 import moment from "moment";
-import { Fab, Badge, Button } from "@material-ui/core";
-import { withStyles, withTheme } from "@material-ui/core/styles";
-import CheckIcon from "@material-ui/icons/Check";
-import ReplayIcon from "@material-ui/icons/Replay";
-import PrintIcon from "@material-ui/icons/ListAlt";
-import AttachIcon from "@material-ui/icons/AttachFile";
-import RestorePageIcon from "@material-ui/icons/RestorePage";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import CachedIcon from "@material-ui/icons/Cached";
+import { Fab, Badge, Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import ClaimHistoryPanel from "./ClaimHistoryPanel";
+import isEqual from 'lodash/isEqual';
 import {
   Contributions,
   Form,
@@ -27,6 +22,10 @@ import {
   fetchMutation,
   parseData,
   coreAlert,
+  GetIconComponent,
+  getLocalStorage,
+  setLocalStorage,
+  removeLocalStorage,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -41,20 +40,24 @@ import {
   DEFAULT,
   RIGHT_CLAIMREVIEW,
   REFERRAL,
+  SERVICE_TYPE_PP_S,
 } from "../constants";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
+const CheckIcon = GetIconComponent("Check")
 
+const ReplayIcon = GetIconComponent("Replay")
+const PrintIcon = GetIconComponent("ListAlt")
+const AttachIcon = GetIconComponent("AttachFile")
+const RestorePageIcon = GetIconComponent("RestorePage")
+const FileCopyIcon = GetIconComponent("FileCopy")
+const CachedIcon = GetIconComponent("Cached")
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
-const styles = (theme) => ({
-  paper: theme.paper.paper,
-  paperHeader: theme.paper.header,
-  paperHeaderAction: theme.paper.action,
-  item: theme.paper.item,
-  lockedPage: theme.page.locked,
-});
+const StyledDiv = styled("div")(({ theme }) => ({
+  ...theme?.page?.locked ?? {},
+}));
 
 class ClaimServicesPanel extends Component {
   render() {
@@ -70,6 +73,7 @@ class ClaimItemsPanel extends Component {
 
 class ClaimForm extends Component {
   state = {
+    historyOpen: false,
     lockNew: false,
     reset: 0,
     claim_uuid: null,
@@ -81,6 +85,7 @@ class ClaimForm extends Component {
     isDuplicate: false,
     isRestored: false,
     isSaved: false,
+    initialClaim: {},
   };
 
   constructor(props) {
@@ -133,9 +138,9 @@ class ClaimForm extends Component {
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY));
+      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? JSON.parse(localStorage.getItem(STORAGE_KEY_ADMIN));
+      this?.state?.claim?.admin ?? this.props.claimAdmin ?? getLocalStorage(STORAGE_KEY_ADMIN);
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -150,7 +155,7 @@ class ClaimForm extends Component {
     if (!itemsOrServices) return null;
     return itemsOrServices.map((itemOrService) => {
       Object.keys(itemOrService).forEach((key) => {
-        if (!["item", "service", "priceAsked", "qtyProvided"].includes(key)) {
+        if (!["item", "service", "priceAsked", "qtyProvided", "services", "items", "subServices", "subItems"].includes(key)) {
           delete itemOrService[key];
         }
       });
@@ -187,10 +192,10 @@ class ClaimForm extends Component {
   componentDidMount() {
     if (!!this.props.claimHealthFacility) {
       this.props.claimHealthFacilitySet(this.props.claimHealthFacility);
-      localStorage.setItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY, JSON.stringify(this.props.claimHealthFacility));
+      setLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY, this.props.claimHealthFacility);
     }
     if (this.props.claimAdmin) {
-      localStorage.setItem(STORAGE_KEY_ADMIN, JSON.stringify(this.props.claimAdmin));
+      setLocalStorage(STORAGE_KEY_ADMIN, this.props.claimAdmin);
     }
     if (this.props.claim_uuid) {
       this.setState(
@@ -201,16 +206,16 @@ class ClaimForm extends Component {
   }
 
   componentWillUnmount() {
-    localStorage.removeItem(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
-    localStorage.removeItem(STORAGE_KEY_ADMIN);
+    removeLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
+    removeLocalStorage(STORAGE_KEY_ADMIN);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.fetchedClaim !== this.props.fetchedClaim && !!this.props.fetchedClaim) {
-      var claim = this.props.claim;
+      const claim = JSON.parse(JSON.stringify(this.props.claim));
       claim.jsonExt = !!claim.jsonExt ? JSON.parse(claim.jsonExt) : {};
       this.setState(
-        { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false },
+        { claim, claim_uuid: claim.uuid, lockNew: false, newClaim: false, initialClaim: claim },
         this.props.claimHealthFacilitySet(this.props.claim.healthFacility),
       );
     } else if (prevProps.claim_uuid && !this.props.claim_uuid && this.state.isDuplicate) {
@@ -282,13 +287,13 @@ class ClaimForm extends Component {
       !this.state.claim.referHF
     )
       return false;
-    if(!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
+    if (!!this.showPatientCondition && this.showPatientCondition == true && !this.state.claim.patientCondition) return false
     if (!this.state.claim.insuree) return false;
     if (!this.state.claim.admin) return false;
     if (!this.state.claim.dateClaimed) return false;
     if (!this.state.claim.dateFrom) return false;
-    if (this.isVisitDateToMandatory){
-      if( !this.state.claim.dateTo) return false;
+    if (this.isVisitDateToMandatory) {
+      if (!this.state.claim.dateTo) return false;
     }
     if (this.state.claim.dateClaimed < this.state.claim.dateFrom) return false;
     if (!!this.state.claim.dateTo && this.state.claim.dateFrom > this.state.claim.dateTo) return false;
@@ -296,16 +301,16 @@ class ClaimForm extends Component {
     if (
       (this.state.claim.visitType == REFERRAL || this.state.claim.patientCondition == REFERRAL) &&
       (!this.state.claim.referralCode || this.state.claim.referralCode == null || this.state.claim.referralCode == undefined)
-    ){
+    ) {
       return false
     } 
-    if (this.state.claim.services !== undefined) {
+    if (!forReview && this.state.claim.services !== undefined) {
       if (this.state.claim.services.length && this.state.claim.services.filter((s) => !this.canSaveDetail(s, "service", forReview)).length - 1) {
         return false;
       }
     }
 
-    if (this.isCareTypeMandatory){
+    if (this.isCareTypeMandatory) {
       if (!CARE_TYPE_STATUS.includes(this.state.claim.careType)) return false;
     }
     if (this.isExplanationMandatoryForIPD) {
@@ -375,7 +380,7 @@ class ClaimForm extends Component {
   };
 
   _save = (claim) => {
-    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined )&&(claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
+    if (this.attachmentRequiredForReferral && (claim.attachmentsCount == 0 || claim.attachmentsCount == undefined) && (claim.visitType == REFERRAL || claim.patientCondition == REFERRAL)) {
       this.props.coreAlert(
         formatMessage(this.props.intl, "claim", "claim.missingAttachment"),
         formatMessage(this.props.intl, "claim", "claim.attachFile"),
@@ -443,6 +448,7 @@ class ClaimForm extends Component {
 
   resetForm = () =>
     this.setState(() => ({
+      historyOpen: false,
       lockNew: false,
       reset: 0,
       claim_uuid: null,
@@ -454,7 +460,10 @@ class ClaimForm extends Component {
       isDuplicate: false,
       isRestored: false,
       isSaved: false,
+      historyOpen: false,
     }));
+
+  doesClaimChanged = () => this.state.claim != this.state.initialClaim;
 
   render() {
     const {
@@ -468,9 +477,16 @@ class ClaimForm extends Component {
       forReview = false,
       forFeedback = false,
       isHealthFacilityPage = false,
-      classes,
     } = this.props;
-    const { claim, claim_uuid, lockNew, isSaved } = this.state;
+    const { claim, claim_uuid, lockNew, isSaved, historyOpen } = this.state;
+
+    const handleViewVersion = (version) => {
+      return;
+    };
+
+    const claimPanels = [];
+    if (!forReview || claim?.services?.length > 0) claimPanels.push(ClaimServicesPanel);
+    if (!forReview || claim?.items?.length > 0) claimPanels.push(ClaimItemsPanel);  
 
     let readOnly =
       lockNew ||
@@ -491,21 +507,28 @@ class ClaimForm extends Component {
     if (!!claim_uuid && rights.includes(RIGHT_PRINT)) {
       actions.push({
         doIt: (e) => this.print(claim_uuid),
-        icon: <Button startIcon={<PrintIcon />}>
-        {formatMessage(this.props.intl, "claim", "claim.print.buttonText")}
-        </Button>,
+        button: (
+          <Button startIcon={<PrintIcon />} onClick={(e) => this.print(claim_uuid)}>
+            {formatMessage(this.props.intl, "claim", "claim.print.buttonText")}
+          </Button>
+        ),
         onlyIfNotDirty: true,
       });
     }
     if (!!this.claimAttachments && (!readOnly || claim.attachmentsCount > 0)) {
       actions.push({
         doIt: (e) => this.setState({ attachmentsClaim: claim }),
-        icon: (
-          <Button 
-          startIcon={<Badge badgeContent={this.state.claim?.attachmentsCount ?? 0} color="primary">
-          <AttachIcon />
-          </Badge>}>
-          {formatMessage(this.props.intl, "claim", "claimAttachments.buttonText")}          </Button>
+        button: (
+          <Button
+            startIcon={
+              <Badge badgeContent={this.state.claim?.attachmentsCount ?? 0} color="primary">
+                <AttachIcon />
+              </Badge>
+            }
+            onClick={(e) => this.setState({ attachmentsClaim: claim })}
+          >
+            {formatMessage(this.props.intl, "claim", "claimAttachments.buttonText")}
+          </Button>
         ),
       });
     }
@@ -521,7 +544,7 @@ class ClaimForm extends Component {
           <span>
             <Fab color="primary" onClick={(e) => this.restore()}>
               <RestorePageIcon />
-              
+
             </Fab>
           </span>
         ),
@@ -551,8 +574,6 @@ class ClaimForm extends Component {
       },
     ];
 
-    const isModified = this.state.claim != this.props.claim;
-
     const editingProps = {
       isDuplicate: this.state.isDuplicate,
       isRestored: this.state.isRestored || this.state.claim?.restore,
@@ -567,7 +588,7 @@ class ClaimForm extends Component {
       fab: forReview && this.state.claim.reviewStatus < 8 && <CheckIcon />,
       fabAction: this._deliverReview,
       fabTooltip: formatMessage(this.props.intl, "claim", "claim.Review.deliverReview.fab.tooltip"),
-      canSave: (e) => isModified && this.canSave(forFeedback, forReview),
+      canSave: (e) => this.doesClaimChanged() && this.canSave(forFeedback, forReview),
       reload: (claim_uuid || readOnly) && this.reload,
       actions: actions,
       readOnly: readOnly,
@@ -576,35 +597,43 @@ class ClaimForm extends Component {
       onEditedChanged: this.onEditedChanged,
     };
     return (
-      <div className={readOnly ? classes.lockedPage : null}>
-        <Helmet
-          title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
-            code: this.state.claim?.code,
-          })}
-        />
-        <ProgressOrError progress={fetchingClaim} error={errorClaim} />
-        {(!!fetchedClaim || !claim_uuid) && (
-          <Fragment>
-            <PublishedComponent
-              pubRef="claim.AttachmentsDialog"
-              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
-              claim={this.state.attachmentsClaim}
-              close={(e) => this.setState({ attachmentsClaim: null })}
-              onUpdated={() => this.setState({ forcedDirty: true })}
-            />
-            <Form
-              module="claim"
-              title="edit.title"
-              titleParams={{ code: this.state.claim.code }}
-              HeadPanel={ClaimMasterPanel}
-              Panels={!!forFeedback ? [ClaimFeedbackPanel] : [ClaimServicesPanel, ClaimItemsPanel]}
-              openDirty={save || forReview}
-              additionalTooltips={tooltips}
-              {...editingProps}
-            />
-            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
-          </Fragment>
-        )}
+      <div>
+        <StyledDiv className={readOnly ? "lockedPage" : null}>
+          <Helmet
+            title={formatMessageWithValues(this.props.intl, "claim", "claim.edit.page.title", {
+              code: this.state.claim?.code,
+            })}
+          />
+          <ProgressOrError progress={fetchingClaim} error={errorClaim} />
+          {(!!fetchedClaim || !claim_uuid) && (
+            <Fragment>
+              <PublishedComponent
+                pubRef="claim.AttachmentsDialog"
+                readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+                claim={this.state.attachmentsClaim}
+                close={(e) => this.setState({ attachmentsClaim: null })}
+                onUpdated={() => this.setState({ forcedDirty: true })}
+              />
+              <Form
+                module="claim"
+                title="edit.title"
+                titleParams={{ code: this.state.claim.code }}
+                HeadPanel={ClaimMasterPanel}
+                Panels={!!forFeedback ? [ClaimFeedbackPanel] : claimPanels}
+                openDirty={save || forReview}
+                additionalTooltips={tooltips}
+                {...editingProps}
+              />
+            </Fragment>
+          )}
+        </StyledDiv>
+        <StyledDiv>
+          <ClaimHistoryPanel
+            claim={this.state.claim}
+            claimUuid={claim_uuid}
+            onViewVersion={handleViewVersion}
+          />
+        </StyledDiv>
       </div>
     );
   }
@@ -632,8 +661,10 @@ const mapDispatchToProps = (dispatch) => {
   );
 };
 
+export { CLAIM_FORM_CONTRIBUTION_KEY };
+export { ClaimServicesPanel };
 export default withHistory(
   withModulesManager(
-    connect(mapStateToProps, mapDispatchToProps)(injectIntl(withTheme(withStyles(styles)(ClaimForm)))),
+    connect(mapStateToProps, mapDispatchToProps)(injectIntl(ClaimForm)),
   ),
 );

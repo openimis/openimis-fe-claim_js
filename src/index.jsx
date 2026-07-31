@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  Keyboard, ScreenShare, Assignment
-} from "@material-ui/icons";
-import { FormattedMessage } from "@openimis/fe-core";
-import ClaimMainMenu from "./menus/ClaimMainMenu";
+import { decodeId, GetIconComponent, FormattedMessage } from "@openimis/fe-core";
 import HealthFacilitiesPage from "./pages/HealthFacilitiesPage";
 import EditPage from "./pages/EditPage";
 import ReviewsPage from "./pages/ReviewsPage";
@@ -25,7 +21,6 @@ import ClaimMasterPanelExt from "./components/ClaimMasterPanelExt";
 import AttachmentsDialog from "./components/AttachmentsDialog";
 import messages_en from "./translations/en.json";
 import reducer from "./reducer";
-import { decodeId } from "@openimis/fe-core";
 import ClaimPercentageReferralsReport from "./reports/ClaimPercentageReferralsReport";
 import ClaimsOverviewReport from "./reports/ClaimsOverviewReport";
 import ClaimHistoryReport from "./reports/ClaimHistoryReport";
@@ -33,7 +28,11 @@ import ClaimsPrimaryOperationalIndicators from "./reports/ClaimsPrimaryOperation
 import ClaimInsureeSummary from "./components/ClaimInsureeSummary";
 import YesNoPicker from "./pickers/YesNoPicker";
 import PatientConditionPicker from "./pickers/PatientConditionPicker";
-import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS } from "./constants";
+import { RIGHT_ADD, RIGHT_SUBMIT, RIGHT_CLAIMREVIEW, RIGHT_PROCESS, RIGHT_FEEDBACK, RIGHT_SEARCH, RIGHT_HF_SEARCH } from "./constants";
+
+const Keyboard = GetIconComponent("Keyboard")
+const ScreenShare = GetIconComponent("ScreenShare")
+const Assignment = GetIconComponent("Assignment")
 
 const ROUTE_HEALTH_FACILITIES = "claim/healthFacilities";
 const ROUTE_CLAIM_EDIT = "claim/healthFacilities/claim";
@@ -184,29 +183,21 @@ const DEFAULT_CONFIG = {
     { key: "claim.PatientConditionPicker", ref: PatientConditionPicker },
   ],
   "core.Router": [
-    { path: ROUTE_HEALTH_FACILITIES, component: HealthFacilitiesPage },
-    { path: ROUTE_CLAIM_EDIT + "/:claim_uuid?", component: EditPage }, // ? = optional (needed to route new claims)
-    { path: ROUTE_REVIEWS, component: ReviewsPage },
-    { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid/:customBackUri?/:customBackUuid?", component: ReviewPage },
-    { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage },
+    { path: ROUTE_HEALTH_FACILITIES, text: "claim.menu.healthFacilityClaims",id: "claim.healthFacilityClaims", component: HealthFacilitiesPage, rights:[RIGHT_SEARCH, RIGHT_HF_SEARCH], icon: "Keyboard" },
+    { path: ROUTE_CLAIM_EDIT + "/:claim_uuid?", component: EditPage, rights: [RIGHT_SEARCH, RIGHT_HF_SEARCH], icon: "Keyboard" }, // ? = optional (needed to route new claims)
+    { path: ROUTE_REVIEWS, text: "claim.menu.reviews",id: "claim.reviews", component: ReviewsPage, rights: [RIGHT_CLAIMREVIEW], icon: "Assignment" },
+    { path: ROUTE_CLAIM_REVIEW + "/:claim_uuid/:customBackUri?/:customBackUuid?", component: ReviewPage, rights: [RIGHT_CLAIMREVIEW], icon: "Assignment" },
+    { path: ROUTE_CLAIM_FEEDBACK + "/:claim_uuid", component: FeedbackPage, rights: [RIGHT_FEEDBACK], icon: "ScreenShare" },
   ],
-  "core.MainMenu": [{ name: 'ClaimMainMenu', component: ClaimMainMenu }],
+  "core.MainMenu": [{ name: 'ClaimMainMenu', id: "claim.MainMenu", text: "claim.mainMenu", icon: "ScreenShare"}],
   "claim.MasterPanel": [ClaimMasterPanelExt],
   "insuree.ProfilePage.insureeClaims": [ClaimInsureeSummary],
   "claim.MainMenu": [
     {
-      text: <FormattedMessage module="claim" id="menu.healthFacilityClaims" />,
-      icon: <Keyboard />,
-      route: "/claim/healthFacilities",
-      id: "claim.healthFacilityClaims",
-      filter: (rights) => rights.some((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS),
+      route: ROUTE_HEALTH_FACILITIES,
     },
     {
-      text: <FormattedMessage module="claim" id="menu.reviews" />,
-      icon: <Assignment />,
-      route: "/claim/reviews",
-      id: "claim.reviews",
-      filter: (rights) => rights.some((r) => r >= RIGHT_CLAIMREVIEW && r <= RIGHT_PROCESS),
+      route: ROUTE_REVIEWS,
     },
 ],
 };

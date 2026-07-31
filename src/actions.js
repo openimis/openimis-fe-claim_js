@@ -21,6 +21,12 @@ export function selectClaimAdmin(admin) {
   };
 }
 
+export function setCurrentClaimAdmin(admin) {
+  return (dispatch) => {
+    dispatch({ type: "CLAIM_SET_CURRENT_CLAIM_ADMIN", payload: admin });
+  };
+}
+
 export function selectHealthFacility(hf) {
   return (dispatch) => {
     dispatch({ type: "CLAIM_CLAIM_HEALTH_FACILITY_SELECTED", payload: hf });
@@ -720,4 +726,66 @@ export function generate(uuid) {
       .then((blob) => openBlob(blob, `${_uuid.uuid()}.pdf`, "pdf"))
       .then((e) => dispatch({ type: "CLAIM_PRINT_DONE" }));
   };
+}
+
+export function fetchClaimHistory(claimUuid) {
+  return graphqlWithVariables(
+    `
+    query ($claimUuid: String!) {
+      claimHistory(claimUuid: $claimUuid) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        edges {
+          node {
+            uuid
+            validityTo
+            code
+            jsonExt
+            dateClaimed
+            dateProcessed
+            feedbackStatus
+            reviewStatus
+            claimed
+            approved
+            status
+            restoreId
+
+            insuree {
+              id
+              uuid
+              chfId
+              lastName
+              otherNames
+              dob
+              insureePolicies {
+                edges {
+                  node {
+                    policy {
+                      id
+                      status
+                      effectiveDate
+                      expiryDate
+                      product {
+                        id
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            attachmentsCount
+          }
+        }
+      }
+    }
+    `,
+    { claimUuid },
+    "CLAIM_HISTORY_FETCH",
+  );
 }

@@ -30,10 +30,11 @@ const ClaimOfficerPicker = (props) => {
   const options = useSelector((state) => state.claim.claimOfficers? state.claim.claimOfficers.items: []);
   const error = useSelector((state) => state.claim.claimOfficers? state.claim.claimOfficers.error: 'error');
 
-  useEffect(async () => {
-     await dispatch(
-      fetchClaimOfficers(modulesManager, extraFragment, variables),
-    );
+  useEffect(() => {
+    const fetchData = async () => {
+      await dispatch(fetchClaimOfficers(modulesManager, extraFragment, variables));
+    };
+    fetchData();
   }, []);
 
   const getOptionLabel = (option) => {
@@ -61,7 +62,7 @@ const ClaimOfficerPicker = (props) => {
         filterOptions={filterOptions}
         filterSelectedOptions={filterSelectedOptions}
         onInputChange={(search) => setVariables({ search })}
-        getOptionSelected={(option, value) => decodeId(option.id) === value.toString()}
+        isOptionEqualToValue={(option, value) => decodeId(option.id) === value.toString()}
       />
     </div>
   );

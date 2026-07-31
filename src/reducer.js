@@ -10,6 +10,7 @@ import {
 
 function reducer(
   state = {
+    currentClaimAdmin: null,
     fetchingClaimAttachments: false,
     fetchedClaimAttachments: false,
     errorClaimAttachments: null,
@@ -52,6 +53,10 @@ function reducer(
       },
       error: null,
     },
+    fetchingHistory: false,
+    fetchedHistory: false,
+    errorHistory: null,
+    history: null,
   },
   action,
 ) {
@@ -87,6 +92,11 @@ function reducer(
         s.claimRegion = s.claimDistrict.parent;
       }
       return s;
+    case "CLAIM_SET_CURRENT_CLAIM_ADMIN": {
+      const currentClaimAdmin = action.payload;
+      s = { ...state, currentClaimAdmin };
+      return s;
+    }
     case "CLAIM_CLAIM_HEALTH_FACILITY_SELECTED":
       var claimHealthFacility = action.payload;
       var s = { ...state, claimHealthFacility };
@@ -393,6 +403,28 @@ function reducer(
       return {
         ...state,
         generating: false,
+      };
+    case "CLAIM_HISTORY_FETCH_REQ":
+      return {
+        ...state,
+        fetchingHistory: true,
+        fetchedHistory: false,
+        errorHistory: null,
+        history: null,
+      };
+    case "CLAIM_HISTORY_FETCH_RESP":
+      return {
+        ...state,
+        fetchingHistory: false,
+        fetchedHistory: true,
+        history: parseData(action.payload.data?.claimHistory),
+        pageInfo: pageInfo(action.payload.data?.claimHistory?.pageInfo),
+      };
+    case "CLAIM_HISTORY_FETCH_ERR":
+      return {
+        ...state,
+        fetchingHistory: false,
+        errorHistory: formatGraphQLError(action.payload?.response?.errors),
       };
     default:
       return state;
