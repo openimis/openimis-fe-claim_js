@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Badge, Button, TextField, Tooltip, Typography } from "@mui/material";
+import { Badge, Button, TextField, Typography } from "@mui/material";
 import { RIGHT_CLAIMREVIEW } from "../constants";
 import {
   formatAmount,
