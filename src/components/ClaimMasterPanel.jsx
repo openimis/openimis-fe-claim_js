@@ -157,7 +157,7 @@ class ClaimMasterPanel extends FormPanel {
     edited.claimed = _.round(totalClaimed, 2);
     edited.approved = _.round(totalApproved, 2);
 
-    let ro = readOnly || !!forReview || !!forFeedback;
+    let ro = !!(readOnly || forReview || forFeedback);
     return (
       <Grid container>
         <ControlledField
@@ -254,7 +254,7 @@ class ClaimMasterPanel extends FormPanel {
                 label="claimedDate"
                 reset={reset}
                 onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={this.isClaimedDateFixed ?? ro}
+                readOnly={!!this.isClaimedDateFixed || ro}
                 required={true}
                 minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
                 slotProps={{
