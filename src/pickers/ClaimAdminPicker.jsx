@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 import {
   useModulesManager,
@@ -8,7 +8,6 @@ import {
   useGraphqlQuery,
 } from "@openimis/fe-core";
 import { DEFAULT } from "../constants";
-import { setCurrentClaimAdmin } from "../actions";
 
 export const formatClaimAdminLabel = (claimAdmin, renderLastNameFirst) => {
   if (!claimAdmin) return "";
@@ -34,15 +33,11 @@ const ClaimAdminPicker = (props) => {
     hfFilter,
     region,
     district,
-    dataCy = "claim-admin-picker"
   } = props;
+
   const userHealthFacilityId = useSelector((state) =>
     state?.loc?.userHealthFacilityFullPath?.uuid
   );
-  const i_user = useSelector((state) =>
-    state?.core?.user?.username
-  );
-
   const modulesManager = useModulesManager();
   const { formatMessage } = useTranslations("claim", modulesManager);
   const [searchString, setSearchString] = useState("");
@@ -91,19 +86,7 @@ const ClaimAdminPicker = (props) => {
     { skip: readOnly },
   );
 
-  const dispatch = useDispatch();
   const formatClaimAdmin = (claimAdmin) => formatClaimAdminLabel(claimAdmin, renderLastNameFirst);
-  const claimAdmins = readOnly
-    ? (value ? [value] : [])
-    : (data?.claimAdmins?.edges.map((edge) => edge.node) || []);
-
-  useEffect(() => {
-    if (readOnly) return;
-    const currentAdmin = claimAdmins.find((admin) => admin.code === i_user);
-    if (currentAdmin) {
-      dispatch(setCurrentClaimAdmin(currentAdmin));
-    }
-  }, [claimAdmins, i_user, readOnly, dispatch]);
 
   return (
     <Autocomplete
@@ -115,7 +98,7 @@ const ClaimAdminPicker = (props) => {
       withLabel={withLabel}
       withPlaceholder={withPlaceholder}
       readOnly={readOnly}
-      options={claimAdmins}
+      options={data?.claimAdmins?.edges.map((edge) => edge.node) ?? []}
       isLoading={isLoading}
       value={value}
       getOptionLabel={(option) => formatClaimAdmin(option)}
@@ -123,7 +106,6 @@ const ClaimAdminPicker = (props) => {
       filterOptions={filterOptions}
       filterSelectedOptions={filterSelectedOptions}
       onInputChange={readOnly ? undefined : setSearchString}
-      dataCy={dataCy}
     />
   );
 };
