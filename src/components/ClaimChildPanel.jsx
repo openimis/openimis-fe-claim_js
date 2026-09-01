@@ -59,7 +59,6 @@ class ClaimChildPanel extends Component {
       "claimForm.quantityMaxValue",
       DEFAULT.QUANTITY_MAX_VALUE,
     );
-    this.isDecimalPrice = props.modulesManager.getConf("fe-claim", "isDecimalPrice", true);
   }
 
   initData = () => {
@@ -284,7 +283,7 @@ class ClaimChildPanel extends Component {
         )}
         {
           <Grid>
-            {!!forReview && edited.status == 4 && this._checkIfItemsServicesExist(type, edited) && (
+            {forReview && edited.status == 4 && this._checkIfItemsServicesExist(type, edited) && (
               <>
                 {withTooltip(
                   <IconButton onClick={this.rejectAllOnClick}>
@@ -335,15 +334,19 @@ class ClaimChildPanel extends Component {
       `edit.${type}s.${type}`,
       `edit.${type}s.quantity`,
       `edit.${type}s.price`,
-      `edit.${type}s.explanation`,
+      `edit.${type}s.explanation`
     ];
-
     let subServiceHeaders = [
       `medical.service.code`,
       `medical.service.name`,
       `edit.${type}s.quantity`,
       `claim.edit.items.appPrice`,
     ];
+    const totalAmount = this.state.data.reduce((sum, r) => {
+      const qty = r.qtyProvided || 0;
+      const price = r.priceAsked || 0;
+      return sum + qty * price;
+    }, 0);
 
     let filterItemsOptions = (options) => {
       let currentItemsIds = edited.items ? edited.items.map((claimItem) => claimItem?.item?.id) : [];
@@ -358,14 +361,14 @@ class ClaimChildPanel extends Component {
       (i, idx) => (
         <Tooltip
           title={formatMessage(intl, "claim", "ClaimChildPanel.itemOrService.tooltip")}
-          disableHoverListener={!!forReview || !!readOnly}
-          disableFocusListener={!!forReview || !!readOnly}
+          disableHoverListener={forReview || !!readOnly}
+          disableFocusListener={forReview || !!readOnly}
           sx={{ fontSize: "3rem" }}
         >
           <Box minWidth={forReview ? 300 : 400}>
             <PublishedComponent
               required={(!!edited.services && edited.services?.length<2 && !!edited.items && edited?.items?.length<2) || (!edited.services && !edited.items)}
-              readOnly={!!forReview || readOnly}
+              readOnly={forReview || readOnly}
               pubRef={picker}
               filterOptions={this.props.type === "item" ? filterItemsOptions : filterServicesOptions}
               withLabel={false}
@@ -381,7 +384,7 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <NumberInput
-          readOnly={!!forReview || readOnly || (type === "service" && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
+          readOnly={forReview || readOnly || (type === "service" && i[type]?.packagetype != SERVICE_TYPE_PP_S)}
           value={i.qtyProvided}
           onChange={(v) => this._onChange(idx, "qtyProvided", v)}
           error={i.qtyProvided <= 0 ? formatMessage(intl, "claim", "ClaimChildPanel.quantity.error") : null}
@@ -391,20 +394,17 @@ class ClaimChildPanel extends Component {
       ),
       (i, idx) => (
         <AmountInput
-          readOnly={!!forReview || readOnly || this.fixedPricesAtEnter}
-          value={
-            i[type] === "service" && i[type]?.packagetype != SERVICE_TYPE_PP_S
-              ? this.state.data[idx].service?.priceAsked
-              : i.priceAsked
-          }
-          allowDecimals={this.isDecimalPrice}
+          readOnly={forReview || readOnly || this.fixedPricesAtEnter}
+          value={i.priceAsked}
+          decimal={true}
+          {...(forReview ? {style: { width: "100px" }} : {})}
           onChange={(v) => this._onChange(idx, "priceAsked", v)}
           inputProps={{ "data-cy": `claim-${this.props.type}-${idx}-price` }}
         />
       ),
       (i, idx) => (
         <TextInput
-          readOnly={!!forReview || readOnly}
+          readOnly={forReview || readOnly}
           value={i.explanation}
           error={
             this.explanationRequiredIfQuantityAboveThreshold &&
@@ -419,8 +419,8 @@ class ClaimChildPanel extends Component {
           onChange={(v) => this._onChange(idx, "explanation", v)}
           inputProps={{ "data-cy": `claim-${this.props.type}-${idx}-explanation` }}
         />
-      ),
-    ];
+      )
+    ];    
 
     let subServicesItemsFormatters = [
       (i, idx) => (i.subServices?.map((u, udx) => (
@@ -435,14 +435,14 @@ class ClaimChildPanel extends Component {
           <TableCell>
             <Box minWidth={forReview ? 400 : 600 }>
               <TextInput
-                readOnly={!!forReview || readOnly || true}
+                readOnly={forReview || readOnly || true}
                 value={u.service.name}
               />
             </Box>
           </TableCell>
           <TableCell>
             <NumberInput
-              readOnly={!!forReview || readOnly}
+              readOnly={forReview || readOnly}
               value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
               onChange={(v) => {
                 u.qtyDisplayed = v;
@@ -517,12 +517,12 @@ class ClaimChildPanel extends Component {
               </TableCell>
               <TableCell>
                 <Box minWidth={400}>
-                  <TextInput readOnly={!!forReview || readOnly || true} value={u.item.name} />
+                  <TextInput readOnly={forReview || readOnly || true} value={u.item.name} />
                 </Box>
               </TableCell>
               <TableCell>
                 <NumberInput
-                  readOnly={!!forReview || readOnly}
+                  readOnly={forReview || readOnly}
                   value={u.qtyDisplayed ? u.qtyDisplayed : "0"}
                   onChange={(v) => {
                     u.qtyDisplayed = v;
@@ -596,7 +596,7 @@ class ClaimChildPanel extends Component {
         )) ?? [],
     ];
 
-    if (!!forReview || edited.status !== 2) {
+    if (forReview || edited.status !== 2) {
       headers.push(`edit.${type}s.appQuantity`);
       itemFormatters.push((i, idx) => (
         <NumberInput
@@ -611,8 +611,9 @@ class ClaimChildPanel extends Component {
         itemFormatters.push((i, idx) => (
           <AmountInput
             readOnly={!forReview && readOnly}
-            value={i.priceApproved}
+            value={i.priceApproved || i.priceAdjusted}
             onChange={(v) => this._onChange(idx, "priceApproved", v)}
+            {...(forReview ? {style: { width: "100px" }} : {})}
           />
         ));
       }
@@ -644,7 +645,7 @@ class ClaimChildPanel extends Component {
         />
       ));
     }
-    if (!!forReview || edited.status !== 2) {
+    if (forReview || edited.status !== 2) {
       headers.push(`edit.${type}s.status`, `edit.${type}s.rejectionReason`);
       itemFormatters.push(
         (i, idx) => (
@@ -660,6 +661,16 @@ class ClaimChildPanel extends Component {
         (i, idx) => this.formatRejectedReason(i, idx),
       );
     }
+
+    headers.push(`edit.${type}.totalAmount`);
+    itemFormatters.push((i, idx) => (
+      <AmountInput
+        readOnly={true}
+        value={(i.qtyProvided || 0) * (i.priceAsked || 0)}
+        decimal={true}
+        {...(forReview ? {style: { width: "120px" }} : {})}      />
+    ));
+
     let header = formatMessage(intl, "claim", `edit.${this.props.type}s.title`);
     if (fetchingPricelist) {
       header += formatMessage(intl, "claim", `edit.${this.props.type}s.fetchingPricelist`);
@@ -679,6 +690,13 @@ class ClaimChildPanel extends Component {
           disableDeleteOnEmptyRow
           showOrdinalNumber={this.showOrdinalNumber}
         />
+        <Box display="flex" justifyContent="flex-start" padding={2} paddingLeft={135}>
+          <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
+            {formatMessageWithValues(intl, "claim", `edit.${type}s.totalAmountLabel`, {
+              total: formatAmount(modulesManager, intl, totalAmount),
+            })}
+          </Typography>
+        </Box>
       </StyledPaper>
     );
   }

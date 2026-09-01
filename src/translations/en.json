@@ -380,16 +380,6 @@
   "claim.gql_mutation_restore_claims_perms": "Claim | Mutation Restore Claims",
   "claim.gql_mutation_delete_claims_perms": "Claim | Mutation Delete Claims",
   "claim.claim_print_perms": "Claim | Claim Print",
-  "claim.ClaimHistoryModal.title": "History of Claim {code}",
-  "claimHistory.code": "Code",
-  "claimHistory.dateClaimed": "Date Claimed",
-  "claimHistory.dateProcessed": "Date Processed",
-  "claimHistory.feedbackStatus": "Feedback Status",
-  "claimHistory.reviewStatus": "Review Status",
-  "claimHistory.claimed": "Claimed",
-  "claimHistory.approved": "Approved",
-  "claimHistory.status": "Status",
-  "claimHistory.restoreId": "Restore ID",
   "claim.deleteHealthFacility.textButton": "Delete",
   "claim.attachment.missingPredefinedType": "Missing predefined Type",
   "claim.attachment.definePredefinedType": "You must define the the General Type first and then select the Predefined Type or clean the attachment",
@@ -411,4 +401,14 @@
   "claim.Claim.title.diagnosis": "Diagnosis",
   "claim.Claim.title.amount": "Amount",
   "claim.Claim.title.status": "Status"
+  "ClaimSummary": "Claim Summary",
+  "totalItems": "Total Items",
+  "totalServices": "Total Services",
+  "totalClaimed": "Total Claimed",
+  "totalApproved": "Total Approved",
+  "edit.item.totalAmount": "Total",
+  "edit.service.totalAmount": "Total",
+  "edit.items.totalAmountLabel": "Total Items : {total}",
+  "edit.services.totalAmountLabel": "Total Services : {total}"
+
 }

@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Badge, Button, TextField, Tooltip, Typography } from "@mui/material";
+import { Badge, Button, TextField, Typography } from "@mui/material";
 import { RIGHT_CLAIMREVIEW } from "../constants";
 import {
   formatAmount,
@@ -11,6 +11,7 @@ import {
   Searcher,
   withModulesManager,
   GetIconComponent,
+  ActionMenu
 } from "@openimis/fe-core";
 import _ from "lodash";
 import { injectIntl } from "react-intl";
@@ -308,11 +309,16 @@ class ClaimSearcher extends Component {
       });
     }
     result.push((c) => (
-      <Tooltip title={formatMessage(this.props.intl, "claim", "openNewTabButton.tooltip")}>
-        <Button startIcon={<TabIcon />} onClick={(e) => this.props.onDoubleClick(c, true)}>
-          {formatMessage(this.props.intl, "claim", "openNewTab.buttonText")}
-        </Button>
-      </Tooltip>
+      <ActionMenu 
+        actions={[
+          {
+            icon: <TabIcon />,
+            label: formatMessage(this.props.intl, "claim", "openNewTab.buttonText"),
+            tooltip: formatMessage(this.props.intl, "claim", "openNewTabButton.tooltip"),
+            onClick: () => this.props.onDoubleClick(c, true)
+          }
+        ]}
+      />
     ));
     return result;
   };

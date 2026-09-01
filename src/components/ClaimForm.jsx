@@ -41,11 +41,13 @@ import {
   REFERRAL,
   SERVICE_TYPE_PP_S,
 } from "../constants";
+import ClaimSummaryPanel from "./ClaimSummaryPanel";
 import ClaimMasterPanel from "./ClaimMasterPanel";
 import ClaimChildPanel from "./ClaimChildPanel";
 import ClaimFeedbackPanel from "./ClaimFeedbackPanel";
-const CheckIcon = GetIconComponent("Check")
+import { claimedAmount, approvedAmount } from "../helpers/amounts";
 
+const CheckIcon = GetIconComponent("Check")
 const ReplayIcon = GetIconComponent("Replay")
 const PrintIcon = GetIconComponent("ListAlt")
 const AttachIcon = GetIconComponent("AttachFile")
@@ -319,7 +321,6 @@ class ClaimForm extends Component {
       if (!this.state.claim.items && !this.state.claim.services) {
         return !!this.canSaveClaimWithoutServiceNorItem;
       }
-      //if there are items or services, they have to be complete
       let items = [];
       if (!!this.state.claim.items) {
         items = [...this.state.claim.items];
@@ -474,7 +475,7 @@ class ClaimForm extends Component {
       forFeedback = false,
       isHealthFacilityPage = false,
     } = this.props;
-    const { claim, claim_uuid, lockNew, isSaved, historyOpen } = this.state;
+    const { claim, claim_uuid, lockNew, isSaved } = this.state;
 
     const handleViewVersion = (version) => {
       return;
@@ -482,7 +483,15 @@ class ClaimForm extends Component {
 
     const claimPanels = [];
     if (!forReview || claim?.services?.length > 0) claimPanels.push(ClaimServicesPanel);
-    if (!forReview || claim?.items?.length > 0) claimPanels.push(ClaimItemsPanel);  
+    if (!forReview || claim?.items?.length > 0) claimPanels.push(ClaimItemsPanel);
+
+    const totalClaimed = (claim?.items?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0) + 
+                        (claim?.services?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0);
+    const totalApproved = (claim?.items?.reduce((sum, r) => sum + approvedAmount(r), 0) || 0) + 
+                         (claim?.services?.reduce((sum, r) => sum + approvedAmount(r), 0) || 0);
+    const totalItems = claim?.items?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0;
+    const totalServices = claim?.services?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0;                     
+                         
 
     let readOnly =
       lockNew ||
@@ -620,6 +629,14 @@ class ClaimForm extends Component {
               additionalTooltips={tooltips}
               {...editingProps}
             />
+            <ClaimSummaryPanel 
+              totalClaimed={totalClaimed} 
+              totalApproved={totalApproved} 
+              showApproved={forReview || claim?.status >= 4}
+              totalItems={totalItems}
+              totalServices={totalServices}
+            />
+            <Contributions contributionKey={CLAIM_FORM_CONTRIBUTION_KEY} {...editingProps} />
           </Fragment>
         )}
       </StyledDiv>

@@ -4,19 +4,19 @@ export function claimedAmount(r) {
   let totalPrice = 0;
   if (Object?.keys(r)?.length != 0) {
     if ('item' in r) {
-      return !!r.qtyProvided && !!r.priceAsked ? r.qtyProvided * parseFloat(r.priceAsked) : 0;
+      return !!r.qtyProvided && !!r.priceAsked ? r.qtyProvided * Number.parseFloat(r.priceAsked) : 0;
     } else {
       if (r?.service) {
         if (Object?.keys(r.service)?.length != 0) {
           let currentPackageType = r.service.packagetype;
           if (currentPackageType == SERVICE_TYPE_PP_S) {
-            totalPrice += (r?.qtyProvided * parseFloat(r.priceAsked));
+            totalPrice += (r?.qtyProvided * Number.parseFloat(r.priceAsked));
           } else {
             if (r?.service.manualPrice) {
-              totalPrice += parseFloat(r.service.price);
+              totalPrice += Number.parseFloat(r.service.price);
             } else {
-              var subServices = r.service?.serviceServiceSet || r.service?.serviceserviceSet || r.services;
-              var subItems = r.service.serviceItemSet || r.service.servicesLinked || r.items;
+              var subServices = r.service?.serviceServiceSet || r.service?.serviceserviceSet || r.services || r.subServices;
+              var subItems = r.service.serviceItemSet || r.service.servicesLinked || r.items || r.subItems;
               if (!!subServices) {
                 subServices.forEach(subService => {
                   let qtyAsked = 0;
@@ -103,13 +103,14 @@ export function approvedAmount(r) {
   if ('item' in r) {
     let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
     let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
-    return qty * parseFloat(price);
+    return qty * Number.parseFloat(price);
   } else {
     if (r?.service) {
       let currentPackageType = r.service.packagetype;
       if (currentPackageType == SERVICE_TYPE_PP_S) {
+        let qty = r.qtyApproved !== null && r.qtyApproved !== "" ? r.qtyApproved : r.qtyProvided;
         let price = r.priceApproved !== null && r.priceApproved !== "" ? r.priceApproved : r.priceAsked;
-        totalPrice += parseFloat(price);
+        return qty * Number.parseFloat(price);
       } else {
         if (r?.services) {
           r.services.forEach(subItem => {

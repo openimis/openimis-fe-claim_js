@@ -21,12 +21,6 @@ export function selectClaimAdmin(admin) {
   };
 }
 
-export function setCurrentClaimAdmin(admin) {
-  return (dispatch) => {
-    dispatch({ type: "CLAIM_SET_CURRENT_CLAIM_ADMIN", payload: admin });
-  };
-}
-
 export function selectHealthFacility(hf) {
   return (dispatch) => {
     dispatch({ type: "CLAIM_CLAIM_HEALTH_FACILITY_SELECTED", payload: hf });
@@ -635,8 +629,8 @@ export function formatReviewDetail(type, detail) {
     ${detail.qtyApproved !== null ? `qtyApproved: "${_.round(detail.qtyApproved, 2).toFixed(2)}"` : ""}
     ${detail.priceApproved !== null ? `priceApproved: "${_.round(detail.priceApproved, 2).toFixed(2)}"` : ""}
     ${detail.justification !== null ? `justification: "${formatGQLString(detail.justification)}"` : ""}
-    ${subServices !== null ?  `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
-    ${subItems !== null ?  `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
+    ${type == 'service' && subServices !== null ?  `serviceServiceSet: [ ${subServices.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""} 
+    ${type == 'service' && subItems !== null ?  `serviceItemSet: [ ${subItems.map((d) => formatDetailSubService(type, d)).join("\n")}]` : ""}
     status: ${detail.status}
     ${detail.rejectionReason !== null ? `rejectionReason: ${detail.rejectionReason}` : ""}
   }`;
