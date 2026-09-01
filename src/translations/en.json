@@ -395,6 +395,12 @@
   "claimHistory.approved": "Approved",
   "claimHistory.status": "Status",
   "claimHistory.restoreId": "Restore ID",
+  "claim.Claim.title.insuree": "Insuree informations",
+  "claim.Claim.title.visitDetails": "Visit Details",
+  "claim.Claim.title.claimInfos": "Claim informations",
+  "claim.Claim.title.diagnosis": "Diagnosis",
+  "claim.Claim.title.amount": "Amount",
+  "claim.Claim.title.status": "Status"
   "ClaimSummary": "Claim Summary",
   "totalItems": "Total Items",
   "totalServices": "Total Services",

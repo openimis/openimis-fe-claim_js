@@ -13,12 +13,13 @@ import {
   AmountInput,
   TextInput,
   ValidatedTextInput,
-  GRID_RESPONSIVE_SMALL,
   GRID_RESPONSIVE_STANDARD,
   GRID_RESPONSIVE_LARGE,
   GRID_RESPONSIVE_HALF,
+  GRID_RESPONSIVE_FULL,
+  FormattedMessage
 } from "@openimis/fe-core";
-import { Grid, Checkbox, FormControlLabel } from "@mui/material";
+import { Grid, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import _ from "lodash";
 import ClaimAdminPicker from "../pickers/ClaimAdminPicker";
 import { claimedAmount, approvedAmount } from "../helpers/amounts";
@@ -159,446 +160,505 @@ class ClaimMasterPanel extends FormPanel {
 
     let ro = readOnly || !!forReview || !!forFeedback;
     return (
-      <Grid container>
-        <ControlledField
-          module="claim"
-          id="Claim.healthFacility"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-              <PublishedComponent
-                pubRef="location.HealthFacilityPicker"
-                value={edited.healthFacility}
-                reset={reset}
-                readOnly={true}
-                required={true}
-                inputProps={{"data-cy": "claim-hf-picker"}}
-              />
+      <Grid container direction="column">
+        <Grid container>
+          <Grid size={GRID_RESPONSIVE_HALF} container direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.insuree" />
+              </Typography>
             </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.insuree"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
-              <PublishedComponent
-                pubRef={this.insureePicker}
-                value={edited.insuree}
-                reset={reset || isDuplicate}
-                onChange={(v, s) => this.updateAttribute("insuree", v)}
-                readOnly={ro}
-                required={true}
-                inputProps={{"data-cy": "claim-insuree-picker"}}
-              />
-            </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.visitDateFrom"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateFrom}
-                module="claim"
-                label="visitDateFrom"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateFrom", d)}
-                readOnly={ro}
-                required={true}
-                maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
-                slotProps={{
-                  day: {
-                    'data-cy': 'claim-vdate-from-picker',
-                  }
-                }}
-              />
-            </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.visitDateTo"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateTo}
-                module="claim"
-                label="visitDateTo"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateTo", d)}
-                readOnly={ro}
-                minDate={edited.dateFrom}
-                maxDate={edited.dateClaimed}
-                required={this.isVisitDateToMandatory}
-                slotProps={{
-                  day: {
-                    'data-cy': 'claim-vdate-to-picker',
-                  }
-                }}                
-              />
-            </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.claimedDate"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-              <PublishedComponent
-                pubRef="core.DatePicker"
-                value={edited.dateClaimed ?? new Date()}
-                module="claim"
-                label="claimedDate"
-                reset={reset}
-                onChange={(d) => this.updateAttribute("dateClaimed", d)}
-                readOnly={this.isClaimedDateFixed ?? ro}
-                required={true}
-                minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
-                slotProps={{
-                  day: {
-                    'data-cy': 'claim-claimed-date-picker',
-                  }
-                }}
-              />
-            </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.visitType"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-              <PublishedComponent
-                pubRef="medical.VisitTypePicker"
-                name="visitType"
-                withNull={false}
-                value={edited.visitType}
-                reset={reset}
-                onChange={(v, s) => this.updateAttribute("visitType", v)}
-                readOnly={ro}
-                required={true}
-                inputProps={{ "data-cy": "claim-visit-type-picker" }}
-              />
-            </StyledItemGrid>
-          }
-        />
-        <ControlledField
-          module="claim"
-          id="Claim.careType"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-              <PublishedComponent
-                pubRef="claim.CareTypePicker"
-                name="careType"
-                withNull={false}
-                value={edited.careType}
-                reset={reset}
-                onChange={(value) => this.updateAttribute("careType", value)}
-                readOnly={ro}
-                required={this.isCareTypeMandatory}
-                inputProps={{ "data-cy": "claim-care-type-picker" }}
-              />
-            </StyledItemGrid>
-          }
-        />
-        {!forFeedback && (
-          <ControlledField
-            module="claim"
-            id="Claim.mainDiagnosis"
-            field={
-              <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                <PublishedComponent
-                  pubRef="medical.DiagnosisPicker"
-                  name="mainDiagnosis"
-                  label={formatMessage(intl, "claim", "mainDiagnosis")}
-                  value={edited.icd}
-                  reset={reset}
-                  onChange={(v, s) => this.updateAttribute("icd", v)}
-                  readOnly={ro}
-                  required
-                  dataCy="claim-main-diagnosis-picker"
-                />
-              </StyledItemGrid>
-            }
-          />
-        )}
-        {(!!edited.visitType && edited.visitType == REFERRAL) ||
-        (!!edited.patientCondition && edited.patientCondition == REFERRAL) ? (
-          <ControlledField
-            module="claim"
-            id="Claim.referHealthFacility"
-            field={
-              <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                <PublishedComponent
-                  pubRef="location.HealthFacilityReferPicker"
-                  label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
-                  value={
-                    (edited.visitType === this.claimTypeReferSymbol
-                      ? !!edited.referFrom
-                        ? edited.referFrom
-                        : edited.referHF
-                      : edited.referTo) ?? this.EMPTY_STRING
-                  }
-                  reset={reset}
-                  readOnly={ro}
-                  required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
-                  filterOptions={(options) =>
-                    options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
-                  }
-                  filterSelectedOptions={true}
-                  onChange={(d) => this.updateAttribute("referHF", d)}
-                  dataCy={"claim-hf-referer-picker"}
-                />
-              </StyledItemGrid>
-            }
-          />
-        ) : null}
-
-        <ControlledField
-          module="claim"
-          id="Claim.code"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-              <ValidatedTextInput
-                action={claimCodeValidationCheck}
-                autoFocus={true}
-                clearAction={claimCodeValidationClear}
-                codeTakenLabel="claim.codeTaken"
-                isValid={isCodeValid}
-                isValidating={isCodeValidating}
-                itemQueryIdentifier="claimCode"
-                label="claim.code"
-                module="claim"
-                onChange={(code) => this.updateAttribute("code", code)}
-                readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
-                required={!this.autoGenerateClaimCode}
-                setValidAction={claimCodeSetValid}
-                shouldValidate={this.shouldValidate}
-                validationError={codeValidationError}
-                value={
-                  this.state.data?.code
-                    ? this.state.data.code
-                    : this.autoGenerateClaimCode && !isRestored
-                    ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
-                    : ""
-                }
-                inputProps={{
-                  "maxLength": this.codeMaxLength,
-                  "data-cy": "claim-code-validated-input"
-                }}
-              />
-            </StyledItemGrid>
-          }
-        />
-        {this.fields.guaranteeNo !== "N" && (
-          <ControlledField
-            module="claim"
-            id="Claim.guarantee"
-            field={
-              <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                <TextInput
-                  module="claim"
-                  label="guaranteeId"
-                  value={edited.guaranteeId}
-                  reset={reset}
-                  onChange={(v) => this.updateAttribute("guaranteeId", v)}
-                  readOnly={ro}
-                  inputProps={{
-                    "maxLength": this.guaranteeIdMaxLength,
-                    "data-cy": "claim-guarantee-id"
-                  }}
-                  required={this.fields.guaranteeNo === "M"}
-                />
-              </StyledItemGrid>
-            }
-          />
-        )}
-        {!!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.status"
-              field={
-                <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                  <ClaimStatusPicker readOnly={true} value={edited.status} />
-                </StyledItemGrid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.feedbackStatus"
-              field={
-                <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                  <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
-                </StyledItemGrid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.reviewStatus"
-              field={
-                <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                  <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
-                </StyledItemGrid>
-              }
-            />
-          </Fragment>
-        )}
-        {!forFeedback && (
-          <ControlledField
-            module="claim"
-            id="Claim.claimed"
-            field={
-              <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                <AmountInput value={edited.claimed} module="claim" label="claimed" readOnly={true} />
-              </StyledItemGrid>
-            }
-          />
-        )}
-        {(forReview || edited.status >= 4) && !forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.approved"
-              field={
-                <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-                  <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
-                </StyledItemGrid>
-              }
-            />
-            <ControlledField
-              module="claim"
-              id="Claim.valuated"
-              field={
-                <StyledItemGrid size={GRID_RESPONSIVE_SMALL} className="item">
-                  <AmountInput value={this.computePriceAdjusted()} module="claim" label="valuated" readOnly={true} />
-                </StyledItemGrid>
-              }
-            />
-          </Fragment>
-        )}
-
-        {!forFeedback && (
-          <Fragment>
-            {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
+            <Grid container>
               <ControlledField
-                key={`Claim.secDiagnosis${diagnosisIndex + 1}`}
                 module="claim"
-                id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                id="Claim.insuree"
                 field={
-                  <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                  <StyledItemGrid size={GRID_RESPONSIVE_FULL} className="item">
                     <PublishedComponent
-                      pubRef="medical.DiagnosisPicker"
-                      name={`secDiagnosis${diagnosisIndex + 1}`}
-                      label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
-                      value={edited[`icd${diagnosisIndex + 1}`]}
-                      reset={reset}
-                      onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
+                      pubRef={this.insureePicker}
+                      value={edited.insuree}
+                      reset={reset || isDuplicate}
+                      onChange={(v, s) => this.updateAttribute("insuree", v)}
                       readOnly={ro}
+                      required={true}
+                      inputProps={{ "data-cy": "claim-insuree-picker" }}
                     />
                   </StyledItemGrid>
                 }
               />
-            ))}
-          </Fragment>
-        )}
-        <ControlledField
-          module="claim"
-          id="Claim.admin"
-          field={
-            <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-              <ClaimAdminPicker
-                value={edited.admin}
-                onChange={(v, s) => this.updateAttribute("admin", v)}
-                readOnly
-                required
-              />
-            </StyledItemGrid>
-          }
-        />
-        {!forFeedback && (
-          <Fragment>
-            <ControlledField
-              module="claim"
-              id="Claim.explanation"
-              field={
+              {this.showPatientCondition && (
                 <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
-                  <TextInput
-                    module="claim"
-                    label="explanation"
-                    value={edited.explanation}
-                    reset={reset}
-                    onChange={(v) => this.updateAttribute("explanation", v)}
-                    readOnly={ro}
-                    required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
-                    inputProps={{"data-cy": "claim-explanation-input"}}
+                  <PublishedComponent
+                    pubRef="claim.PatientConditionPicker"
+                    name="patientCondition"
+                    value={edited.patientCondition}
+                    required
+                    onChange={(v) => this.updateAttribute("patientCondition", v)}
+                    inputProps={{ "data-cy": "claim-patient-condition-picker" }}
                   />
                 </StyledItemGrid>
-              }
-            />
-            {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+              )}
               <ControlledField
                 module="claim"
-                id="Claim.adjustment"
+                id="Claim.careType"
                 field={
-                  <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-                    <TextInput
-                      module="claim"
-                      label="adjustment"
-                      value={edited.adjustment}
+                  <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                    <PublishedComponent
+                      pubRef="claim.CareTypePicker"
+                      name="careType"
+                      withNull={false}
+                      value={edited.careType}
                       reset={reset}
-                      onChange={(v) => this.updateAttribute("adjustment", v)}
-                      readOnly={readOnly || edited.reviewStatus >= 8}
-                      inputProps={{"data-cy": "claim-adjustement-input"}}
+                      onChange={(value) => this.updateAttribute("careType", value)}
+                      readOnly={ro}
+                      required={this.isCareTypeMandatory}
+                      inputProps={{ "data-cy": "claim-care-type-picker" }}
                     />
                   </StyledItemGrid>
                 }
               />
-            )}
-          </Fragment>
-        )}
-        {this.showPatientCondition && (
-          <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-            <PublishedComponent
-              pubRef="claim.PatientConditionPicker"
-              name="patientCondition"
-              value={edited.patientCondition}
-              required
-              onChange={(v) => this.updateAttribute("patientCondition", v)}
-              inputProps={{"data-cy": "claim-patient-condition-picker"}}
-            />
-          </StyledItemGrid>
-        )}
-        {(edited.visitType == "R" || edited.patientCondition == "R") && (
-          <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-            <TextInput
-              id="claim.referralCode"
-              module="insuree"
-              label="claim.referralCode"
-              value={edited.referralCode}
-              required={edited.visitType == "R" || edited.patientCondition == "R"}
-              onChange={(v) => this.updateAttribute("referralCode", v)}
-            />
-          </StyledItemGrid>
-        )}
-        {this.showPreAuthorization && (
-          <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
-            <FormControlLabel
-              control={
-                <Checkbox
-                  id="Claim.preAuthorization"
-                  color="primary"
-                  checked={edited?.preAuthorization}
-                  onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+            </Grid>
+          </Grid>
+          <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.visitDetails" />
+              </Typography>
+            </StyledItemGrid>
+            <Grid container>
+              <ControlledField
+                module="claim"
+                id="Claim.visitDateFrom"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                    <PublishedComponent
+                      pubRef="core.DatePicker"
+                      value={edited.dateFrom}
+                      module="claim"
+                      label="visitDateFrom"
+                      reset={reset}
+                      onChange={(d) => this.updateAttribute("dateFrom", d)}
+                      readOnly={ro}
+                      required={true}
+                      maxDate={edited.dateTo < edited.dateClaimed ? edited.dateTo : edited.dateClaimed}
+                      slotProps={{
+                        day: {
+                          'data-cy': 'claim-vdate-from-picker',
+                        }
+                      }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              <ControlledField
+                module="claim"
+                id="Claim.visitDateTo"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                    <PublishedComponent
+                      pubRef="core.DatePicker"
+                      value={edited.dateTo}
+                      module="claim"
+                      label="visitDateTo"
+                      reset={reset}
+                      onChange={(d) => this.updateAttribute("dateTo", d)}
+                      readOnly={ro}
+                      minDate={edited.dateFrom}
+                      maxDate={edited.dateClaimed}
+                      required={this.isVisitDateToMandatory}
+                      slotProps={{
+                        day: {
+                          'data-cy': 'claim-vdate-to-picker',
+                        }
+                      }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              <ControlledField
+                module="claim"
+                id="Claim.claimedDate"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                    <PublishedComponent
+                      pubRef="core.DatePicker"
+                      value={edited.dateClaimed ?? new Date()}
+                      module="claim"
+                      label="claimedDate"
+                      reset={reset}
+                      onChange={(d) => this.updateAttribute("dateClaimed", d)}
+                      readOnly={this.isClaimedDateFixed ?? ro}
+                      required={true}
+                      minDate={!!edited.dateTo ? edited.dateTo : edited.dateFrom}
+                      slotProps={{
+                        day: {
+                          'data-cy': 'claim-claimed-date-picker',
+                        }
+                      }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              <ControlledField
+                module="claim"
+                id="Claim.visitType"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                    <PublishedComponent
+                      pubRef="medical.VisitTypePicker"
+                      name="visitType"
+                      withNull={false}
+                      value={edited.visitType}
+                      reset={reset}
+                      onChange={(v, s) => this.updateAttribute("visitType", v)}
+                      readOnly={ro}
+                      required={true}
+                      inputProps={{ "data-cy": "claim-visit-type-picker" }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              {(!!edited.visitType && edited.visitType == REFERRAL) ||
+                (!!edited.patientCondition && edited.patientCondition == REFERRAL) ? (
+                <ControlledField
+                  module="claim"
+                  id="Claim.referHealthFacility"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                      <PublishedComponent
+                        pubRef="location.HealthFacilityReferPicker"
+                        label={formatMessage(intl, "claim", "ClaimMasterPanel.referHFLabel")}
+                        value={
+                          (edited.visitType === this.claimTypeReferSymbol
+                            ? !!edited.referFrom
+                              ? edited.referFrom
+                              : edited.referHF
+                            : edited.referTo) ?? this.EMPTY_STRING
+                        }
+                        reset={reset}
+                        readOnly={ro}
+                        required={this.isReferHFMandatory && edited.visitType === this.claimTypeReferSymbol}
+                        filterOptions={(options) =>
+                          options?.filter((option) => option.uuid !== userHealthFacilityFullPath?.uuid)
+                        }
+                        filterSelectedOptions={true}
+                        onChange={(d) => this.updateAttribute("referHF", d)}
+                        dataCy={"claim-hf-referer-picker"}
+                      />
+                    </StyledItemGrid>
+                  }
                 />
-              }
-              label={formatMessage(intl, "claim", "pre-authorization")}
-            />
-          </StyledItemGrid>
-        )}
+              ) : null}
+              {(edited.visitType == "R" || edited.patientCondition == "R") && (
+                <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                  <TextInput
+                    id="claim.referralCode"
+                    module="insuree"
+                    label="claim.referralCode"
+                    value={edited.referralCode}
+                    required={edited.visitType == "R" || edited.patientCondition == "R"}
+                    onChange={(v) => this.updateAttribute("referralCode", v)}
+                  />
+                </StyledItemGrid>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.claimInfos" />
+              </Typography>
+            </StyledItemGrid>
+            <Grid container >
+              <ControlledField
+                module="claim"
+                id="Claim.healthFacility"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                    <PublishedComponent
+                      pubRef="location.HealthFacilityPicker"
+                      value={edited.healthFacility}
+                      reset={reset}
+                      readOnly={true}
+                      required={true}
+                      inputProps={{ "data-cy": "claim-hf-picker" }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              <ControlledField
+                module="claim"
+                id="Claim.admin"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                    <ClaimAdminPicker
+                      value={edited.admin}
+                      onChange={(v, s) => this.updateAttribute("admin", v)}
+                      readOnly
+                      required
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              <ControlledField
+                module="claim"
+                id="Claim.code"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                    <ValidatedTextInput
+                      action={claimCodeValidationCheck}
+                      autoFocus={true}
+                      clearAction={claimCodeValidationClear}
+                      codeTakenLabel="claim.codeTaken"
+                      isValid={isCodeValid}
+                      isValidating={isCodeValidating}
+                      itemQueryIdentifier="claimCode"
+                      label="claim.code"
+                      module="claim"
+                      onChange={(code) => this.updateAttribute("code", code)}
+                      readOnly={readOnly || !!forReview || !!forFeedback || this.autoGenerateClaimCode}
+                      required={!this.autoGenerateClaimCode}
+                      setValidAction={claimCodeSetValid}
+                      shouldValidate={this.shouldValidate}
+                      validationError={codeValidationError}
+                      value={
+                        this.state.data?.code
+                          ? this.state.data.code
+                          : this.autoGenerateClaimCode && !isRestored
+                            ? formatMessage(intl, "claim", "ClaimMasterPanel.autogenerate")
+                            : ""
+                      }
+                      inputProps={{
+                        "maxLength": this.codeMaxLength,
+                        "data-cy": "claim-code-validated-input"
+                      }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              {this.fields.guaranteeNo !== "N" && (
+                <ControlledField
+                  module="claim"
+                  id="Claim.guarantee"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                      <TextInput
+                        module="claim"
+                        label="guaranteeId"
+                        value={edited.guaranteeId}
+                        reset={reset}
+                        onChange={(v) => this.updateAttribute("guaranteeId", v)}
+                        readOnly={ro}
+                        inputProps={{
+                          "maxLength": this.guaranteeIdMaxLength,
+                          "data-cy": "claim-guarantee-id"
+                        }}
+                        required={this.fields.guaranteeNo === "M"}
+                      />
+                    </StyledItemGrid>
+                  }
+                />
+              )}
+              {this.showPreAuthorization && (
+                <StyledItemGrid size={GRID_RESPONSIVE_LARGE} className="item">
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        id="Claim.preAuthorization"
+                        color="primary"
+                        checked={edited?.preAuthorization}
+                        onChange={(e) => this.updateAttribute("preAuthorization", e.target.checked)}
+                      />
+                    }
+                    label={formatMessage(intl, "claim", "pre-authorization")}
+                  />
+                </StyledItemGrid>
+              )}
+            </Grid>
+          </Grid>
+          <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.diagnosis" />
+              </Typography>
+            </StyledItemGrid>
+            <Grid container>
+              {!forFeedback && (
+                <ControlledField
+                  module="claim"
+                  id="Claim.mainDiagnosis"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                      <PublishedComponent
+                        pubRef="medical.DiagnosisPicker"
+                        name="mainDiagnosis"
+                        label={formatMessage(intl, "claim", "mainDiagnosis")}
+                        value={edited.icd}
+                        reset={reset}
+                        onChange={(v, s) => this.updateAttribute("icd", v)}
+                        readOnly={ro}
+                        required
+                        dataCy="claim-main-diagnosis-picker"
+                      />
+                    </StyledItemGrid>
+                  }
+                />
+              )}
+              {!forFeedback && (
+                <Fragment>
+                  {Array.from({ length: this.numberOfAdditionalDiagnosis }, (_, diagnosisIndex) => (
+                    <ControlledField
+                      key={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                      module="claim"
+                      id={`Claim.secDiagnosis${diagnosisIndex + 1}`}
+                      field={
+                        <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                          <PublishedComponent
+                            pubRef="medical.DiagnosisPicker"
+                            name={`secDiagnosis${diagnosisIndex + 1}`}
+                            label={formatMessage(intl, "claim", `secDiagnosis${diagnosisIndex + 1}`)}
+                            value={edited[`icd${diagnosisIndex + 1}`]}
+                            reset={reset}
+                            onChange={(value) => this.updateAttribute(`icd${diagnosisIndex + 1}`, value)}
+                            readOnly={ro}
+                          />
+                        </StyledItemGrid>
+                      }
+                    />
+                  ))}
+                </Fragment>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid container>
+          <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.amount" />
+              </Typography>
+            </StyledItemGrid>
+            <Grid container>
+              {!forFeedback && (
+                <ControlledField
+                  module="claim"
+                  id="Claim.claimed"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                      <AmountInput value={edited.claimed} module="claim" label="claimed" readOnly={true} />
+                    </StyledItemGrid>
+                  }
+                />
+              )}
+              {(forReview || edited.status >= 4) && !forFeedback && (
+                <Fragment>
+                  <ControlledField
+                    module="claim"
+                    id="Claim.approved"
+                    field={
+                      <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                        <AmountInput value={edited.approved || null} module="claim" label="approved" readOnly={true} />
+                      </StyledItemGrid>
+                    }
+                  />
+                  <ControlledField
+                    module="claim"
+                    id="Claim.valuated"
+                    field={
+                      <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                        <AmountInput value={this.computePriceAdjusted()} module="claim" label="valuated" readOnly={true} />
+                      </StyledItemGrid>
+                    }
+                  />
+                </Fragment>
+              )}
+            </Grid>
+          </Grid>
+          {!!forFeedback && (<Grid container size={GRID_RESPONSIVE_HALF} direction="column">
+            <StyledItemGrid className="item">
+              <Typography className="item" fontWeight="bold">
+                <FormattedMessage module="claim" id="Claim.title.status" />
+              </Typography>
+            </StyledItemGrid>
+            <Grid container>
+              <Fragment>
+                <ControlledField
+                  module="claim"
+                  id="Claim.status"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                      <ClaimStatusPicker readOnly={true} value={edited.status} />
+                    </StyledItemGrid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.feedbackStatus"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                      <FeedbackStatusPicker readOnly={true} value={edited.feedbackStatus} />
+                    </StyledItemGrid>
+                  }
+                />
+                <ControlledField
+                  module="claim"
+                  id="Claim.reviewStatus"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                      <ReviewStatusPicker readOnly={true} value={edited.reviewStatus} />
+                    </StyledItemGrid>
+                  }
+                />
+              </Fragment>
+            </Grid>
+          </Grid>)}
+
+        </Grid>
+        <Grid container>
+          {!forFeedback && (
+            <Fragment>
+              <ControlledField
+                module="claim"
+                id="Claim.explanation"
+                field={
+                  <StyledItemGrid size={GRID_RESPONSIVE_HALF} className="item">
+                    <TextInput
+                      module="claim"
+                      label="explanation"
+                      value={edited.explanation}
+                      reset={reset}
+                      onChange={(v) => this.updateAttribute("explanation", v)}
+                      readOnly={ro}
+                      required={this.isExplanationMandatoryForIPD && edited.careType === IN_PATIENT_STRING ? true : false}
+                      inputProps={{ "data-cy": "claim-explanation-input" }}
+                    />
+                  </StyledItemGrid>
+                }
+              />
+              {(!!forReview || this.showAdjustmentAtEnter || edited.status >= 4) && (
+                <ControlledField
+                  module="claim"
+                  id="Claim.adjustment"
+                  field={
+                    <StyledItemGrid size={GRID_RESPONSIVE_STANDARD} className="item">
+                      <TextInput
+                        module="claim"
+                        label="adjustment"
+                        value={edited.adjustment}
+                        reset={reset}
+                        onChange={(v) => this.updateAttribute("adjustment", v)}
+                        readOnly={readOnly || edited.reviewStatus >= 8}
+                        inputProps={{ "data-cy": "claim-adjustement-input" }}
+                      />
+                    </StyledItemGrid>
+                  }
+                />
+              )}
+            </Fragment>
+          )}
+        </Grid>
         <Contributions
           claim={edited}
           readOnly={ro}
