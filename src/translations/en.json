@@ -400,7 +400,7 @@
   "claim.Claim.title.claimInfos": "Claim informations",
   "claim.Claim.title.diagnosis": "Diagnosis",
   "claim.Claim.title.amount": "Amount",
-  "claim.Claim.title.status": "Status"
+  "claim.Claim.title.status": "Status",
   "ClaimSummary": "Claim Summary",
   "totalItems": "Total Items",
   "totalServices": "Total Services",
