@@ -101,6 +101,10 @@ const ClaimAdminPicker = (props) => {
       options={data?.claimAdmins?.edges.map((edge) => edge.node) ?? []}
       isLoading={isLoading}
       value={value}
+      // By uuid, not id: a value coming from the session (`user.claim_admin`, serialised
+      // by current_user) carries the database key while an option queried here carries
+      // the relay id, and the default comparison would never match the two.
+      isOptionEqualToValue={(option, v) => option?.uuid === v?.uuid}
       getOptionLabel={(option) => formatClaimAdmin(option)}
       onChange={(option) => onChange(option, option ? `${option.code} ${option.lastName} ${option.otherNames}` : null)}
       filterOptions={filterOptions}

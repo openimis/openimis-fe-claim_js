@@ -27,6 +27,47 @@ export function selectHealthFacility(hf) {
   };
 }
 
+// Resolves the claim administrator the logged-in user acts as, relying on the backend
+// to narrow `claimAdmins` to the user's own record when they lack the right to query
+// the others. A single hit therefore means "this user can only be this admin" and can
+// safely be used as a default; anything else leaves the choice to the user.
+// Only needed when `user.claim_admin` is empty: tblUsers.ClaimAdminId is not always
+// populated and the backend then resolves the link by login name instead.
+export function fetchOwnClaimAdmin(mm) {
+  return async (dispatch) => {
+    const response = await dispatch(
+      graphqlWithVariables(
+        `
+        query OwnClaimAdmin {
+          claimAdmins(first: 2) {
+            edges {
+              node ${mm.getProjection("claim.ClaimAdminPicker.projection")}
+            }
+          }
+        }
+      `,
+        {},
+        "CLAIM_OWN_CLAIM_ADMIN",
+        { skip: true },
+        {},
+        // Users who are neither claim admins nor allowed to query them get a
+        // permission error here; that is an expected outcome, not a failure to report.
+        { silent: true },
+      ),
+    );
+    if (response.error) return null;
+    const errors = response.payload?.errors;
+    if (errors?.length) {
+      // Reported here because the request is silent: without this a failing query is
+      // indistinguishable from "this user is not a claim administrator".
+      console.warn("OwnClaimAdmin query returned errors", errors);
+      return null;
+    }
+    const edges = response.payload?.data?.claimAdmins?.edges ?? [];
+    return edges.length === 1 ? edges[0].node : null;
+  };
+}
+
 export function selectDistrict(district) {
   return (dispatch) => {
     dispatch({ type: "CLAIM_CLAIM_DISTRICT_SELECTED", payload: district });

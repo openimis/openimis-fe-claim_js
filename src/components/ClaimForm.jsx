@@ -136,12 +136,19 @@ class ClaimForm extends Component {
 
   _newClaim() {
     let claim = {};
+    // `user.claim_admin` last: the redux selection and the local storage copy are lost on
+    // a reload, and both pickers are read only here, so without it a claim administrator
+    // landing on this route directly gets a form they cannot fill in.
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
+      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY) ??
+      this.props.userClaimAdmin?.healthFacility;
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? getLocalStorage(STORAGE_KEY_ADMIN);
+      this?.state?.claim?.admin ??
+      this.props.claimAdmin ??
+      getLocalStorage(STORAGE_KEY_ADMIN) ??
+      this.props.userClaimAdmin;
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -663,6 +670,7 @@ const mapStateToProps = (state, props) => ({
   mutation: state.claim.mutation,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
+  userClaimAdmin: state.core?.user?.claim_admin,
   generating: state.claim.generating,
   isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
 });

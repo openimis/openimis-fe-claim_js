@@ -18,7 +18,8 @@ import {
   GetIconComponent,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
-import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin } from "../actions";
+import { claimAdminDefaultFilters } from "../components/ClaimFilter";
+import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin, fetchOwnClaimAdmin } from "../actions";
 import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
 const AddIcon = GetIconComponent("Add")
 
@@ -42,10 +43,15 @@ class HealthFacilitiesPage extends Component {
         "filter": "status: 2",
       },
     });
+    // A user linked to a claim administrator can only act as that one, so the pane opens
+    // on it instead of offering a picker holding a single option; a configured default and
+    // the cached filters of the last search both still win.
+    defaultFilters = { ...claimAdminDefaultFilters(props.userClaimAdmin), ...defaultFilters };
     this.canSubmitClaimWithZero = props.modulesManager.getConf("fe-claim", "canSubmitClaimWithZero", false);
     this.state = {
       defaultFilters,
       confirmedAction: null,
+      ownClaimAdmin: null,
     };
   }
 
@@ -133,23 +139,32 @@ class HealthFacilitiesPage extends Component {
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit", [c.uuid], newTab);
   };
 
+  // The filter selection wins when set, so a user allowed to query several claim
+  // administrators keeps acting on the one they searched for; users restricted to their
+  // own record fall back to it and never have to pick themselves. `user.claim_admin`
+  // comes with the session (current_user serialises the whole record, health facility
+  // and location path included), so it needs no round trip; the query is only there for
+  // the users whose tblUsers.ClaimAdminId is empty and whose link is resolved by login
+  // name - see fetchOwnClaimAdmin.
+  newClaimAdmin = () => this.props.claimAdmin ?? this.props.userClaimAdmin ?? this.state.ownClaimAdmin;
+
+  newClaimHealthFacility = () => this.props.claimHealthFacility ?? this.newClaimAdmin()?.healthFacility;
+
   onAdd = () => {
-    this.props.selectClaimAdmin(this.props.user.claim_admin);
-    this.props.selectHealthFacility(this.props.user.claim_admin?.healthFacility);
+    this.props.selectClaimAdmin(this.newClaimAdmin());
+    this.props.selectHealthFacility(this.newClaimHealthFacility());
     historyPush(this.props.modulesManager, this.props.history, "claim.route.claimEdit");
   };
 
-  canAdd = () => this.iUIsClaimAdmin();
+  canAdd = () => Boolean(this.newClaimAdmin()) && Boolean(this.newClaimHealthFacility());
 
-  iUIsClaimAdmin = () => Boolean(this.props.user?.claim_admin);
-
-  componentDidMount = () => {
+  componentDidMount = async () => {
     const { module } = this.props;
     if (module !== MODULE_NAME) this.props.clearCurrentPaginationPage();
 
-    if(this.iUIsClaimAdmin()) {
-      this.props.selectClaimAdmin(this.props.user?.claim_admin);
-      this.props.selectHealthFacility(this.props.user?.claim_admin?.healthFacility);
+    if (!this.props.userClaimAdmin) {
+      const ownClaimAdmin = await this.props.fetchOwnClaimAdmin(this.props.modulesManager);
+      if (ownClaimAdmin) this.setState({ ownClaimAdmin });
     }
   };
 
@@ -225,7 +240,7 @@ const mapStateToProps = (state) => ({
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
-  user: state.core.user,
+  userClaimAdmin: state.core?.user?.claim_admin,
 });
 
 const mapDispatchToProps = (dispatch) => {
@@ -233,6 +248,7 @@ const mapDispatchToProps = (dispatch) => {
     {
       selectClaimAdmin,
       selectHealthFacility,
+      fetchOwnClaimAdmin,
       journalize,
       coreConfirm,
       submit,

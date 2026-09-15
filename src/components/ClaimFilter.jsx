@@ -26,6 +26,46 @@ import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } 
 
 const CLAIM_FILTER_CONTRIBUTION_KEY = "claim.Filter";
 
+// Filter builders kept at module level so the defaults a page seeds the searcher with
+// are built by the very code a manual selection goes through - see
+// claimAdminDefaultFilters.
+const regionFilter = (v) =>
+  !!v
+    ? { id: "region", value: v, filter: `healthFacility_Location_Parent_Uuid: "${v.uuid}"` }
+    : { id: "region", value: null, filter: null };
+
+const districtFilter = (v) =>
+  !!v
+    ? { id: "district", value: v, filter: `healthFacility_Location_Uuid: "${v.uuid}"` }
+    : { id: "district", value: null, filter: null };
+
+const healthFacilityFilter = (v) =>
+  !!v
+    ? { id: "healthFacility", value: v, filter: `healthFacility_Uuid: "${v.uuid}"` }
+    : { id: "healthFacility", value: null, filter: null };
+
+const claimAdminFilter = (v) =>
+  !!v ? { id: "admin", value: v, filter: `admin_Uuid: "${v.uuid}"` } : { id: "admin", value: null, filter: null };
+
+// The filter set that picking `admin` by hand would produce, in the shape Searcher
+// takes for its defaultFilters. Lets a page open the pane already on the only
+// administrator its user can act as.
+export const claimAdminDefaultFilters = (admin) => {
+  if (!admin) return {};
+  const healthFacility = admin.healthFacility;
+  const district = healthFacility?.location;
+  return Object.fromEntries(
+    [
+      regionFilter(district?.parent),
+      districtFilter(district),
+      healthFacilityFilter(healthFacility),
+      claimAdminFilter(admin),
+    ]
+      .filter((f) => !!f.value)
+      .map((f) => [f.id, { value: f.value, filter: f.filter }]),
+  );
+};
+
 const StyledForm = styled("form")(({ theme }) => ({
   padding: 0,
 }));
@@ -56,53 +96,13 @@ class Head extends Component {
     return !!filters[k] ? filters[k].value : null;
   };
 
-  _regionFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "region",
-        value: v,
-        filter: `healthFacility_Location_Parent_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "region", value: null, filter: null };
-    }
-  };
+  _regionFilter = regionFilter;
 
-  _districtFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "district",
-        value: v,
-        filter: `healthFacility_Location_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "district", value: null, filter: null };
-    }
-  };
+  _districtFilter = districtFilter;
 
-  _healthFacilityFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "healthFacility",
-        value: v,
-        filter: `healthFacility_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "healthFacility", value: null, filter: null };
-    }
-  };
+  _healthFacilityFilter = healthFacilityFilter;
 
-  _claimAdminFilter = (v) => {
-    if (!!v) {
-      return {
-        id: "admin",
-        value: v,
-        filter: `admin_Uuid: "${v.uuid}"`,
-      };
-    } else {
-      return { id: "admin", value: null, filter: null };
-    }
-  };
+  _claimAdminFilter = claimAdminFilter;
 
   _claimBatchRunFilter = (v) => {
     if (!!v) {
