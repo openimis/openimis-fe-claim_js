@@ -38,6 +38,10 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  RIGHT_FEEDBACK,
+  RIGHT_UPDATE,
+  RIGHT_HF_ADD,
+  RIGHT_HF_UPDATE,
   REFERRAL,
   SERVICE_TYPE_PP_S,
 } from "../constants";
@@ -500,13 +504,24 @@ class ClaimForm extends Component {
     const totalServices = claim?.services?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0;                     
                          
 
+    // The right to edit depends on the context: review and feedback have their own
+    // rights, entering a new claim requires the add right and touching an existing
+    // one the update right (HF variants being the equivalents for HF users).
+    const canEdit = forReview
+      ? rights.includes(RIGHT_CLAIMREVIEW)
+      : forFeedback
+        ? rights.includes(RIGHT_FEEDBACK)
+        : claim_uuid
+          ? rights.includes(RIGHT_UPDATE) || rights.includes(RIGHT_HF_UPDATE)
+          : rights.includes(RIGHT_ADD) || rights.includes(RIGHT_HF_ADD);
+
     let readOnly =
       lockNew ||
       isSaved ||
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
-      !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
+      !canEdit;
 
     var actions = [];
     if (!!claim_uuid) {
@@ -621,7 +636,7 @@ class ClaimForm extends Component {
           <Fragment>
             <PublishedComponent
               pubRef="claim.AttachmentsDialog"
-              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+              readOnly={!canEdit || readOnly}
               claim={this.state.attachmentsClaim}
               close={(e) => this.setState({ attachmentsClaim: null })}
               onUpdated={() => this.setState({ forcedDirty: true })}

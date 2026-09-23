@@ -20,7 +20,15 @@ import {
 import ClaimSearcher from "../components/ClaimSearcher";
 import { claimAdminDefaultFilters } from "../components/ClaimFilter";
 import { submit, del, selectHealthFacility, submitAll, selectClaimAdmin, fetchOwnClaimAdmin } from "../actions";
-import { RIGHT_ADD, RIGHT_LOAD, RIGHT_SUBMIT, RIGHT_DELETE, MODULE_NAME } from "../constants";
+import {
+  RIGHT_ADD,
+  RIGHT_HF_ADD,
+  RIGHT_HF_SEARCH,
+  RIGHT_SEARCH,
+  RIGHT_SUBMIT,
+  RIGHT_DELETE,
+  MODULE_NAME,
+} from "../constants";
 const AddIcon = GetIconComponent("Add")
 
 const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
@@ -179,7 +187,8 @@ class HealthFacilitiesPage extends Component {
 
   render() {
     const { intl, rights, generatingPrint } = this.props;
-    if (!rights.filter((r) => r >= RIGHT_ADD && r <= RIGHT_SUBMIT).length) return null;
+    if (!rights.includes(RIGHT_SEARCH) && !rights.includes(RIGHT_HF_SEARCH)) return null;
+    const hasAddRight = rights.includes(RIGHT_ADD) || rights.includes(RIGHT_HF_ADD);
     let actions = [];
     if (rights.includes(RIGHT_SUBMIT)) {
       actions.push({ label: "claimSummaries.submitAll", enabled: this.canSubmitAll, action: this.submitAll });
@@ -202,13 +211,13 @@ class HealthFacilitiesPage extends Component {
         <ClaimSearcher
           defaultFilters={this.state.defaultFilters}
           cacheFiltersKey="claimHealthFacilitiesPageFiltersCache"
-          onDoubleClick={rights.includes(RIGHT_LOAD) ? this.onDoubleClick : null}
+          onDoubleClick={this.onDoubleClick}
           actions={actions}
           processing={generatingPrint}
           filterPaneContributionsKey={CLAIM_HF_FILTER_CONTRIBUTION_KEY}
           actionsContributionKey={CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY}
         />
-        {!generatingPrint && rights.includes(RIGHT_ADD) && (
+        {!generatingPrint && hasAddRight && (
           <Tooltip
             title={
               !this.canAdd()

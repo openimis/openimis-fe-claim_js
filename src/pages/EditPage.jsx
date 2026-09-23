@@ -6,7 +6,15 @@ import { useTheme, styled } from "@mui/material/styles";
 import { formatMessageWithValues, withModulesManager, withHistory, historyPush } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { createClaim, updateClaim } from "../actions";
-import { DEFAULT, RIGHT_ADD, RIGHT_LOAD } from "../constants";
+import {
+  DEFAULT,
+  RIGHT_ADD,
+  RIGHT_HF_ADD,
+  RIGHT_HF_SEARCH,
+  RIGHT_HF_UPDATE,
+  RIGHT_SEARCH,
+  RIGHT_UPDATE,
+} from "../constants";
 
 const StyledDiv = styled("div")(({ theme }) => ({
   ...theme?.page ?? {},
@@ -46,7 +54,9 @@ class EditPage extends Component {
 
   render() {
     const { modulesManager, history, rights, claim_uuid, path } = this.props;
-    if (!rights.includes(RIGHT_LOAD)) return null;
+    if (!rights.includes(RIGHT_SEARCH) && !rights.includes(RIGHT_HF_SEARCH)) return null;
+    const canAdd = rights.includes(RIGHT_ADD) || rights.includes(RIGHT_HF_ADD);
+    const canUpdate = rights.includes(RIGHT_UPDATE) || rights.includes(RIGHT_HF_UPDATE);
 
     const isHealthFacilityPage = () => {
       return path.split("/").includes("healthFacilities");
@@ -57,8 +67,8 @@ class EditPage extends Component {
         <ClaimForm
           claim_uuid={claim_uuid}
           back={(e) => historyPush(modulesManager, history, "claim.route.healthFacilities")}
-          add={rights.includes(RIGHT_ADD) ? this.add : null}
-          save={rights.includes(RIGHT_LOAD) ? this.save : null}
+          add={canAdd ? this.add : null}
+          save={canAdd || canUpdate ? this.save : null}
           isHealthFacilityPage={isHealthFacilityPage()}
         />
       </StyledDiv>
