@@ -58,7 +58,6 @@ class HealthFacilitiesPage extends Component {
     this.canSubmitClaimWithZero = props.modulesManager.getConf("fe-claim", "canSubmitClaimWithZero", false);
     this.state = {
       defaultFilters,
-      confirmedAction: null,
       ownClaimAdmin: null,
     };
   }
@@ -67,8 +66,6 @@ class HealthFacilitiesPage extends Component {
     if (prevProps.submittingMutation && !this.props.submittingMutation) {
       this.props.journalize(this.props.mutation);
       this.setState({ reset: this.state.reset + 1 });
-    } else if (!prevProps.confirmed && this.props.confirmed) {
-      this.state.confirmedAction();
     }
   }
 
@@ -123,6 +120,7 @@ class HealthFacilitiesPage extends Component {
           formatMessageWithValues(this.props.intl, "claim", "deleteClaim.confirm.message", {
             code: selection[0].code,
           }),
+          { onConfirm: confirmedAction },
         );
     } else {
       confirmedAction = () =>
@@ -137,10 +135,11 @@ class HealthFacilitiesPage extends Component {
           formatMessageWithValues(this.props.intl, "claim", "deleteClaims.confirm.message", {
             count: selection.length,
           }),
+          { onConfirm: confirmedAction },
         );
     }
 
-    this.setState({ confirmedAction }, confirm);
+    confirm();
   };
 
   onDoubleClick = (c, newTab = false) => {
