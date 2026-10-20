@@ -684,9 +684,11 @@ export function formatReviewDetails(type, details) {
     ]`;
 }
 
-export function saveReview(claim, clientMutationLabel) {
+// submitReview also delivers the review, in the same mutation that saves it.
+export function saveReview(claim, clientMutationLabel, submitReview = false) {
   let reviewGQL = `
     claimUuid: "${claim.uuid}"
+    ${submitReview ? "submitReview: true" : ""}
     ${!!claim.adjustment ? `adjustment: "${formatGQLString(claim.adjustment)}"` : ""}
     ${formatReviewDetails("service", claim.services)}
     ${formatReviewDetails("item", claim.items)}
