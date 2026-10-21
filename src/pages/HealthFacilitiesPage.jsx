@@ -244,7 +244,6 @@ const mapStateToProps = (state) => ({
   userHealthFacilityFullPath: !!state.loc ? state.loc.userHealthFacilityFullPath : null,
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,
-  confirmed: state.core.confirmed,
   filtersCache: state.core.filtersCache,
   selectedFilters: state.core.filtersCache.claimHealthFacilitiesPageFiltersCache,
   module: state.core?.savedPagination?.module,
