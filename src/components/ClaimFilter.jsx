@@ -47,6 +47,12 @@ const healthFacilityFilter = (v) =>
 const claimAdminFilter = (v) =>
   !!v ? { id: "admin", value: v, filter: `admin_Uuid: "${v.uuid}"` } : { id: "admin", value: null, filter: null };
 
+export const claimStatusFilter = (v) => ({
+  id: "claimStatus",
+  value: v,
+  filter: !!v ? `status: ${v}` : null,
+});
+
 // The filter set that picking `admin` by hand would produce, in the shape Searcher
 // takes for its defaultFilters. Lets a page open the pane already on the only
 // administrator its user can act as.
@@ -305,15 +311,7 @@ class Details extends Component {
             pubRef="claim.ClaimStatusPicker"
             name="claimStatus"
             value={filters["claimStatus"] && filters["claimStatus"]["value"]}
-            onChange={(v, s) =>
-              onChangeFilters([
-                {
-                  id: "claimStatus",
-                  value: v,
-                  filter: !!v ? `status: ${v}` : null,
-                },
-              ])
-            }
+            onChange={(v, s) => onChangeFilters([claimStatusFilter(v)])}
           />
         </StyledItemGrid>
         <StyledItemGrid size={GRID_RESPONSIVE_STANDARD}>
