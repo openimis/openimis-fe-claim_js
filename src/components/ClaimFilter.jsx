@@ -50,7 +50,8 @@ const claimAdminFilter = (v) =>
 export const claimStatusFilter = (v) => ({
   id: "claimStatus",
   value: v,
-  filter: !!v ? `status: ${v}` : null,
+  // 0 (Error) is a status too, not an empty choice
+  filter: v !== null && v !== undefined ? `status: ${v}` : null,
 });
 
 // The filter set that picking `admin` by hand would produce, in the shape Searcher

@@ -28,6 +28,7 @@
   "claim.codeTaken": "Claim code already exists",
   "claim.guaranteeId": "Guarantee No.",
   "claim.claimStatus.null": "Any",
+  "claim.claimStatus.0": "Error",
   "claim.claimStatus.1": "Rejected",
   "claim.claimStatus.2": "Entered",
   "claim.claimStatus.4": "Checked",
