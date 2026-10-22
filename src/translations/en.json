@@ -213,6 +213,8 @@
   "claim.rejectionReason.17": "Item/service cannot be covered within waiting period",
   "claim.rejectionReason.18": "N/A",
   "claim.rejectionReason.19": "Maximum number of antenatal contacts exceeded",
+  "claim.rejectionReason.20": "Claim cannot be submitted: it is not in the Entered status",
+  "claim.rejectionReason.21": "No active policy covers the patient at the date of care",
   "claim.Review.deliverReview.fab.tooltip": "Deliver review",
   "claim.Feedback": "Feedback",
   "claim.Feedback.date": "Feedback Date",
