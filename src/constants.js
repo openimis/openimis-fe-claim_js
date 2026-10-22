@@ -10,7 +10,10 @@ export const CLAIM_DETAIL_REJECTED_STATUS = 2;
 export const STATUS_ERROR = 0;
 export const STATUS_REJECTED = 1;
 export const STATUS_ENTERED = 2;
-export const REJECTION_REASONS = _.range(-1, 20);
+// Row rejection reasons a reviewer can pick. 20 (submission refused, claim not
+// Entered) is claim-level only; 21 (no active policy) is also set on rows by the
+// backend validation, so the picker must be able to show it.
+export const REJECTION_REASONS = [..._.range(-1, 20), 21];
 export const FEEDBACK_ASSESSMENTS = _.range(-1, 6);
 // NULL - all claims, 1 - with attachments, 2 - without attachments
 export const ATTACHMENT_STATUS_WITH = 1;
