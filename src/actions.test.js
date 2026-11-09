@@ -12,19 +12,8 @@ vi.mock("@openimis/fe-core", async () => ({
   ...(await vi.importActual("@openimis/fe-core/helpers/api")),
   ...(await vi.importActual("@openimis/fe-core/helpers/jsonExt")),
   baseApiUrl: "/api",
-  formatMutation: (operationName, input) => ({
-    clientMutationId: "test-mutation-id",
-    payload: `mutation { ${operationName}(input: { ${input} }) { clientMutationId } }`,
-  }),
-  decodeId: (id) => atob(id).split(":")[1],
-  formatGQLString: (value) => value,
-  graphql: (payload, types, meta) => ({ payload, types, meta }),
-  ...core
+  ...core,
 }));
-
-
-
-import { saveReview } from "./actions";
 
 const actions = await import("./actions");
 const { default: reducer } = await import("./reducer");
@@ -526,14 +515,17 @@ describe("claim actions", () => {
       expect(query(actions.createClaim(mm(), claim(), "Create claim"))).toContain('code: "C-001" autogenerate: false');
     });
 
-    it("never regenerates the code of a claim being updated and tags it with the mutation", () => {
+    // The claim itself is left untouched: it may be frozen redux state, so the mutation
+    // names the claims it acts on in its meta instead.
+    it("never regenerates the code of a claim being updated and names it in the mutation", () => {
       const edited = claim({ uuid: "c-1" });
       const result = actions.updateClaim(mm({ getConf: () => true }), edited, "Update claim");
 
       expect(result.type).toEqual(["CLAIM_MUTATION_REQ", "CLAIM_UPDATE_CLAIM_RESP", "CLAIM_MUTATION_ERR"]);
       expect(query(result)).toContain("mutation updateClaim { updateClaim(");
       expect(query(result)).toContain('code: "C-001" autogenerate: false');
-      expect(edited.clientMutationId).toBe(result.meta.clientMutationId);
+      expect(result.meta.claimUuids).toEqual(["c-1"]);
+      expect(edited).not.toHaveProperty("clientMutationId");
     });
   });
 
@@ -558,7 +550,8 @@ describe("claim actions", () => {
       expect(query(result)).toContain('uuids: ["c-1","c-2"]');
       expect(query(result)).toContain('clientMutationDetails: {"count":2}');
       expect(result.meta).toMatchObject({ clientMutationLabel: "Bulk", clientMutationDetails: '{"count":2}' });
-      expect(claims.map((c) => c.clientMutationId)).toEqual([result.meta.clientMutationId, result.meta.clientMutationId]);
+      expect(result.meta.claimUuids).toEqual(["c-1", "c-2"]);
+      expect(claims).toEqual([{ uuid: "c-1" }, { uuid: "c-2" }]);
     });
 
     it("records no details when none are given", () => {
@@ -605,7 +598,8 @@ describe("claim actions", () => {
         'claimUuid: "c-1" feedback: { feedbackDate: "2026-09-10" officerId: 3 careRendered: false paymentAsked: true' +
           " drugPrescribed: false drugReceived: true asessment: 0 }",
       );
-      expect(subject.clientMutationId).toBe(result.meta.clientMutationId);
+      expect(result.meta.claimUuids).toEqual(["c-1"]);
+      expect(subject).not.toHaveProperty("clientMutationId");
     });
 
     it("leaves out unanswered feedback fields", () => {
@@ -698,7 +692,8 @@ describe("claim actions", () => {
       expect(result.type).toEqual(["CLAIM_MUTATION_REQ", "CLAIM_SAVE_CLAIM_REVIEW_RESP", "CLAIM_MUTATION_ERR"]);
       expect(query(result)).toContain('claimUuid: "c-1" adjustment: "cut\\ta" services: [ { id: 92 serviceId: 6');
       expect(query(result)).toContain("items: [ { id: 91 itemId: 5");
-      expect(subject.clientMutationId).toBe(result.meta.clientMutationId);
+      expect(result.meta.claimUuids).toEqual(["c-1"]);
+      expect(subject).not.toHaveProperty("clientMutationId");
     });
 
     it("saves a review without adjustment or lines", () => {
@@ -706,46 +701,29 @@ describe("claim actions", () => {
 
       expect(query(result)).not.toContain("adjustment");
       expect(query(result)).not.toContain("services:");
+      expect(query(result)).not.toContain("submitReview");
     });
 
+    // OP-3207: delivering from the review page must carry the on-screen review,
+    // so it goes through saveClaimReview with submitReview instead of deliverClaimsReview.
+    it("saves and delivers the review when asked to submit", () => {
+      const subject = {
+        uuid: "c-1",
+        services: [
+          {
+            ...reviewed({ id: 7, item: undefined, qtyApproved: 3, priceApproved: 12.5, status: 2, rejectionReason: 1 }),
+            service: ref("ServiceGQLType", 5),
+          },
+        ],
+      };
+      const result = actions.saveReview(subject, "Review", true);
 
-const reviewedClaim = () => ({
-  uuid: "11111111-2222-3333-4444-555555555555",
-  code: "C-1",
-  adjustment: null,
-  items: [],
-  services: [
-    {
-      id: 7,
-      service: { id: btoa("ServiceGQLType:5") },
-      qtyApproved: 3,
-      priceApproved: 12.5,
-      justification: null,
-      status: 2,
-      rejectionReason: 1,
-    },
-  ],
-});
-
-describe("saveReview", () => {
-  it("saves the review without delivering it", () => {
-    const { payload } = saveReview(reviewedClaim(), "save");
-
-    expect(payload).toContain("saveClaimReview");
-    expect(payload).not.toMatch(/submitReview:\s*true/);
-    expect(payload).toContain('qtyApproved: "3.00"');
-  });
-
-  // OP-3207: delivering from the review page must carry the on-screen review,
-  // so it goes through saveClaimReview with submitReview instead of deliverClaimsReview.
-  it("saves and delivers the review when asked to submit", () => {
-    const { payload } = saveReview(reviewedClaim(), "submit", true);
-
-    expect(payload).toContain("saveClaimReview");
-    expect(payload).toMatch(/submitReview:\s*true/);
-    expect(payload).toContain('qtyApproved: "3.00"');
-    expect(payload).toContain('priceApproved: "12.50"');
-    expect(payload).toMatch(/status:\s*2/);
-    expect(payload).toMatch(/rejectionReason:\s*1/);
+      expect(query(result)).toContain("saveClaimReview");
+      expect(query(result)).toMatch(/submitReview:\s*true/);
+      expect(query(result)).toContain('qtyApproved: "3.00"');
+      expect(query(result)).toContain('priceApproved: "12.50"');
+      expect(query(result)).toMatch(/status:\s*2/);
+      expect(query(result)).toMatch(/rejectionReason:\s*1/);
+    });
   });
 });

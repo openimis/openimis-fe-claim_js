@@ -1,5 +1,5 @@
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 // fe-core's barrel imports itself, so the real helpers come from their defining modules.
 vi.mock("@openimis/fe-core", async () => {
@@ -16,27 +16,12 @@ const { renderWithProviders, screen, userEvent } = await import("@openimis/fe-co
 const renderPicker = (props = {}) =>
   renderWithProviders(<RejectionReasonPicker onChange={() => {}} withLabel={false} {...props} />, { messages: en });
 
-// React rethrows render errors through a window error event, which jsdom prints unless prevented.
-const silenceRenderErrors = () => {
-  const swallow = (event) => event.preventDefault();
-  window.addEventListener("error", swallow);
-  vi.spyOn(console, "error").mockImplementation(() => {});
-  return () => window.removeEventListener("error", swallow);
-};
-
 const openOptions = async () => {
   await userEvent.click(screen.getByRole("combobox"));
   return screen.getAllByRole("option").map((option) => option.textContent);
 };
 
 describe("RejectionReasonPicker", () => {
-  let restore = () => {};
-
-  afterEach(() => {
-    restore();
-    vi.restoreAllMocks();
-  });
-
   it("offers every rejection reason, translated, after an empty choice", async () => {
     renderPicker();
     const options = await openOptions();
@@ -44,7 +29,7 @@ describe("RejectionReasonPicker", () => {
     expect(options).toHaveLength(REJECTION_REASONS.length + 1);
     expect(options[1]).toBe("Rejected by a medical officer");
     expect(options[2]).toBe("Accepted");
-    expect(options.at(-1)).toBe("Maximum number of antenatal contacts exceeded");
+    expect(options.at(-1)).toBe("No active policy covers the patient at the date of care");
   });
 
   it("can leave out the empty choice", async () => {
@@ -81,19 +66,13 @@ describe("RejectionReasonPicker", () => {
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Item/Service duplicated");
   });
 
-  // Currently fails: the label is the bare identifier `rejectionReason` instead of the
-  // string key, so rendering with a label throws a ReferenceError.
-  it.fails("shows its label", () => {
-    restore = silenceRenderErrors();
+  it("shows its label", () => {
     renderPicker({ withLabel: true });
 
     expect(screen.getByText("Rejection Reason")).toBeInTheDocument();
   });
 
-  // Currently fails: outside compact mode withTooltip returns `{ c }`, an object, which
-  // React refuses to render.
-  it.fails("shows the code of a read-only reason outside compact mode", () => {
-    restore = silenceRenderErrors();
+  it("shows the code of a read-only reason outside compact mode", () => {
     renderPicker({ readOnly: true, value: 6 });
 
     expect(screen.getByText("6")).toBeInTheDocument();
