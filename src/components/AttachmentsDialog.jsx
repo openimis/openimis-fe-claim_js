@@ -162,21 +162,6 @@ class AttachmentsDialog extends Component {
         attachmentToDelete: null,
         reset: state.reset + 1,
       }));
-    } else if (
-      prevProps.confirmed !== this.props.confirmed &&
-      !!this.props.confirmed &&
-      !!this.state.attachmentToDelete
-    ) {
-      const title = this.state.attachmentToDelete.title ? `${this.state.attachmentToDelete.title}` : "";
-      const filename = this.state.attachmentToDelete.filename ? `(${this.state.attachmentToDelete.filename})` : "";
-      this.props.deleteAttachment(
-        this.state.attachmentToDelete,
-        formatMessageWithValues(this.props.intl, "claim", "claim.ClaimAttachment.delete.mutationLabel", {
-          file: `${title} ${filename}`,
-          code: `${this.props.claim.code}`,
-        }),
-      );
-      
     }
   }
 
@@ -216,13 +201,25 @@ class AttachmentsDialog extends Component {
   delete = (a, i) => {
     if (!!a.id) {
       const filename = a.filename ? `(${a.filename})` : "";
-      this.setState({ attachmentToDelete: a }, (e) =>
-        this.props.coreConfirm(
-          formatMessage(this.props.intl, "claim", "deleteClaimAttachment.confirm.title"),
-          formatMessageWithValues(this.props.intl, "claim", "deleteClaimAttachment.confirm.message", {
-            file: `${a.title} ${filename}`,
-          }),
-        ),
+      // state.core.confirmed deleted the attachment on any other dialog's "Yes", and
+      // a cancelled delete left it parked to be dropped from the list later (OP-3224).
+      this.props.coreConfirm(
+        formatMessage(this.props.intl, "claim", "deleteClaimAttachment.confirm.title"),
+        formatMessageWithValues(this.props.intl, "claim", "deleteClaimAttachment.confirm.message", {
+          file: `${a.title} ${filename}`,
+        }),
+        {
+          onConfirm: () =>
+            this.setState({ attachmentToDelete: a }, () =>
+              this.props.deleteAttachment(
+                a,
+                formatMessageWithValues(this.props.intl, "claim", "claim.ClaimAttachment.delete.mutationLabel", {
+                  file: `${a.title || ""} ${filename}`,
+                  code: `${this.props.claim.code}`,
+                }),
+              ),
+            ),
+        },
       );
     } else {
       var claimAttachments = [...this.state.claimAttachments];
@@ -593,7 +590,6 @@ class AttachmentsDialog extends Component {
 
 const mapStateToProps = (state) => ({
   rights: !!state.core && !!state.core.user && !!state.core.user.i_user ? state.core.user.i_user.rights : [],
-  confirmed: state.core.confirmed,
   submittingMutation: state.claim.submittingMutation,
   mutation: state.claim.mutation,
   fetchingClaimAttachments: state.claim.fetchingClaimAttachments,

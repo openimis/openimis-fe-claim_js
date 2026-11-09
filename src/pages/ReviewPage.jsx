@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 import { useTheme, styled } from "@mui/material/styles";
 import { withModulesManager, withHistory, formatMessageWithValues, historyPush, journalize } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
-import { saveReview, deliverReview } from "../actions";
+import { saveReview } from "../actions";
 import _ from "lodash";
 
 const StyledDiv = styled("div")(({ theme }) => ({
@@ -42,12 +42,15 @@ class ReviewPage extends Component {
     }
   };
 
+  // Save the review as shown on screen and deliver it in one mutation: the
+  // uuid-only deliverReview action would drop any unsaved edits.
   deliverReview = (claim) => {
     if (!!claim && (!!claim.items || !!claim.services)) {
       this.setState({ close: true }, (e) =>
-        this.props.deliverReview(
-          [claim],
+        this.props.saveReview(
+          claim,
           formatMessageWithValues(this.props.intl, "claim", "DeliverClaimReview.mutationLabel", { code: claim.code }),
+          true,
         ),
       );
     }
@@ -86,7 +89,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = (dispatch) => {
-  return bindActionCreators({ deliverReview, saveReview, journalize }, dispatch);
+  return bindActionCreators({ saveReview, journalize }, dispatch);
 };
 
 export { StyledDiv };

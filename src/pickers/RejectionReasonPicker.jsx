@@ -10,7 +10,7 @@ class RejectionReasonPicker extends Component {
   _onChange = (v) =>
     this.props.onChange(v, !!this.props.compact ? v : formatMessage(this.props.intl, "claim", `rejectionReason.${v}`));
 
-  withTooltip = (c, t) => (!!this.props.compact ? <Tooltip title={t}>{c}</Tooltip> : { c });
+  withTooltip = (c, t) => (!!this.props.compact ? <Tooltip title={t}>{c}</Tooltip> : c);
 
   render() {
     const { intl, name, value, withNull = true, withLabel = true, readOnly = false } = this.props;
@@ -37,7 +37,7 @@ class RejectionReasonPicker extends Component {
     return (
       <SelectInput
         module="claim"
-        label={withLabel ? rejectionReason : null}
+        label={withLabel ? "rejectionReason" : null}
         options={options}
         name={name}
         value={value}

@@ -38,6 +38,10 @@ import {
   STORAGE_KEY_CLAIM_HEALTH_FACILITY,
   DEFAULT,
   RIGHT_CLAIMREVIEW,
+  RIGHT_FEEDBACK,
+  RIGHT_UPDATE,
+  RIGHT_HF_ADD,
+  RIGHT_HF_UPDATE,
   REFERRAL,
   SERVICE_TYPE_PP_S,
 } from "../constants";
@@ -136,12 +140,19 @@ class ClaimForm extends Component {
 
   _newClaim() {
     let claim = {};
+    // `user.claim_admin` last: the redux selection and the local storage copy are lost on
+    // a reload, and both pickers are read only here, so without it a claim administrator
+    // landing on this route directly gets a form they cannot fill in.
     claim.healthFacility =
       this?.state?.claim?.healthFacility ??
       this.props.claimHealthFacility ??
-      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY);
+      getLocalStorage(STORAGE_KEY_CLAIM_HEALTH_FACILITY) ??
+      this.props.userClaimAdmin?.healthFacility;
     claim.admin =
-      this?.state?.claim?.admin ?? this.props.claimAdmin ?? getLocalStorage(STORAGE_KEY_ADMIN);
+      this?.state?.claim?.admin ??
+      this.props.claimAdmin ??
+      getLocalStorage(STORAGE_KEY_ADMIN) ??
+      this.props.userClaimAdmin;
     claim.status = this.props.modulesManager.getConf("fe-claim", "newClaim.status", 2);
     claim.dateClaimed = toISODate(moment().toDate());
     claim.dateFrom = toISODate(moment().toDate());
@@ -493,13 +504,24 @@ class ClaimForm extends Component {
     const totalServices = claim?.services?.reduce((sum, r) => sum + claimedAmount(r), 0) || 0;                     
                          
 
+    // The right to edit depends on the context: review and feedback have their own
+    // rights, entering a new claim requires the add right and touching an existing
+    // one the update right (HF variants being the equivalents for HF users).
+    const canEdit = forReview
+      ? rights.includes(RIGHT_CLAIMREVIEW)
+      : forFeedback
+        ? rights.includes(RIGHT_FEEDBACK)
+        : claim_uuid
+          ? rights.includes(RIGHT_UPDATE) || rights.includes(RIGHT_HF_UPDATE)
+          : rights.includes(RIGHT_ADD) || rights.includes(RIGHT_HF_ADD);
+
     let readOnly =
       lockNew ||
       isSaved ||
       (!forReview && !forFeedback && claim.status !== 2) ||
       (forReview && (claim.reviewStatus >= 8 || claim.status !== 4)) ||
       (forFeedback && claim.status !== 4) ||
-      !rights.filter((r) => r === RIGHT_CLAIMREVIEW).length;
+      !canEdit;
 
     var actions = [];
     if (!!claim_uuid) {
@@ -614,7 +636,7 @@ class ClaimForm extends Component {
           <Fragment>
             <PublishedComponent
               pubRef="claim.AttachmentsDialog"
-              readOnly={!rights.includes(RIGHT_ADD) || readOnly}
+              readOnly={!canEdit || readOnly}
               claim={this.state.attachmentsClaim}
               close={(e) => this.setState({ attachmentsClaim: null })}
               onUpdated={() => this.setState({ forcedDirty: true })}
@@ -663,6 +685,7 @@ const mapStateToProps = (state, props) => ({
   mutation: state.claim.mutation,
   claimAdmin: state.claim.claimAdmin,
   claimHealthFacility: state.claim.claimHealthFacility,
+  userClaimAdmin: state.core?.user?.claim_admin,
   generating: state.claim.generating,
   isClaimCodeValid: state.claim.validationFields?.claimCode?.isValid,
 });

@@ -12,8 +12,19 @@ vi.mock("@openimis/fe-core", async () => ({
   ...(await vi.importActual("@openimis/fe-core/helpers/api")),
   ...(await vi.importActual("@openimis/fe-core/helpers/jsonExt")),
   baseApiUrl: "/api",
-  ...core,
+  formatMutation: (operationName, input) => ({
+    clientMutationId: "test-mutation-id",
+    payload: `mutation { ${operationName}(input: { ${input} }) { clientMutationId } }`,
+  }),
+  decodeId: (id) => atob(id).split(":")[1],
+  formatGQLString: (value) => value,
+  graphql: (payload, types, meta) => ({ payload, types, meta }),
+  ...core
 }));
+
+
+
+import { saveReview } from "./actions";
 
 const actions = await import("./actions");
 const { default: reducer } = await import("./reducer");
@@ -696,5 +707,45 @@ describe("claim actions", () => {
       expect(query(result)).not.toContain("adjustment");
       expect(query(result)).not.toContain("services:");
     });
+
+
+const reviewedClaim = () => ({
+  uuid: "11111111-2222-3333-4444-555555555555",
+  code: "C-1",
+  adjustment: null,
+  items: [],
+  services: [
+    {
+      id: 7,
+      service: { id: btoa("ServiceGQLType:5") },
+      qtyApproved: 3,
+      priceApproved: 12.5,
+      justification: null,
+      status: 2,
+      rejectionReason: 1,
+    },
+  ],
+});
+
+describe("saveReview", () => {
+  it("saves the review without delivering it", () => {
+    const { payload } = saveReview(reviewedClaim(), "save");
+
+    expect(payload).toContain("saveClaimReview");
+    expect(payload).not.toMatch(/submitReview:\s*true/);
+    expect(payload).toContain('qtyApproved: "3.00"');
+  });
+
+  // OP-3207: delivering from the review page must carry the on-screen review,
+  // so it goes through saveClaimReview with submitReview instead of deliverClaimsReview.
+  it("saves and delivers the review when asked to submit", () => {
+    const { payload } = saveReview(reviewedClaim(), "submit", true);
+
+    expect(payload).toContain("saveClaimReview");
+    expect(payload).toMatch(/submitReview:\s*true/);
+    expect(payload).toContain('qtyApproved: "3.00"');
+    expect(payload).toContain('priceApproved: "12.50"');
+    expect(payload).toMatch(/status:\s*2/);
+    expect(payload).toMatch(/rejectionReason:\s*1/);
   });
 });

@@ -346,8 +346,19 @@ function reducer(
           },
         },
       };
-    case "CLAIM_MUTATION_REQ":
-      return dispatchMutationReq(state, action);
+    case "CLAIM_MUTATION_REQ": {
+      // Lock the searcher rows of the claims under mutation (see ClaimSearcher.rowLocked),
+      // on copies: the claims in state must not be written in place.
+      const next = dispatchMutationReq(state, action);
+      const claimUuids = action.meta?.claimUuids;
+      if (!claimUuids?.length || !state.claims) return next;
+      return {
+        ...next,
+        claims: state.claims.map((c) =>
+          claimUuids.includes(c.uuid) ? { ...c, clientMutationId: action.meta.clientMutationId } : c,
+        ),
+      };
+    }
     case "CLAIM_MUTATION_ERR":
       return dispatchMutationErr(state, action);
     case "CLAIM_CREATE_CLAIM_RESP":
