@@ -1,3 +1,5 @@
+# The steps live in the reusable workflow in openimis-fe_js, so fixes land there
+# once and apply to every module; this file should not need to change.
 name: CI Build
 
 on:
