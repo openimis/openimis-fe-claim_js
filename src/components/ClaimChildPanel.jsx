@@ -93,6 +93,21 @@ class ClaimChildPanel extends Component {
     this.setState({ data: this.initData() });
   }
 
+  // Whether anything initData() reads differs. Comparing the whole claim instead reset the
+  // rows (a setState during the commit, so a second commit) on every keystroke in any other
+  // field of the form, including the other panel's rows.
+  _initDataInputsChanged = (prevProps) => {
+    const { edited, type, forReview } = this.props;
+    const prevEdited = prevProps.edited;
+    return (
+      prevProps.type !== type ||
+      prevProps.forReview !== forReview ||
+      !_.isEqual(prevEdited?.[`${prevProps.type}s`], edited[`${type}s`]) ||
+      !!prevEdited?.services !== !!edited.services ||
+      prevEdited?.status !== edited.status
+    );
+  };
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
@@ -102,7 +117,7 @@ class ClaimChildPanel extends Component {
       this.setState({ data, reset: this.state.reset + 1 });
     } else if (
       prevProps.reset !== this.props.reset ||
-      (!!this.props.edited && !_.isEqual(prevProps.edited, this.props.edited))
+      (!!this.props.edited && this._initDataInputsChanged(prevProps))
     ) {
       this.setState({
         data: this.initData(),
