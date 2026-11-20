@@ -1,15 +1,14 @@
 import React, { Component } from "react";
-import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { useTheme, styled } from "@mui/material/styles";
-import { withModulesManager, withHistory, formatMessageWithValues, historyPush, journalize } from "@openimis/fe-core";
+import { withModulesManager, withHistory, formatMessageWithValues, historyPush, journalize, injectIntl } from "@openimis/fe-core";
 import ClaimForm from "../components/ClaimForm";
 import { saveReview } from "../actions";
 import _ from "lodash";
 
 const StyledDiv = styled("div")(({ theme }) => ({
-  ...theme?.page ?? {},
+  ...(theme?.page ?? {}),
 }));
 
 class ReviewPage extends Component {
