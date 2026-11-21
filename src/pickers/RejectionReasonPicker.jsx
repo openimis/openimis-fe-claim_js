@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { SelectInput } from "@openimis/fe-core";
-import { injectIntl } from "react-intl";
+import { SelectInput, injectIntl } from "@openimis/fe-core";
+
 import { formatMessage } from "@openimis/fe-core";
 
 import { REJECTION_REASONS } from "../constants";

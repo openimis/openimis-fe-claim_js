@@ -7,7 +7,7 @@ import { useModulesManager, useTranslations, TextInput, PublishedComponent, useG
 import { calculateAge, calculateDuration } from "../utils/utils";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.item ?? {},
+  ...(theme?.paper?.item ?? {}),
 }));
 
 const AdditionalPanelInsuree = ({ dateTo, dateFrom, insuree, dateClaimed, isEdited }) => {

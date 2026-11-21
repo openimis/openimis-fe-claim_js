@@ -4,7 +4,8 @@ import { act, render } from "@testing-library/react";
 
 // The fe-core barrel cannot be loaded whole in a module test (UserPicker import
 // cycle); the dialog only needs these, and the table itself is irrelevant here.
-vi.mock("@openimis/fe-core", () => ({
+vi.mock("@openimis/fe-core", async () => ({
+  injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
   GetIconComponent: () => () => null,
   FormattedMessage: () => null,
   withModulesManager: (component) => component,

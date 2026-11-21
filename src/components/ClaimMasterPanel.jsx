@@ -1,7 +1,6 @@
 import React, { Fragment } from "react";
 import { useTheme, styled } from "@mui/material/styles";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 import { bindActionCreators } from "redux";
 import {
   formatMessage,
@@ -17,7 +16,8 @@ import {
   GRID_RESPONSIVE_LARGE,
   GRID_RESPONSIVE_HALF,
   GRID_RESPONSIVE_FULL,
-  FormattedMessage
+  FormattedMessage,
+  injectIntl
 } from "@openimis/fe-core";
 import { Grid, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import _ from "lodash";
@@ -164,7 +164,9 @@ class ClaimMasterPanel extends FormPanel {
         <Grid container>
           <Grid size={GRID_RESPONSIVE_HALF} container direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.insuree" />
               </Typography>
             </StyledItemGrid>
@@ -221,7 +223,9 @@ class ClaimMasterPanel extends FormPanel {
           </Grid>
           <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.visitDetails" />
               </Typography>
             </StyledItemGrid>
@@ -367,7 +371,9 @@ class ClaimMasterPanel extends FormPanel {
         <Grid container>
           <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.claimInfos" />
               </Typography>
             </StyledItemGrid>
@@ -480,7 +486,9 @@ class ClaimMasterPanel extends FormPanel {
           </Grid>
           <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.diagnosis" />
               </Typography>
             </StyledItemGrid>
@@ -536,7 +544,9 @@ class ClaimMasterPanel extends FormPanel {
         <Grid container>
           <Grid container size={GRID_RESPONSIVE_HALF} direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.amount" />
               </Typography>
             </StyledItemGrid>
@@ -578,7 +588,9 @@ class ClaimMasterPanel extends FormPanel {
           </Grid>
           {!!forFeedback && (<Grid container size={GRID_RESPONSIVE_HALF} direction="column">
             <StyledItemGrid className="item">
-              <Typography className="item" fontWeight="bold">
+              <Typography className="item" sx={{
+                fontWeight: "bold"
+              }}>
                 <FormattedMessage module="claim" id="Claim.title.status" />
               </Typography>
             </StyledItemGrid>

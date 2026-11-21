@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { Component } from "react";
-import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 
 import { Box, Grid, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
@@ -20,6 +19,7 @@ import {
   withModulesManager,
   withTooltip,
   GetIconComponent,
+  injectIntl,
 } from "@openimis/fe-core";
 import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P, SERVICE_TYPE_PP_S } from "../constants";
 import { approvedAmount, claimedAmount } from "../helpers/amounts";
@@ -380,7 +380,9 @@ class ClaimChildPanel extends Component {
           disableFocusListener={forReview || !!readOnly}
           sx={{ fontSize: "3rem" }}
         >
-          <Box minWidth={forReview ? 300 : 400}>
+          <Box sx={{
+            minWidth: forReview ? 300 : 400
+          }}>
             <PublishedComponent
               required={(!!edited.services && edited.services?.length<2 && !!edited.items && edited?.items?.length<2) || (!edited.services && !edited.items)}
               readOnly={forReview || readOnly}
@@ -448,7 +450,9 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
           <TableCell>
-            <Box minWidth={forReview ? 400 : 600 }>
+            <Box sx={{
+              minWidth: forReview ? 400 : 600
+            }}>
               <TextInput
                 readOnly={forReview || readOnly || true}
                 value={u.service.name}
@@ -531,7 +535,9 @@ class ClaimChildPanel extends Component {
                 <TextInput readOnly={true} value={u.item.code} />
               </TableCell>
               <TableCell>
-                <Box minWidth={400}>
+                <Box sx={{
+                  minWidth: 400
+                }}>
                   <TextInput readOnly={forReview || readOnly || true} value={u.item.name} />
                 </Box>
               </TableCell>
@@ -705,7 +711,13 @@ class ClaimChildPanel extends Component {
           disableDeleteOnEmptyRow
           showOrdinalNumber={this.showOrdinalNumber}
         />
-        <Box display="flex" justifyContent="flex-start" padding={2} paddingLeft={135}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            padding: 2,
+            paddingLeft: 135
+          }}>
           <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
             {formatMessageWithValues(intl, "claim", `edit.${type}s.totalAmountLabel`, {
               total: formatAmount(modulesManager, intl, totalAmount),

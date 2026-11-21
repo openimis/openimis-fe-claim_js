@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import _ from "lodash";
 import _debounce from "lodash/debounce";
-import { injectIntl } from "react-intl";
 import { RIGHT_CLAIMREVIEW } from "../constants";
 
 import { Grid, Divider, Checkbox, FormControlLabel } from "@mui/material";
@@ -21,6 +20,7 @@ import {
   TextInput,
   AmountInput,
   Contributions,
+  injectIntl,
 } from "@openimis/fe-core";
 import { selectClaimAdmin, selectHealthFacility, selectDistrict, selectRegion } from "../actions";
 
