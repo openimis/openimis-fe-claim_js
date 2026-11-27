@@ -10,8 +10,14 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import { GetIconComponent, injectIntl } from "@openimis/fe-core";
-import { useModulesManager, useTranslations, Table, formatDateFromISO } from "@openimis/fe-core";
+import {
+  GetIconComponent,
+  injectIntl,
+  useModulesManager,
+  useTranslations,
+  Table,
+  formatDateFromISO,
+} from "@openimis/fe-core";
 import { fetchClaimHistory } from "../actions";
 import { styled } from "@mui/material/styles";
 

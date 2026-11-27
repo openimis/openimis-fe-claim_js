@@ -16,7 +16,7 @@ import {
 } from "../constants";
 
 const StyledDiv = styled("div")(({ theme }) => ({
-  ...(theme?.page ?? {}),
+  ...theme?.page,
 }));
 
 class EditPage extends Component {
