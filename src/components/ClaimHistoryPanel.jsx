@@ -16,7 +16,6 @@ import {
   useModulesManager,
   useTranslations,
   Table,
-  formatDateFromISO,
 } from "@openimis/fe-core";
 import { fetchClaimHistory } from "../actions";
 import { styled } from "@mui/material/styles";
