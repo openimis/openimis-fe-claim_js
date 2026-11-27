@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 
 import { Grid, Typography, Divider, Button } from "@mui/material";
 import { useTheme, styled } from "@mui/material/styles";
@@ -18,6 +17,7 @@ import {
   formatMessage,
   GRID_RESPONSIVE_HALF,
   GRID_RESPONSIVE_STANDARD,
+  injectIntl,
 } from "@openimis/fe-core";
 import {
   clearLastClaimAt,
@@ -31,11 +31,11 @@ import AdditionalPanelInsuree from "./AdditionalPanelInsuree";
 import AdditionalPanelClaim from "./AdditionalPanelClaim";
 
 const StyledItemGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.item ?? {},
+  ...(theme?.paper?.item ?? {}),
 }));
 
 const StyledTableTitle = styled(Typography)(({ theme }) => ({
-  ...theme?.table?.header ?? {},
+  ...(theme?.table?.header ?? {}),
 }));
 
 const StyledInactiveLabel = styled(Typography)({

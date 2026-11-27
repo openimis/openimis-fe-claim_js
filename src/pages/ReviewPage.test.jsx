@@ -4,7 +4,8 @@ import { act, render } from "@testing-library/react";
 
 // The fe-core barrel cannot be loaded whole in a module test (UserPicker import
 // cycle); the page only needs its HOCs (identity here) and the label formatter.
-vi.mock("@openimis/fe-core", () => ({
+vi.mock("@openimis/fe-core", async () => ({
+  injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
   withModulesManager: (component) => component,
   withHistory: (component) => component,
   formatMessageWithValues: (intl, module, id) => id,

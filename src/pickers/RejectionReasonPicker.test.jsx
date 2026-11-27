@@ -5,7 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("@openimis/fe-core", async () => {
   const selectInput = await vi.importActual("@openimis/fe-core/components/inputs/SelectInput");
   const i18n = await vi.importActual("@openimis/fe-core/helpers/i18n");
-  return { SelectInput: selectInput.default, formatMessage: i18n.formatMessage };
+  return {
+    injectIntl: (await import("@openimis/fe-core/testing")).injectIntl, SelectInput: selectInput.default, formatMessage: i18n.formatMessage };
 });
 
 const { default: RejectionReasonPicker } = await import("./RejectionReasonPicker");

@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { Component } from "react";
-import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 
 import { Box, Grid, IconButton, Paper, TableCell, Tooltip, Typography } from "@mui/material";
@@ -20,6 +19,7 @@ import {
   withModulesManager,
   withTooltip,
   GetIconComponent,
+  injectIntl,
 } from "@openimis/fe-core";
 import { DEFAULT, SERVICE_TYPE_PP_F, SERVICE_TYPE_PP_P, SERVICE_TYPE_PP_S } from "../constants";
 import { approvedAmount, claimedAmount } from "../helpers/amounts";
@@ -93,6 +93,21 @@ class ClaimChildPanel extends Component {
     this.setState({ data: this.initData() });
   }
 
+  // Whether anything initData() reads differs. Comparing the whole claim instead reset the
+  // rows (a setState during the commit, so a second commit) on every keystroke in any other
+  // field of the form, including the other panel's rows.
+  _initDataInputsChanged = (prevProps) => {
+    const { edited, type, forReview } = this.props;
+    const prevEdited = prevProps.edited;
+    return (
+      prevProps.type !== type ||
+      prevProps.forReview !== forReview ||
+      !_.isEqual(prevEdited?.[`${prevProps.type}s`], edited[`${type}s`]) ||
+      !!prevEdited?.services !== !!edited.services ||
+      prevEdited?.status !== edited.status
+    );
+  };
+
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.edited_id && !this.props.edited_id && !(this.props.isDuplicate || this.props.isRestored)) {
       let data = [];
@@ -102,7 +117,7 @@ class ClaimChildPanel extends Component {
       this.setState({ data, reset: this.state.reset + 1 });
     } else if (
       prevProps.reset !== this.props.reset ||
-      (!!this.props.edited && !_.isEqual(prevProps.edited, this.props.edited))
+      (!!this.props.edited && this._initDataInputsChanged(prevProps))
     ) {
       this.setState({
         data: this.initData(),
@@ -365,7 +380,9 @@ class ClaimChildPanel extends Component {
           disableFocusListener={forReview || !!readOnly}
           sx={{ fontSize: "3rem" }}
         >
-          <Box minWidth={forReview ? 300 : 400}>
+          <Box sx={{
+            minWidth: forReview ? 300 : 400
+          }}>
             <PublishedComponent
               required={(!!edited.services && edited.services?.length<2 && !!edited.items && edited?.items?.length<2) || (!edited.services && !edited.items)}
               readOnly={forReview || readOnly}
@@ -433,7 +450,9 @@ class ClaimChildPanel extends Component {
             />
           </TableCell>
           <TableCell>
-            <Box minWidth={forReview ? 400 : 600 }>
+            <Box sx={{
+              minWidth: forReview ? 400 : 600
+            }}>
               <TextInput
                 readOnly={forReview || readOnly || true}
                 value={u.service.name}
@@ -516,7 +535,9 @@ class ClaimChildPanel extends Component {
                 <TextInput readOnly={true} value={u.item.code} />
               </TableCell>
               <TableCell>
-                <Box minWidth={400}>
+                <Box sx={{
+                  minWidth: 400
+                }}>
                   <TextInput readOnly={forReview || readOnly || true} value={u.item.name} />
                 </Box>
               </TableCell>
@@ -690,7 +711,13 @@ class ClaimChildPanel extends Component {
           disableDeleteOnEmptyRow
           showOrdinalNumber={this.showOrdinalNumber}
         />
-        <Box display="flex" justifyContent="flex-start" padding={2} paddingLeft={135}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            padding: 2,
+            paddingLeft: 135
+          }}>
           <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
             {formatMessageWithValues(intl, "claim", `edit.${type}s.totalAmountLabel`, {
               total: formatAmount(modulesManager, intl, totalAmount),
