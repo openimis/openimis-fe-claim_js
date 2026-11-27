@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import { useTheme, styled } from "@mui/material/styles";
-import { injectIntl } from "react-intl";
 import _ from "lodash";
 import { Grid, Typography, Divider, Slider, Paper } from "@mui/material";
 import {
@@ -10,21 +9,22 @@ import {
   formatMessage,
   decodeId,
   ControlledField,
+  injectIntl,
 } from "@openimis/fe-core";
 import { FEEDBACK_ASSESSMENTS } from "../constants";
 
 const CLAIM_FEEDBACK_CONTRIBUTION_KEY = "claim.ClaimFeedback";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  ...theme?.paper?.paper ?? {},
+  ...(theme?.paper?.paper ?? {}),
 }));
 
 const StyledHeaderGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.header ?? {},
+  ...(theme?.paper?.header ?? {}),
 }));
 
 const StyledItemGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.item ?? {},
+  ...(theme?.paper?.item ?? {}),
 }));
 
 const StyledTristateSlider = styled(Slider)({
@@ -97,7 +97,13 @@ class ClaimFeedbackPanel extends Component {
   };
 
   _tristate = (f) => (
-    <Grid container alignItems="center" justifyContent="center" direction="column">
+    <Grid
+      container
+      direction="column"
+      sx={{
+        alignItems: "center",
+        justifyContent: "center"
+      }}>
       <Grid>
         <FormattedMessage module="claim" id={`Feedback.${f}`} />
       </Grid>
@@ -136,7 +142,9 @@ class ClaimFeedbackPanel extends Component {
           </Grid>
           <Grid size={3} />
           <Grid size={6}>
-            <Grid container alignItems="center" justify="center">
+            <Grid container justify="center" sx={{
+              alignItems: "center"
+            }}>
               <ControlledField
                 module="claim"
                 id="Feedback.date"
@@ -220,7 +228,9 @@ class ClaimFeedbackPanel extends Component {
               <Fragment>
                 <Grid size={2} />
                 <StyledItemGrid size={8} className="item">
-                  <Grid container alignItems="center" justify="center" direction="column">
+                  <Grid container justify="center" direction="column" sx={{
+                    alignItems: "center"
+                  }}>
                     <Grid className="assessmentContainer">
                       <Typography gutterBottom>
                         <FormattedMessage module="claim" id="Feedback.overallAssesment" />

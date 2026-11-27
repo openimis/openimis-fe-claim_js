@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 import { Fab, Tooltip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import _ from "lodash";
@@ -16,6 +15,7 @@ import {
   Helmet,
   clearCurrentPaginationPage,
   GetIconComponent,
+  injectIntl,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import { claimAdminDefaultFilters } from "../components/ClaimFilter";
@@ -35,11 +35,11 @@ const CLAIM_HF_FILTER_CONTRIBUTION_KEY = "claim.HealthFacilitiesFilter";
 const CLAIM_SEARCHER_ACTION_CONTRIBUTION_KEY = "claim.SelectionAction";
 
 const StyledDiv = styled("div")(({ theme }) => ({
-  ...theme?.page ?? {},
+  ...(theme?.page ?? {}),
 }));
 
 const StyledFabDiv = styled("div")(({ theme }) => ({
-  ...theme?.fab ?? {},
+  ...(theme?.fab ?? {}),
 }));
 
 class HealthFacilitiesPage extends Component {

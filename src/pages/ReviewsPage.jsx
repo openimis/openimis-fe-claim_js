@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 import { Grid, InputAdornment, IconButton, Tooltip, Button } from "@mui/material";
 import {
   formatMessage,
@@ -19,6 +18,7 @@ import {
   Contributions,
   GRID_RESPONSIVE_STANDARD,
   GetIconComponent,
+  injectIntl,
 } from "@openimis/fe-core";
 import ClaimSearcher from "../components/ClaimSearcher";
 import {
@@ -475,7 +475,9 @@ class ReviewsPage extends Component {
   provideFeedback = (c) => historyPush(this.props.modulesManager, this.props.history, "claim.route.feedback", [c.uuid]);
 
   feedbackColFormatter = (c) => (
-    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
+    <Grid container wrap="nowrap" style={{ gap: 4 }} sx={{
+      alignItems: "center"
+    }}>
       <Grid>
         <PublishedComponent
           pubRef="claim.FeedbackStatusPicker"
@@ -551,7 +553,9 @@ class ReviewsPage extends Component {
     }
   };
   reviewColFormatter = (c) => (
-    <Grid container alignItems="center" wrap="nowrap" style={{ gap: 4 }}>
+    <Grid container wrap="nowrap" style={{ gap: 4 }} sx={{
+      alignItems: "center"
+    }}>
       <Grid>
         <PublishedComponent
           pubRef="claim.ReviewStatusPicker"

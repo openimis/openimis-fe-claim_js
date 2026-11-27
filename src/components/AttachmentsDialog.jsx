@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 import _ from "lodash";
 
 import {
@@ -30,6 +29,7 @@ import {
   coreConfirm,
   coreAlert,
   GetIconComponent,
+  injectIntl,
 } from "@openimis/fe-core";
 import {
   fetchClaimAttachments,
@@ -46,11 +46,11 @@ const DeleteIcon = GetIconComponent("Delete")
 const FileIcon = GetIconComponent("Add")
 const LinkIcon = GetIconComponent("Link")
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
-  ...theme?.dialog?.title ?? {},
+  ...(theme?.dialog?.title ?? {}),
 }));
 
 const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
-  ...theme?.dialog?.content ?? {},
+  ...(theme?.dialog?.content ?? {}),
 }));
 
 class AttachmentsDialog extends Component {
@@ -561,11 +561,13 @@ class AttachmentsDialog extends Component {
       <Dialog
         open={open}
         fullWidth={true}
-        PaperProps={{
-          style: {
-            width: "800px",
-            maxWidth: "none",
-          },
+        slotProps={{
+          paper: {
+            style: {
+              width: "800px",
+              maxWidth: "none",
+            },
+          }
         }}
       >
         <StyledDialogTitle className="dialogTitle">

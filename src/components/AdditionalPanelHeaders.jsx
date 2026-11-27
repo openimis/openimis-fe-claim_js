@@ -6,11 +6,11 @@ import { useTheme, styled } from "@mui/material/styles";
 import { FormattedMessage } from "@openimis/fe-core";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.item ?? {},
+  ...(theme?.paper?.item ?? {}),
 }));
 
 const StyledTypography = styled(Typography)(({ theme }) => ({
-  ...theme?.table?.title ?? {},
+  ...(theme?.table?.title ?? {}),
 }));
 
 const AdditionalPanelHeaders = () => {

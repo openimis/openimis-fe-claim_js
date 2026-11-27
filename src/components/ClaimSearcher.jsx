@@ -11,10 +11,10 @@ import {
   Searcher,
   withModulesManager,
   GetIconComponent,
-  ActionMenu
+  ActionMenu,
+  injectIntl
 } from "@openimis/fe-core";
 import _ from "lodash";
-import { injectIntl } from "react-intl";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { fetchClaimSummaries } from "../actions";

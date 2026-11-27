@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { injectIntl } from "react-intl";
 import {
   Accordion as ExpansionPanel,
   AccordionSummary as ExpansionPanelSummary,
@@ -11,8 +10,13 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import { GetIconComponent } from "@openimis/fe-core";
-import { useModulesManager, useTranslations, Table, formatDateFromISO } from "@openimis/fe-core";
+import {
+  GetIconComponent,
+  injectIntl,
+  useModulesManager,
+  useTranslations,
+  Table,
+} from "@openimis/fe-core";
 import { fetchClaimHistory } from "../actions";
 import { styled } from "@mui/material/styles";
 
@@ -131,7 +135,12 @@ const ClaimHistoryPanel = ({ claim, claimUuid, onViewVersion, classes }) => {
               <CircularProgress />
             </Box>
           ) : errorHistory ? (
-            <Box color="error.main" p={2} width="100%">
+            <Box
+              sx={{
+                color: "error.main",
+                p: 2,
+                width: "100%"
+              }}>
               {errorHistory}
             </Box>
           ) : (

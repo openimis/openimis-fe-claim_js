@@ -8,7 +8,8 @@ import { configureStore } from "@reduxjs/toolkit";
 // The fe-core barrel cannot be loaded whole in a module test (UserPicker import
 // cycle). The table is replaced by a stub recording the rows the panel hands it.
 let tableItems;
-vi.mock("@openimis/fe-core", () => ({
+vi.mock("@openimis/fe-core", async () => ({
+  injectIntl: (await import("@openimis/fe-core/testing")).injectIntl,
   AmountInput: () => null,
   decodeId: (id) => id,
   Error: () => null,

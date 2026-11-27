@@ -14,7 +14,7 @@ import {
 } from "@openimis/fe-core";
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
-  ...theme?.paper?.item ?? {},
+  ...(theme?.paper?.item ?? {}),
 }));
 
 const AdditionalPanelClaim = ({ sameDiagnosisClaim }) => {

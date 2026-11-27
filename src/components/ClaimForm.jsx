@@ -1,7 +1,6 @@
 import React, { Component, Fragment, useState } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { injectIntl } from "react-intl";
 import moment from "moment";
 import { Fab, Badge, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -25,6 +24,7 @@ import {
   getLocalStorage,
   setLocalStorage,
   removeLocalStorage,
+  injectIntl,
 } from "@openimis/fe-core";
 import { claimHealthFacilitySet, fetchClaim, generate, print } from "../actions";
 import {
@@ -61,7 +61,7 @@ const CachedIcon = GetIconComponent("Cached")
 const CLAIM_FORM_CONTRIBUTION_KEY = "claim.ClaimForm";
 
 const StyledDiv = styled("div")(({ theme }) => ({
-  ...theme?.page ?? {},
+  ...(theme?.page ?? {}),
   "lockedPage": theme?.page?.locked ?? {}
 }));
 
